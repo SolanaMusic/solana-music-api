@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SolanaMusicApi.Domain\SolanaMusicApi.Domain.csproj" />
+    <ProjectReference Include="..\SolanaMusicApi.Infrastructure\SolanaMusicApi.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
