@@ -26,10 +26,7 @@ public static class DefaultUsersExtension
 
             var userResponse = await userManager.CreateAsync(user, DefaultUsers.UserPassword);
             if (userResponse.Succeeded)
-            {
-                var date = DateTime.Now;
-                await userManager.AddToRoleAsync(user, nameof(UserRoles.Admin));
-            }
+                await userManager.AddToRoleAsync(user, nameof(UserRoles.User));
         }
 
         if (defaultUser == null)
@@ -42,10 +39,7 @@ public static class DefaultUsersExtension
 
             var userResponse = await userManager.CreateAsync(user, DefaultUsers.ModerPassword);
             if (userResponse.Succeeded)
-            {
-                var date = DateTime.Now;
                 await userManager.AddToRoleAsync(user, nameof(UserRoles.Moderator));
-            }
         }
 
         if (adminUser == null)
@@ -59,10 +53,7 @@ public static class DefaultUsersExtension
             var adminResponse = await userManager.CreateAsync(admin, DefaultUsers.AdminPassword);
 
             if (adminResponse.Succeeded)
-            {
-                var date = DateTime.Now;
                 await userManager.AddToRoleAsync(admin, nameof(UserRoles.Admin));
-            }
         }
     }
 }

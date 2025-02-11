@@ -133,6 +133,10 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         {
             throw new Exception(rollbackEx.Message);
         }
+        finally
+        {
+            await _transaction.DisposeAsync();
+        }
     }
 
     private async Task<T> GetByIdAsyncTarking(int id)
