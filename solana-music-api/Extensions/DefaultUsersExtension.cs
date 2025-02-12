@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using solana_music_api.SeedData.Constatnts;
+using solana_music_api.SeedData;
 using SolanaMusicApi.Domain.Entities.User;
 using SolanaMusicApi.Domain.Enums;
 
-namespace solana_music_api.SeedData;
+namespace solana_music_api.Extensions;
 
 public static class DefaultUsersExtension
 {

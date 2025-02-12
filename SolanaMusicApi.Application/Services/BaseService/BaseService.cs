@@ -1,7 +1,7 @@
 ﻿using SolanaMusicApi.Domain.Entities;
 using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
-namespace SolanaMusicApi.Application.BaseService;
+namespace SolanaMusicApi.Application.Services.BaseService;
 
 public class BaseService<T>(IBaseRepository<T> baseRepository) : IBaseService<T> where T : BaseEntity
 {

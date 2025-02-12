@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SolanaMusicApi.Domain.Enums;
 
-namespace solana_music_api.SeedData;
+namespace solana_music_api.Extensions;
 
 public static class DefaultRolesExtension
 {

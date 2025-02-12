@@ -1,0 +1,15 @@
+﻿using AutoMapper;
+using SolanaMusicApi.Domain.DTO.Auth;
+using SolanaMusicApi.Domain.Entities.User;
+
+namespace solana_music_api.Mapper;
+
+public class MappingProfiles : Profile
+{
+    public MappingProfiles()
+    {
+        CreateMap<RegisterDto, LoginDto>();
+        CreateMap<RegisterDto, ApplicationUser>()
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email.Substring(0, src.Email.IndexOf('@'))));
+    }
+}

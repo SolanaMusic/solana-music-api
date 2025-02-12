@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using solana_music_api;
-using solana_music_api.SeedData;
+using solana_music_api.Extensions;
 using SolanaMusicApi.Application;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +15,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.ConfigureRepositories();
 builder.Services.ConfigureServices();
 builder.Services.ConfigureIdentity();
+builder.Services.ConfigureGeneral();
+builder.AddJwtAuthentication();
 
 builder.Services.AddControllers();
 builder.Services.ConfigureSwagger();

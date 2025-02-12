@@ -1,4 +1,4 @@
-﻿namespace SolanaMusicApi.Application.BaseService;
+﻿namespace SolanaMusicApi.Application.Services.BaseService;
 
 public interface IBaseService<T>
 {

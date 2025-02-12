@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using SolanaMusicApi.Application;
+using SolanaMusicApi.Application.Services.AuthService;
+using SolanaMusicApi.Application.Services.BaseService;
 using SolanaMusicApi.Domain.Entities.User;
 
 namespace solana_music_api;
@@ -14,7 +16,13 @@ public static class Configurator
 
     public static void ConfigureServices(this IServiceCollection services)
     {
+        services.AddScoped<IAuthService, AuthService>();
+    }
 
+    public static void ConfigureGeneral(this IServiceCollection services)
+    {
+        services.AddAutoMapper(typeof(Program));
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IBaseService<>).Assembly));
     }
 
     public static void ConfigureIdentity(this IServiceCollection services)
