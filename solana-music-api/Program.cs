@@ -30,6 +30,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 await app.CreateDefaultRolesAsync();
 await app.CreateDefaultUsersAsync();
 
