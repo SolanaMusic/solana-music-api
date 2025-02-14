@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using SolanaMusicApi.Application;
+using SolanaMusicApi.Application.Factories.RedirectUrlFactory;
 using SolanaMusicApi.Application.Services.AuthService;
 using SolanaMusicApi.Application.Services.BaseService;
 using SolanaMusicApi.Domain.Entities.User;
@@ -16,6 +17,7 @@ public static class Configurator
 
     public static void ConfigureServices(this IServiceCollection services)
     {
+        services.AddScoped<IRedirectUrlFactory, RedirectUrlFactory>();
         services.AddScoped<IAuthService, AuthService>();
     }
 

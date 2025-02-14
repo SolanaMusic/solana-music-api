@@ -4,7 +4,7 @@ using SolanaMusicApi.Application.Services.AuthService;
 
 namespace SolanaMusicApi.Application.Handlers.Auth;
 
-public class LoginQueryHandler(IAuthService authService) : IRequestHandler<LoginRequest, string>
+public class LoginRequestHandler(IAuthService authService) : IRequestHandler<LoginRequest, string>
 {
     public async Task<string> Handle(LoginRequest request, CancellationToken cancellationToken)
     {

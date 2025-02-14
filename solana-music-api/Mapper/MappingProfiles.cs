@@ -9,7 +9,6 @@ public class MappingProfiles : Profile
     public MappingProfiles()
     {
         CreateMap<RegisterDto, LoginDto>();
-        CreateMap<RegisterDto, ApplicationUser>()
-            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email.Substring(0, src.Email.IndexOf('@'))));
+        CreateMap<RegisterDto, ApplicationUser>();
     }
 }
