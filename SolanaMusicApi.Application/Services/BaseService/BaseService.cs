@@ -3,14 +3,14 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
 namespace SolanaMusicApi.Application.Services.BaseService;
 
-public class BaseService<T>(IBaseRepository<T> baseRepository) : IBaseService<T> where T : BaseEntity
+public abstract class BaseService<T>(IBaseRepository<T> baseRepository) : IBaseService<T> where T : BaseEntity
 {
     public IQueryable<T> GetAll()
     {
         return baseRepository.GetAll();
     }
 
-    public async Task<T> GetByIdAsync(int id)
+    public async Task<T> GetByIdAsync(long id)
     {
         return await baseRepository.GetByIdAsync(id);
     }
@@ -35,7 +35,7 @@ public class BaseService<T>(IBaseRepository<T> baseRepository) : IBaseService<T>
         await baseRepository.UpdateRangeAsync(entities);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(long id)
     {
         await baseRepository.DeleteAsync(id);
     }

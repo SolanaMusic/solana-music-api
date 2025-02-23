@@ -7,7 +7,7 @@ using SolanaMusicApi.Domain.Entities.User;
 
 namespace SolanaMusicApi.Application.Handlers.Auth;
 
-public class ExternalAuthQueryHandler(SignInManager<ApplicationUser> signInManager, IAuthService authService) :
+public class ExternalAuthRequestHandler(SignInManager<ApplicationUser> signInManager, IAuthService authService) :
     IRequestHandler<ExternalAuthRequest, (string AuthProvider, AuthenticationProperties Properties)>
 {
     public Task<(string AuthProvider, AuthenticationProperties Properties)> Handle(ExternalAuthRequest request, CancellationToken cancellationToken)
