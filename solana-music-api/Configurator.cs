@@ -4,7 +4,10 @@ using SolanaMusicApi.Application;
 using SolanaMusicApi.Application.Factories.RedirectUrlFactory;
 using SolanaMusicApi.Application.Services.AuthService;
 using SolanaMusicApi.Application.Services.BaseService;
+using SolanaMusicApi.Application.Services.TracksService;
 using SolanaMusicApi.Domain.Entities.User;
+using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
+using SolanaMusicApi.Infrastructure.Repositories.TrackRepository;
 
 namespace solana_music_api;
 
@@ -12,13 +15,15 @@ public static class Configurator
 {
     public static void ConfigureRepositories(this IServiceCollection services)
     {
-
+        services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+        services.AddScoped<ITrackRepository, TrackRepository>();
     }
 
     public static void ConfigureServices(this IServiceCollection services)
     {
         services.AddScoped<IRedirectUrlFactory, RedirectUrlFactory>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ITracksService, TracksService>();
     }
 
     public static void ConfigureGeneral(this IServiceCollection services)

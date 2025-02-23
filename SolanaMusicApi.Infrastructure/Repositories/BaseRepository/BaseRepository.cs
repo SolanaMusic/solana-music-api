@@ -24,7 +24,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
             .AsNoTracking();
     }
 
-    public async Task<T> GetByIdAsync(int id)
+    public async Task<T> GetByIdAsync(long id)
     {
         var response = await dbSet
             .AsQueryable()
@@ -81,7 +81,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(long id)
     {
         var entity = await GetByIdAsyncTarking(id);
         dbSet.Remove(entity);
@@ -139,7 +139,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         }
     }
 
-    private async Task<T> GetByIdAsyncTarking(int id)
+    private async Task<T> GetByIdAsyncTarking(long id)
     {
         var response = await dbSet
             .AsQueryable()
