@@ -12,48 +12,24 @@ public static class DefaultUsersExtension
         using var scope = app.Services.CreateAsyncScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-        var adminUser = await userManager.FindByEmailAsync(DefaultUsers.UserName);
-        var moderUser = await userManager.FindByEmailAsync(DefaultUsers.ModerEmail);
-        var defaultUser = await userManager.FindByEmailAsync(DefaultUsers.AdminEmail);
-
-        if (defaultUser == null)
+        var users = new[]
         {
-            var user = new ApplicationUser
-            {
-                Email = DefaultUsers.UserEmail,
-                UserName = DefaultUsers.UserName,
-            };
+            new { Email = DefaultUsers.UserEmail, UserName = DefaultUsers.UserName, Password = DefaultUsers.UserPassword, Role = UserRoles.User },
+            new { Email = DefaultUsers.ArtistEmail, UserName = DefaultUsers.ArtistName, Password = DefaultUsers.ArtistPassword, Role = UserRoles.Artist },
+            new { Email = DefaultUsers.ModerEmail, UserName = DefaultUsers.ModerName, Password = DefaultUsers.ModerPassword, Role = UserRoles.Moderator },
+            new { Email = DefaultUsers.AdminEmail, UserName = DefaultUsers.AdminName, Password = DefaultUsers.AdminPassword, Role = UserRoles.Admin }
+        };
 
-            var userResponse = await userManager.CreateAsync(user, DefaultUsers.UserPassword);
-            if (userResponse.Succeeded)
-                await userManager.AddToRoleAsync(user, nameof(UserRoles.User));
-        }
-
-        if (defaultUser == null)
+        foreach (var userData in users)
         {
-            var user = new ApplicationUser
+            if (await userManager.FindByEmailAsync(userData.Email) == null)
             {
-                Email = DefaultUsers.ModerEmail,
-                UserName = DefaultUsers.ModerName,
-            };
+                var user = new ApplicationUser { Email = userData.Email, UserName = userData.UserName };
+                var result = await userManager.CreateAsync(user, userData.Password);
 
-            var userResponse = await userManager.CreateAsync(user, DefaultUsers.ModerPassword);
-            if (userResponse.Succeeded)
-                await userManager.AddToRoleAsync(user, nameof(UserRoles.Moderator));
-        }
-
-        if (adminUser == null)
-        {
-            var admin = new ApplicationUser
-            {
-                Email = DefaultUsers.AdminEmail,
-                UserName = DefaultUsers.AdminName,
-            };
-
-            var adminResponse = await userManager.CreateAsync(admin, DefaultUsers.AdminPassword);
-
-            if (adminResponse.Succeeded)
-                await userManager.AddToRoleAsync(admin, nameof(UserRoles.Admin));
+                if (result.Succeeded)
+                    await userManager.AddToRoleAsync(user, userData.Role.ToString());
+            }
         }
     }
 }

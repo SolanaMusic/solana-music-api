@@ -6,6 +6,10 @@ public class DefaultUsers
     public const string UserEmail = "user@gmail.com";
     public const string UserPassword = "Qwerty123$";
 
+    public const string ArtistName = "Artist";
+    public const string ArtistEmail = "artist@gmail.com";
+    public const string ArtistPassword = "Qwerty123$";
+
     public const string ModerName = "Moderator";
     public const string ModerEmail = "moder@gmail.com";
     public const string ModerPassword = "Qwerty123$";

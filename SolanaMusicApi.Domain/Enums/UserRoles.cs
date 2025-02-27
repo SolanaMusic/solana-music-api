@@ -3,6 +3,7 @@
 public enum UserRoles
 {
     User,
+    Artist,
     Moderator,
     Admin
 }

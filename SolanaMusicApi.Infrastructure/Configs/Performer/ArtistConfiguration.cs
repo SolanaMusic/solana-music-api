@@ -14,6 +14,16 @@ public class ArtistConfiguration : IEntityTypeConfiguration<Artist>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.HasOne(a => a.User)
+            .WithOne(u => u.Artist)
+            .HasForeignKey<Artist>(a => a.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(a => a.Country)
+            .WithMany(c => c.Artists)
+            .HasForeignKey(a => a.CountryId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.Property(a => a.Bio)
             .HasMaxLength(1000);
 
@@ -27,5 +37,9 @@ public class ArtistConfiguration : IEntityTypeConfiguration<Artist>
         builder.HasMany(a => a.Tracks)
             .WithMany(t => t.Artists)
             .UsingEntity(j => j.ToTable("ArtistTracks"));
+
+        builder.HasMany(a => a.Subscribers)
+            .WithMany(u => u.SubscribedArtists)
+            .UsingEntity(j => j.ToTable("ArtistSubscribers"));
     }
 }

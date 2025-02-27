@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using solana_music_api;
 using solana_music_api.Extensions;
 using SolanaMusicApi.Application;
+using SolanaMusicApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

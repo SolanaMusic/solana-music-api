@@ -34,11 +34,12 @@ public static class Configurator
 
     public static void ConfigureIdentity(this IServiceCollection services)
     {
-        services.AddIdentity<ApplicationUser, IdentityRole>()
+        services.AddIdentity<ApplicationUser, IdentityRole<long>>()
+            .AddRoles<IdentityRole<long>>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-        services.AddScoped<RoleManager<IdentityRole>>();
+        services.AddScoped<RoleManager<IdentityRole<long>>>();
     }
 
     public static void ConfigureSwagger(this IServiceCollection services)
