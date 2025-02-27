@@ -12,7 +12,7 @@ using SolanaMusicApi.Application;
 namespace SolanaMusicApi.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250227010623_DomainsAdded")]
+    [Migration("20250227060455_DomainsAdded")]
     partial class DomainsAdded
     {
         /// <inheritdoc />
@@ -241,6 +241,10 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                         .HasColumnOrder(0);
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("CountryCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");

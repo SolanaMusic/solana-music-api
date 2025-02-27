@@ -4,8 +4,8 @@ namespace SolanaMusicApi.Application.Services.AuthService;
 
 public interface IAuthService
 {
-    Task<string> Login(LoginDto loginDto);
-    Task<string> Register(RegisterDto registerDto);
-    Task<string> LoginWithExternal();
+    Task<LoginResponseDto> LoginAsync(LoginDto loginDto);
+    Task<LoginResponseDto> RegisterAsync(RegisterDto registerDto);
+    Task<LoginResponseDto> LoginWithExternalAsync();
     string CheckAuthProvider(string provider);
 }

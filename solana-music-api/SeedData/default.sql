@@ -23,13 +23,25 @@ END
 SET IDENTITY_INSERT dbo.SubscriptionPlans OFF;
 
 -- Countries
+SET IDENTITY_INSERT dbo.Countries ON;
 IF NOT EXISTS (SELECT 1 FROM dbo.Countries WHERE Id = 1)
 BEGIN
-    SET IDENTITY_INSERT dbo.Countries ON;
-    INSERT INTO dbo.Countries ([Id], [Name], [CreatedDate], [UpdatedDate])
-    VALUES (1, 'USA', GETDATE(), GETDATE());
-    SET IDENTITY_INSERT dbo.Countries OFF;
+    INSERT INTO dbo.Countries ([Id], [Name], [CountryCode], [CreatedDate], [UpdatedDate])
+    VALUES (1, 'United States', 'USA', GETDATE(), GETDATE());
 END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Countries WHERE Id = 2)
+BEGIN
+    INSERT INTO dbo.Countries ([Id], [Name], [CountryCode], [CreatedDate], [UpdatedDate])
+    VALUES (2, 'Ukraine', 'UA', GETDATE(), GETDATE());
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Countries WHERE Id = 3)
+BEGIN
+    INSERT INTO dbo.Countries ([Id], [Name], [CountryCode], [CreatedDate], [UpdatedDate])
+    VALUES (3, 'Austria', 'AT', GETDATE(), GETDATE());
+END
+SET IDENTITY_INSERT dbo.Countries OFF;
 
 
 -- Genres

@@ -37,7 +37,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         return response;
     }
 
-    public async Task<T> Add(T entity)
+    public async Task<T> AddAsync(T entity)
     {
         var date = DateTime.Now;
         entity.CreatedDate = date;

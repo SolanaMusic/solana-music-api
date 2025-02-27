@@ -9,7 +9,7 @@ namespace solana_music_api.Controllers;
 
 [Route("api/auth")]
 [ApiController]
-public class AuthController(IMediator mediator, IRedirectUrlFactory redirectUrlFactory) : ControllerBase
+public class AuthController(IMediator mediator) : ControllerBase
 {
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
@@ -32,10 +32,8 @@ public class AuthController(IMediator mediator, IRedirectUrlFactory redirectUrlF
     }
 
     [HttpGet("external-login")]
-    public async Task<IActionResult> ExternalLogin([Required] string provider)
+    public async Task<IActionResult> ExternalLogin([Required] string provider, [Required] string redirectUrl)
     {
-        var response = redirectUrlFactory.Create(provider);
-        var redirectUrl = Url.Action(response, "Auth", null, Request.Scheme);
         if (string.IsNullOrEmpty(redirectUrl))
             return BadRequest("Redirect url is null");
 
@@ -44,7 +42,7 @@ public class AuthController(IMediator mediator, IRedirectUrlFactory redirectUrlF
     }
 
     [HttpGet("external-response")]
-    public async Task<IActionResult> GoogleResponse()
+    public async Task<IActionResult> ExternalResponse()
     {
         var response = await mediator.Send(new ExternalResponseRequest());
         return Ok(response);

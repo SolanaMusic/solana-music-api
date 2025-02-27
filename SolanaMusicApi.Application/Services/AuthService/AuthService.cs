@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using SolanaMusicApi.Application.Services.CountryService;
+using SolanaMusicApi.Application.Services.UserProfileService;
 using SolanaMusicApi.Domain.DTO.Auth;
 using SolanaMusicApi.Domain.DTO.Auth.OAuth;
 using SolanaMusicApi.Domain.Entities.User;
@@ -9,17 +12,23 @@ using SolanaMusicApi.Domain.Enums;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace SolanaMusicApi.Application.Services.AuthService;
 
-public class AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-    IMapper mapper, IOptions<JwtTokenSettings> tokenSettings, IOptions<AuthSettings> authSettings) : IAuthService
+public class AuthService(IUserProfileService userProfileService, ICountryService countryService, UserManager<ApplicationUser> userManager, 
+    SignInManager<ApplicationUser> signInManager, IMapper mapper, IOptions<JwtTokenSettings> tokenSettings, 
+    IOptions<AuthSettings> authSettings) : IAuthService
 {
     private readonly JwtTokenSettings _tokenSettings = tokenSettings.Value;
 
-    public async Task<string> Login(LoginDto loginDto)
+    public async Task<LoginResponseDto> LoginAsync(LoginDto loginDto)
     {
-        var appUser = await userManager.FindByEmailAsync(loginDto.Email);
+        var appUser = await userManager.Users
+            .Include(u => u.Profile)
+            .FirstOrDefaultAsync(u => u.Email == loginDto.Email);
+
 
         if (appUser == null)
             throw new NullReferenceException("User does not exist");
@@ -27,10 +36,10 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
         if (!await userManager.CheckPasswordAsync(appUser, loginDto.Password))
             throw new Exception("Invalid password");
 
-        return await GenerateToken(appUser);
+        return await GetLoginResponseAsync(appUser);
     }
 
-    public async Task<string> Register(RegisterDto registerDto)
+    public async Task<LoginResponseDto> RegisterAsync(RegisterDto registerDto)
     {
         var appUser = await userManager.FindByEmailAsync(registerDto.Email);
 
@@ -38,7 +47,7 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
             throw new Exception("User is already exists");
 
         var newUser = mapper.Map<ApplicationUser>(registerDto);
-        newUser.UserName = await GenerateUserName(registerDto.Email);
+        newUser.UserName = await GenerateUserNameAsync(registerDto.Email);
         var userResponse = await userManager.CreateAsync(newUser, registerDto.Password);
 
         if (!userResponse.Succeeded)
@@ -49,34 +58,33 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
             AggregateErrors(roleResponse.Errors);
 
         var user = mapper.Map<LoginDto>(registerDto);
-        return await Login(user);
+        return await LoginAsync(user);
     }
 
-    public async Task<string> LoginWithExternal()
+    public async Task<LoginResponseDto> LoginWithExternalAsync()
     {
         var info = await signInManager.GetExternalLoginInfoAsync();
         if (info == null)
             throw new NullReferenceException("Authentication error: external login info is null");
 
-        var signInResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false);
-        if (signInResult.Succeeded)
-        {
-            var existingUser = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-            return await GenerateToken(existingUser!);
-        }
+        var existingUser = await GetExistingUserAsync(info);
+        if (existingUser != null)
+            return await GetLoginResponseAsync(existingUser);
 
         var email = info.Principal.FindFirstValue(ClaimTypes.Email);
         if (string.IsNullOrEmpty(email))
             throw new Exception("Could not retrieve the email from external provider");
 
-        var user = await CheckExternalLoginUser(email);
+        var user = await CheckExternalLoginUserAsync(email);
         var addLoginResult = await userManager.AddLoginAsync(user, info);
 
         if (!addLoginResult.Succeeded)
             throw new Exception(AggregateErrors(addLoginResult.Errors));
 
+        await CreateUserProfileAsync(user.Id, info);
         await signInManager.SignInAsync(user, false);
-        return await GenerateToken(user);
+
+        return await GetLoginResponseAsync(user);
     }
 
     public string CheckAuthProvider(string provider)
@@ -90,7 +98,7 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
         return matchedProvider;
     }
 
-    private async Task<string> GenerateToken(ApplicationUser user)
+    private async Task<string> GenerateTokenAsync(ApplicationUser user)
     {
         var roles = await userManager.GetRolesAsync(user);
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -117,7 +125,7 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
         return tokenHandler.WriteToken(token);
     }
 
-    private async Task<ApplicationUser> CheckExternalLoginUser(string email)
+    private async Task<ApplicationUser> CheckExternalLoginUserAsync(string email)
     {
         var user = await userManager.FindByEmailAsync(email);
         if (user != null)
@@ -125,7 +133,7 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
 
         user = new ApplicationUser
         {
-            UserName = await GenerateUserName(email),
+            UserName = await GenerateUserNameAsync(email),
             Email = email
         };
 
@@ -140,7 +148,7 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
         return user;
     }
 
-    private async Task<string> GenerateUserName(string email)
+    private async Task<string> GenerateUserNameAsync(string email)
     {
         var baseUserName = email.Split('@')[0];
         var userName = baseUserName;
@@ -155,10 +163,61 @@ public class AuthService(UserManager<ApplicationUser> userManager, SignInManager
         return userName;
     }
 
-
-
-    private string AggregateErrors(IEnumerable<IdentityError> errors)
+    private async Task<ApplicationUser?> GetExistingUserAsync(ExternalLoginInfo info)
     {
-        return string.Join(" ", errors.Select(e => e.Description));
+        var user = await userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+        if (user != null)
+            await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false);
+
+        return user;
     }
+
+    private async Task CreateUserProfileAsync(long userId, ExternalLoginInfo info)
+    {
+        var country = await GetUserCountryAsync();
+        var countryResponse = await countryService.GetCountryByNameAsync(country);
+
+        var date = DateTime.UtcNow;
+        var profile = new UserProfile
+        {
+            UserId = userId,
+            AvatarUrl = GetAvatarUrl(info),
+            CountryId = countryResponse?.Id ?? 1,
+            TokensAmount = 0,
+            CreatedDate = date,
+            UpdatedDate = date,
+        };
+
+        await userProfileService.AddAsync(profile);
+    }
+
+    private string GetAvatarUrl(ExternalLoginInfo info)
+    {
+        var avatar = info.Principal.Claims.FirstOrDefault(c => c.Type == "urn:google:picture")?.Value ?? string.Empty;
+        return Regex.Replace(avatar, @"=s\d+", "=s300");
+    }
+
+    private async Task<string> GetUserCountryAsync()
+    {
+        var httpClient = new HttpClient();
+        var ip = await httpClient.GetStringAsync("https://api64.ipify.org");
+
+        var url = $"http://ip-api.com/json/{ip}";
+        var response = await httpClient.GetStringAsync(url);
+
+        using var jsonDoc = JsonDocument.Parse(response);
+        return jsonDoc.RootElement.GetProperty("country").GetString() ?? "Unknown";
+    }
+
+    private async Task<LoginResponseDto> GetLoginResponseAsync(ApplicationUser user)
+    {
+        return new LoginResponseDto
+        {
+            Jwt = await GenerateTokenAsync(user),
+            User = user,
+        };
+    }
+
+    private string AggregateErrors(IEnumerable<IdentityError> errors) => 
+        string.Join(" ", errors.Select(e => e.Description));
 }

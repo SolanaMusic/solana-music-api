@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SolanaMusicApi.Domain.DTO.Auth;
 using SolanaMusicApi.Domain.DTO.Auth.OAuth;
@@ -50,6 +51,7 @@ public static class AuthenticationExtension
             options.CallbackPath = "/signin-google";
             options.Scope.Add("email");
             options.Scope.Add("profile");
+            options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
         });
     }
 
