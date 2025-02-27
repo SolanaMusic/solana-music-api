@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using SolanaMusicApi.Domain.DTO.Auth;
-using SolanaMusicApi.Domain.DTO.General;
+using SolanaMusicApi.Domain.DTO.General.CountryDto;
 using SolanaMusicApi.Domain.DTO.User;
 using SolanaMusicApi.Domain.Entities.General;
 using SolanaMusicApi.Domain.Entities.User;
@@ -14,6 +14,7 @@ public class MappingProfiles : Profile
         CreateMap<RegisterDto, LoginDto>();
         CreateMap<RegisterDto, ApplicationUser>();
 
+        CreateMap<CountryRequestDto, Country>();
         CreateMap<Country, CountryResponseDto>();
 
         CreateMap<UserProfile, UserProfileResponseDto>();

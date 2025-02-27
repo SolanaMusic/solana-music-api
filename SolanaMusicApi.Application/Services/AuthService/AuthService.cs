@@ -184,8 +184,6 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
             AvatarUrl = GetAvatarUrl(info),
             CountryId = countryResponse?.Id ?? 1,
             TokensAmount = 0,
-            CreatedDate = date,
-            UpdatedDate = date,
         };
 
         await userProfileService.AddAsync(profile);
