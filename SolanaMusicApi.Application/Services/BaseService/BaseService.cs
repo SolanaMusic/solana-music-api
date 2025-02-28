@@ -17,7 +17,7 @@ public class BaseService<T> : IBaseService<T> where T : BaseEntity
 
     public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entity) => await _baseRepository.AddRangeAsync(entity);
 
-    public async Task<T> UpdateAsync(T entity) => await _baseRepository.UpdateAsync(entity);
+    public async Task<T> UpdateAsync(long id, T entity) => await _baseRepository.UpdateAsync(id, entity);
 
     public async Task<IEnumerable<T>> UpdateRangeAsync(IEnumerable<T> entities) => await _baseRepository.UpdateRangeAsync(entities);
 

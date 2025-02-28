@@ -11,14 +11,8 @@ public class UpdateCountryRequestHandler(ICountryService countryService, IMapper
 {
     public async Task<CountryResponseDto> Handle(UpdateCountryRequest request, CancellationToken cancellationToken)
     {
-        var check = countryService.GetAll().Where(x => x.Id == request.Id);
-        if (!check.Any())
-            throw new Exception("Country does not exist");
-
         var country = mapper.Map<CountryEntity>(request.CountryRequestDto);
-        country.Id = request.Id;
-        var response = await countryService.UpdateAsync(country);
-
+        var response = await countryService.UpdateAsync(request.Id, country);
         return mapper.Map<CountryResponseDto>(response);
     }
 }

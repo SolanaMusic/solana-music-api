@@ -39,7 +39,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
 
     public async Task<T> AddAsync(T entity)
     {
-        var date = DateTime.Now;
+        var date = DateTime.UtcNow;
         entity.CreatedDate = date;
         entity.UpdatedDate = date;
 
@@ -64,13 +64,17 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         return entities;
     }
 
-    public async Task<T> UpdateAsync(T entity)
+    public async Task<T> UpdateAsync(long id, T entity)
     {
+        var existingEntity = await GetByIdAsyncTraking(id);
+        entity.Id = id;
         entity.UpdatedDate = DateTime.UtcNow;
-        dbSet.Update(entity);
+        entity.CreatedDate = existingEntity.CreatedDate;
+
+        _context.Entry(existingEntity).CurrentValues.SetValues(entity);
         await _context.SaveChangesAsync();
 
-        return entity;
+        return existingEntity;
     }
 
     public async Task<IEnumerable<T>> UpdateRangeAsync(IEnumerable<T> entities)
@@ -86,7 +90,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
 
     public async Task<bool> DeleteAsync(long id)
     {
-        var entity = await GetByIdAsyncTarking(id);
+        var entity = await GetByIdAsyncTraking(id);
         dbSet.Remove(entity);
         await _context.SaveChangesAsync();
 
@@ -144,7 +148,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         }
     }
 
-    private async Task<T> GetByIdAsyncTarking(long id)
+    private async Task<T> GetByIdAsyncTraking(long id)
     {
         var response = await dbSet
             .AsQueryable()
