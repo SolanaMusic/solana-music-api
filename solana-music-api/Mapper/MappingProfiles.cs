@@ -21,5 +21,8 @@ public class MappingProfiles : Profile
         CreateMap<UserProfile, UserProfileResponseDto>();
         CreateMap<ApplicationUser, UserResponseDto>();
         CreateMap<LoginResponseDto, AuthResponseDto>();
+
+        CreateMap<GenreRequestDto, Genre>();
+        CreateMap<Genre, GenreResponseDto>();
     }
 }
