@@ -11,4 +11,5 @@ public class Album : BaseEntity
 
     public ICollection<Artist> Artists { get; set; } = [];
     public ICollection<Track> Tracks { get; set; } = [];
+    public ICollection<Genre> Genres { get; set; } = [];
 }

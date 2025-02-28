@@ -45,13 +45,19 @@ SET IDENTITY_INSERT dbo.Countries OFF;
 
 
 -- Genres
+SET IDENTITY_INSERT dbo.Genres ON;
 IF NOT EXISTS (SELECT 1 FROM dbo.Genres WHERE Id = 1)
 BEGIN
-    SET IDENTITY_INSERT dbo.Genres ON;
     INSERT INTO dbo.Genres ([Id], [Name], [CreatedDate], [UpdatedDate])
-    VALUES (1, 'Rock', GETDATE(), GETDATE());
-    SET IDENTITY_INSERT dbo.Genres OFF;
+    VALUES (1, 'Classic', GETDATE(), GETDATE());
 END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Genres WHERE Id = 2)
+BEGIN
+    INSERT INTO dbo.Genres ([Id], [Name], [CreatedDate], [UpdatedDate])
+    VALUES (2, 'Rock', GETDATE(), GETDATE());
+END
+SET IDENTITY_INSERT dbo.Genres OFF;
 
 
 -- Artists
@@ -109,6 +115,26 @@ IF NOT EXISTS (SELECT 1 FROM dbo.TrackGenres WHERE GenresId = 1 AND TracksId = 1
 BEGIN
     INSERT INTO dbo.TrackGenres ([GenresId], [TracksId])
     VALUES (1, 1);
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.TrackGenres WHERE GenresId = 2 AND TracksId = 2)
+BEGIN
+    INSERT INTO dbo.TrackGenres ([GenresId], [TracksId])
+    VALUES (2, 2);
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.TrackGenres WHERE GenresId = 2 AND TracksId = 3)
+BEGIN
+    INSERT INTO dbo.TrackGenres ([GenresId], [TracksId])
+    VALUES (2, 3);
+END
+
+
+-- AlbumGenres
+IF NOT EXISTS (SELECT 1 FROM dbo.AlbumGenres WHERE GenresId = 2 AND AlbumsId = 1)
+BEGIN
+    INSERT INTO dbo.AlbumGenres ([AlbumsId], [GenresId])
+    VALUES (1, 2);
 END
 
 
