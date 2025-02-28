@@ -1,7 +1,7 @@
 ﻿using SolanaMusicApi.Domain.DTO.General.CountryDto;
 using SolanaMusicApi.Domain.Entities;
 
-namespace SolanaMusicApi.Domain.DTO.User;
+namespace SolanaMusicApi.Domain.DTO.User.Profile;
 
 public class UserProfileResponseDto : BaseEntity
 {

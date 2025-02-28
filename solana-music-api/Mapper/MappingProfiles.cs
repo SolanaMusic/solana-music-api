@@ -2,6 +2,7 @@
 using SolanaMusicApi.Domain.DTO.Auth;
 using SolanaMusicApi.Domain.DTO.General.CountryDto;
 using SolanaMusicApi.Domain.DTO.User;
+using SolanaMusicApi.Domain.DTO.User.Profile;
 using SolanaMusicApi.Domain.Entities.General;
 using SolanaMusicApi.Domain.Entities.User;
 
@@ -12,7 +13,7 @@ public class MappingProfiles : Profile
     public MappingProfiles()
     {
         CreateMap<RegisterDto, LoginDto>();
-        CreateMap<RegisterDto, ApplicationUser>();
+        CreateMap<LoginDto, ApplicationUser>();
 
         CreateMap<CountryRequestDto, Country>();
         CreateMap<Country, CountryResponseDto>();

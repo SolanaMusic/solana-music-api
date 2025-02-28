@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SolanaMusicApi.Domain.DTO.User.Profile;
 
 namespace SolanaMusicApi.Domain.DTO.User;
 

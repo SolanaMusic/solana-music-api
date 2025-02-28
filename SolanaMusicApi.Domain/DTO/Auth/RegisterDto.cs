@@ -1,19 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SolanaMusicApi.Domain.DTO.User.Profile;
 
 namespace SolanaMusicApi.Domain.DTO.Auth;
 
 public class RegisterDto
 {
-    [Required]
-    [EmailAddress]
-    public string Email { get; set; } = string.Empty;
-
-    [Required]
-    public int Age { get; set; }
-
-    [Required]
-    public string Country { get; set; } = string.Empty;
-
-    [Required]
-    public string Password { get; set; } = string.Empty;
+    public LoginDto LoginDto { get; set; } = null!;
+    public UserProfileRequestDto UserProfileRequestDto { get; set; } = null!;
 }

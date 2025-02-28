@@ -1,64 +1,55 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SolanaMusicApi.Application.Services.CountryService;
+using SolanaMusicApi.Application.Services.LocationService;
 using SolanaMusicApi.Application.Services.UserProfileService;
+using SolanaMusicApi.Application.Services.UserService;
 using SolanaMusicApi.Domain.DTO.Auth;
 using SolanaMusicApi.Domain.DTO.Auth.OAuth;
+using SolanaMusicApi.Domain.Entities.General;
 using SolanaMusicApi.Domain.Entities.User;
-using SolanaMusicApi.Domain.Enums;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace SolanaMusicApi.Application.Services.AuthService;
 
 public class AuthService(IUserProfileService userProfileService, ICountryService countryService, UserManager<ApplicationUser> userManager, 
-    SignInManager<ApplicationUser> signInManager, IMapper mapper, IOptions<JwtTokenSettings> tokenSettings, 
-    IOptions<AuthSettings> authSettings) : IAuthService
+    ILocationService locationService, IUserService userService, SignInManager<ApplicationUser> signInManager, IMapper mapper, 
+    IOptions<JwtTokenSettings> tokenSettings, IOptions<AuthSettings> authSettings) : IAuthService
 {
     private readonly JwtTokenSettings _tokenSettings = tokenSettings.Value;
 
     public async Task<LoginResponseDto> LoginAsync(LoginDto loginDto)
     {
-        var appUser = await userManager.Users
-            .Include(u => u.Profile)
-            .FirstOrDefaultAsync(u => u.Email == loginDto.Email);
+        var user = await userManager.FindByEmailAsync(loginDto.Email);
 
-
-        if (appUser == null)
+        if (user == null)
             throw new NullReferenceException("User does not exist");
 
-        if (!await userManager.CheckPasswordAsync(appUser, loginDto.Password))
+        if (!await userManager.CheckPasswordAsync(user, loginDto.Password))
             throw new Exception("Invalid password");
 
-        return await GetLoginResponseAsync(appUser);
+        return await GetLoginResponseAsync(user);
     }
 
     public async Task<LoginResponseDto> RegisterAsync(RegisterDto registerDto)
     {
-        var appUser = await userManager.FindByEmailAsync(registerDto.Email);
+        var appUser = await userManager.FindByEmailAsync(registerDto.LoginDto.Email);
 
         if (appUser != null)
             throw new Exception("User is already exists");
 
-        var newUser = mapper.Map<ApplicationUser>(registerDto);
-        newUser.UserName = await GenerateUserNameAsync(registerDto.Email);
-        var userResponse = await userManager.CreateAsync(newUser, registerDto.Password);
+        var newUser = mapper.Map<ApplicationUser>(registerDto.LoginDto);
+        newUser.UserName = await GenerateUserNameAsync(registerDto.LoginDto.Email);
+        await userService.CreateUserAsync(newUser, registerDto.LoginDto.Password);
 
-        if (!userResponse.Succeeded)
-            AggregateErrors(userResponse.Errors);
+        var country = await GetUserCountry();
+        await userProfileService.CreateUserProfileAsync(newUser.Id, country, registerDto.UserProfileRequestDto);
 
-        var roleResponse = await userManager.AddToRoleAsync(newUser, nameof(UserRoles.User));
-        if (!roleResponse.Succeeded)
-            AggregateErrors(roleResponse.Errors);
-
-        var user = mapper.Map<LoginDto>(registerDto);
-        return await LoginAsync(user);
+        return await LoginAsync(registerDto.LoginDto);
     }
 
     public async Task<LoginResponseDto> LoginWithExternalAsync()
@@ -79,12 +70,13 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
         var addLoginResult = await userManager.AddLoginAsync(user, info);
 
         if (!addLoginResult.Succeeded)
-            throw new Exception(AggregateErrors(addLoginResult.Errors));
+            throw new Exception(userService.AggregateErrors(addLoginResult.Errors));
 
-        await CreateUserProfileAsync(user.Id, info);
+        var country = await GetUserCountry();
+        await userProfileService.CreateUserProfileAsync(user.Id, country, info);
         await signInManager.SignInAsync(user, false);
 
-        return await GetLoginResponseAsync(user);
+        return await GetLoginResponseAsync(user!);
     }
 
     public string CheckAuthProvider(string provider)
@@ -137,14 +129,7 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
             Email = email
         };
 
-        var createUserResult = await userManager.CreateAsync(user);
-        if (!createUserResult.Succeeded)
-            throw new Exception(AggregateErrors(createUserResult.Errors));
-
-        var roleResponse = await userManager.AddToRoleAsync(user, nameof(UserRoles.User));
-        if (!roleResponse.Succeeded)
-            throw new Exception(AggregateErrors(roleResponse.Errors));
-
+        await userService.CreateUserAsync(user);
         return user;
     }
 
@@ -172,50 +157,20 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
         return user;
     }
 
-    private async Task CreateUserProfileAsync(long userId, ExternalLoginInfo info)
+    private async Task<Country> GetUserCountry()
     {
-        var country = await GetUserCountryAsync();
-        var countryResponse = await countryService.GetCountryByNameAsync(country);
-
-        var date = DateTime.UtcNow;
-        var profile = new UserProfile
-        {
-            UserId = userId,
-            AvatarUrl = GetAvatarUrl(info),
-            CountryId = countryResponse?.Id ?? 1,
-            TokensAmount = 0,
-        };
-
-        await userProfileService.AddAsync(profile);
-    }
-
-    private string GetAvatarUrl(ExternalLoginInfo info)
-    {
-        var avatar = info.Principal.Claims.FirstOrDefault(c => c.Type == "urn:google:picture")?.Value ?? string.Empty;
-        return Regex.Replace(avatar, @"=s\d+", "=s300");
-    }
-
-    private async Task<string> GetUserCountryAsync()
-    {
-        var httpClient = new HttpClient();
-        var ip = await httpClient.GetStringAsync("https://api64.ipify.org");
-
-        var url = $"http://ip-api.com/json/{ip}";
-        var response = await httpClient.GetStringAsync(url);
-
-        using var jsonDoc = JsonDocument.Parse(response);
-        return jsonDoc.RootElement.GetProperty("country").GetString() ?? "Unknown";
+        var country = await locationService.GetUserCountryAsync();
+        return await countryService.GetCountryByNameAsync(country);
     }
 
     private async Task<LoginResponseDto> GetLoginResponseAsync(ApplicationUser user)
     {
+        var appUser = await userService.GetUserAsync(x => x.Id == user.Id);
+
         return new LoginResponseDto
         {
             Jwt = await GenerateTokenAsync(user),
             User = user,
         };
     }
-
-    private string AggregateErrors(IEnumerable<IdentityError> errors) => 
-        string.Join(" ", errors.Select(e => e.Description));
 }
