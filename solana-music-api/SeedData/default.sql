@@ -66,7 +66,7 @@ BEGIN
     SET IDENTITY_INSERT dbo.Artists ON;
     INSERT INTO dbo.Artists ([Id], [Name], [CountryId], [Bio], [ImageUrl], [UserId], [CreatedDate], [UpdatedDate])
     VALUES (1, 'John Doe', 1, 'An emerging artist in the rock music scene.',
-        'D:\Projects\solana-music-api\solana-music-api\wwwroot\covers\artists\artist-image1.png', null, GETDATE(), GETDATE());
+        'images\artists\artist-image1.png', null, GETDATE(), GETDATE());
     SET IDENTITY_INSERT dbo.Artists OFF;
 END
 
@@ -76,7 +76,7 @@ IF NOT EXISTS (SELECT 1 FROM dbo.Albums WHERE Id = 1)
 BEGIN
     SET IDENTITY_INSERT dbo.Albums ON;
     INSERT INTO dbo.Albums ([Id], [Title], [ReleaseDate], [ImageUrl], [Description], [CreatedDate], [UpdatedDate])
-    VALUES (1, 'Rock Classics', '2024-02-26', 'D:\Projects\solana-music-api\solana-music-api\wwwroot\covers\albums\album-image1.png',
+    VALUES (1, 'Rock Classics', '2024-02-26', 'covers\albums\album-image1.png',
             'A collection of the best rock hits', GETDATE(), GETDATE());
     SET IDENTITY_INSERT dbo.Albums OFF;
 END
@@ -88,8 +88,8 @@ IF NOT EXISTS (SELECT 1 FROM dbo.Tracks WHERE Id = 1)
 BEGIN
     INSERT INTO dbo.Tracks ([Id], [Title], [AlbumId], [ImageUrl], [Duration],
         [FileUrl], [PlaysCount], [ReleaseDate], [CreatedDate], [UpdatedDate])
-    VALUES (1, 'Test track', NULL, 'D:\Projects\solana-music-api\solana-music-api\wwwroot\covers\tracks\track-image1.png',
-        '00:03:28', 'D:\Projects\solana-music-api\solana-music-api\wwwroot\tracks\track1.mp3', 0, '2024-02-26', GETDATE(), GETDATE());
+    VALUES (1, 'Test track', NULL, 'covers\tracks\track-image1.png',
+        '00:03:28', 'tracks\track1.mp3', 0, '2024-02-26', GETDATE(), GETDATE());
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.Tracks WHERE Id = 2)
@@ -97,7 +97,7 @@ BEGIN
     INSERT INTO dbo.Tracks ([Id], [Title], [AlbumId], [ImageUrl], [Duration],
         [FileUrl], [PlaysCount], [ReleaseDate], [CreatedDate], [UpdatedDate])
     VALUES (2, 'Album track 1', 1, null,
-        '00:01:40', 'D:\Projects\solana-music-api\solana-music-api\wwwroot\tracks\album-track1.mp3', 0, '2024-02-26', GETDATE(), GETDATE());
+        '00:01:40', 'tracks\album-track1.mp3', 0, '2024-02-26', GETDATE(), GETDATE());
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.Tracks WHERE Id = 3)
@@ -105,7 +105,7 @@ BEGIN
     INSERT INTO dbo.Tracks ([Id], [Title], [AlbumId], [ImageUrl], [Duration],
         [FileUrl], [PlaysCount], [ReleaseDate], [CreatedDate], [UpdatedDate])
     VALUES (3, 'Album track 2', 1, null,
-        '00:01:17', 'D:\Projects\solana-music-api\solana-music-api\wwwroot\tracks\album-track2.mp3', 0, '2024-02-26', GETDATE(), GETDATE());
+        '00:01:17', 'tracks\album-track2.mp3', 0, '2024-02-26', GETDATE(), GETDATE());
 END
 SET IDENTITY_INSERT dbo.Tracks OFF;
 
@@ -193,25 +193,25 @@ SET IDENTITY_INSERT dbo.UserProfiles ON;
 IF NOT EXISTS (SELECT 1 FROM dbo.UserProfiles WHERE Id = 1)
 BEGIN
     INSERT INTO dbo.UserProfiles ([Id], [UserId], [CountryId], [AvatarUrl], [TokensAmount], [CreatedDate], [UpdatedDate])
-    VALUES (1, 1, 1, 'D:\Projects\solana-music-api\solana-music-api\wwwroot\covers\users\user-image1.png', 100, GETDATE(), GETDATE());
+    VALUES (1, 1, 1, 'images\users\user-image1.png', 100, GETDATE(), GETDATE());
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UserProfiles WHERE Id = 2)
 BEGIN
     INSERT INTO dbo.UserProfiles ([Id], [UserId], [CountryId], [AvatarUrl], [TokensAmount], [CreatedDate], [UpdatedDate])
-    VALUES (2, 2, 1, 'D:\Projects\solana-music-api\solana-music-api\wwwroot\covers\users\user-image1.png', 200, GETDATE(), GETDATE());
+    VALUES (2, 2, 1, 'images\users\user-image1.png', 200, GETDATE(), GETDATE());
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UserProfiles WHERE Id = 3)
 BEGIN
     INSERT INTO dbo.UserProfiles ([Id], [UserId], [CountryId], [AvatarUrl], [TokensAmount], [CreatedDate], [UpdatedDate])
-    VALUES (3, 3, 1, 'D:\Projects\solana-music-api\solana-music-api\wwwroot\covers\users\user-image1.png', 300, GETDATE(), GETDATE());
+    VALUES (3, 3, 1, 'images\users\user-image1.png', 300, GETDATE(), GETDATE());
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UserProfiles WHERE Id = 4)
 BEGIN
     INSERT INTO dbo.UserProfiles ([Id], [UserId], [CountryId], [AvatarUrl], [TokensAmount], [CreatedDate], [UpdatedDate])
-    VALUES (4, 4, 1, 'D:\Projects\solana-music-api\solana-music-api\wwwroot\covers\users\user-image1.png', 400, GETDATE(), GETDATE());
+    VALUES (4, 4, 1, 'images\users\user-image1.png', 400, GETDATE(), GETDATE());
 END
 SET IDENTITY_INSERT dbo.UserProfiles OFF;
 
