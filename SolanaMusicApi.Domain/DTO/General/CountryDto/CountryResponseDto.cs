@@ -1,8 +1,6 @@
-﻿using SolanaMusicApi.Domain.Entities;
+﻿namespace SolanaMusicApi.Domain.DTO.General.CountryDto;
 
-namespace SolanaMusicApi.Domain.DTO.General.CountryDto;
-
-public class CountryResponseDto : BaseEntity
+public class CountryResponseDto : BaseResponseDto
 {
     public string Name { get; set; } = string.Empty;
     public string CountryCode { get; set; } = string.Empty;
