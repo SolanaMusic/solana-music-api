@@ -11,7 +11,6 @@ public class CountryService : BaseService<Country>, ICountryService
 
     public async Task<Country?> GetCountryByNameAsync(string countryName)
     {
-        return await _baseRepository.GetAll()
-            .FirstOrDefaultAsync(c => c.Name == countryName);
+        return await GetAll().FirstOrDefaultAsync(c => c.Name == countryName);
     }
 }

@@ -23,7 +23,7 @@ public class UserProfileService : BaseService<UserProfile>, IUserProfileService
             TokensAmount = 0,
         };
 
-        await _baseRepository.AddAsync(profile);
+        await AddAsync(profile);
     }
 
     public async Task CreateUserProfileAsync(long userId, Country country, ExternalLoginInfo info)
@@ -37,7 +37,7 @@ public class UserProfileService : BaseService<UserProfile>, IUserProfileService
             TokensAmount = 0,
         };
 
-        await _baseRepository.AddAsync(profile);
+        await AddAsync(profile);
     }
 
     private string GetAvatarUrl(ExternalLoginInfo info)
