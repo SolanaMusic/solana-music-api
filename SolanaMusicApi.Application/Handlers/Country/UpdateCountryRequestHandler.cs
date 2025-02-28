@@ -17,9 +17,8 @@ public class UpdateCountryRequestHandler(ICountryService countryService, IMapper
 
         var country = mapper.Map<CountryEntity>(request.CountryRequestDto);
         country.Id = request.Id;
-        var updated = await countryService.UpdateAsync(country);
-        var response = mapper.Map<CountryResponseDto>(updated);
+        var response = await countryService.UpdateAsync(country);
 
-        return response;
+        return mapper.Map<CountryResponseDto>(response);
     }
 }

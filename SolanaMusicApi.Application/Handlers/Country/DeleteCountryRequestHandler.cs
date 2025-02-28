@@ -8,7 +8,6 @@ public class DeleteCountryRequestHandler(ICountryService countryService) : IRequ
 {
     public async Task<bool> Handle(DeleteCountryRequest request, CancellationToken cancellationToken)
     {
-        var response = await countryService.DeleteAsync(request.Id);
-        return response;
+        return await countryService.DeleteAsync(request.Id);
     }
 }

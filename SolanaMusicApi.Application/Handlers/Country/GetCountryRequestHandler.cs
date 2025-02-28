@@ -10,8 +10,7 @@ public class GetCountryRequestHandler(ICountryService countryService, IMapper ma
 {
     public async Task<CountryResponseDto> Handle(GetCountryRequest request, CancellationToken cancellationToken)
     {
-        var country = await countryService.GetByIdAsync(request.Id);
-        var response = mapper.Map<CountryResponseDto>(country);
-        return response;
+        var response = await countryService.GetByIdAsync(request.Id);
+        return mapper.Map<CountryResponseDto>(response);
     }
 }

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests.Country;
 using SolanaMusicApi.Domain.DTO.General.CountryDto;
-using SolanaMusicApi.Domain.Entities.General;
 
 namespace solana_music_api.Controllers;
 

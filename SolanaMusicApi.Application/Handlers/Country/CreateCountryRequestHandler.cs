@@ -18,9 +18,8 @@ public class CreateCountryRequestHandler(ICountryService countryService, IMapper
             throw new Exception("Country allready exists");
 
         var country = mapper.Map<CountryEntity>(request.CountryRequestDto);
-        var added = await countryService.AddAsync(country);
-        var response = mapper.Map<CountryResponseDto>(added);
+        var response = await countryService.AddAsync(country);
 
-        return response;
+        return mapper.Map<CountryResponseDto>(response);
     }
 }
