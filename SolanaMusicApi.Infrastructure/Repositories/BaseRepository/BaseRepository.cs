@@ -88,13 +88,13 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         return entities;
     }
 
-    public async Task<bool> DeleteAsync(long id)
+    public async Task<T> DeleteAsync(long id)
     {
         var entity = await GetByIdAsyncTraking(id);
         dbSet.Remove(entity);
         await _context.SaveChangesAsync();
 
-        return true;
+        return entity;
     }
 
     public async Task DeleteRangeAsync(IEnumerable<T> entities)

@@ -1,13 +1,16 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using SolanaMusicApi.Application.Requests.Country;
 using SolanaMusicApi.Application.Services.CountryService;
+using SolanaMusicApi.Domain.DTO.General.CountryDto;
 
 namespace SolanaMusicApi.Application.Handlers.Country;
 
-public class DeleteCountryRequestHandler(ICountryService countryService) : IRequestHandler<DeleteCountryRequest, bool>
+public class DeleteCountryRequestHandler(ICountryService countryService, IMapper mapper) : IRequestHandler<DeleteCountryRequest, CountryResponseDto>
 {
-    public async Task<bool> Handle(DeleteCountryRequest request, CancellationToken cancellationToken)
+    public async Task<CountryResponseDto> Handle(DeleteCountryRequest request, CancellationToken cancellationToken)
     {
-        return await countryService.DeleteAsync(request.Id);
+        var response = await countryService.DeleteAsync(request.Id);
+        return mapper.Map<CountryResponseDto>(response);
     }
 }

@@ -1,9 +1,14 @@
 ﻿using AutoMapper;
+using SolanaMusicApi.Domain.DTO.Artist;
 using SolanaMusicApi.Domain.DTO.Auth;
 using SolanaMusicApi.Domain.DTO.General.CountryDto;
+using SolanaMusicApi.Domain.DTO.Genre;
+using SolanaMusicApi.Domain.DTO.Track;
 using SolanaMusicApi.Domain.DTO.User;
 using SolanaMusicApi.Domain.DTO.User.Profile;
 using SolanaMusicApi.Domain.Entities.General;
+using SolanaMusicApi.Domain.Entities.Music;
+using SolanaMusicApi.Domain.Entities.Performer;
 using SolanaMusicApi.Domain.Entities.User;
 
 namespace solana_music_api.Mapper;
@@ -24,5 +29,7 @@ public class MappingProfiles : Profile
 
         CreateMap<GenreRequestDto, Genre>();
         CreateMap<Genre, GenreResponseDto>();
+
+        CreateMap<Track, TrackResponseDto>();
     }
 }

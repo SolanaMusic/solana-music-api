@@ -8,7 +8,7 @@ public interface IBaseService<T>
     Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities);
     Task<T> UpdateAsync(long id, T entity);
     Task<IEnumerable<T>> UpdateRangeAsync(IEnumerable<T> entities);
-    Task<bool> DeleteAsync(long id);
+    Task<T> DeleteAsync(long id);
     Task DeleteRangeAsync(IEnumerable<T> entities);
 
     Task BeginTransactionAsync();

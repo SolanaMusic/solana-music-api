@@ -18,7 +18,7 @@ public class BaseService<T>(IBaseRepository<T> baseRepository) : IBaseService<T>
 
     public async Task<IEnumerable<T>> UpdateRangeAsync(IEnumerable<T> entities) => await baseRepository.UpdateRangeAsync(entities);
 
-    public async Task<bool> DeleteAsync(long id) => await baseRepository.DeleteAsync(id);
+    public async Task<T> DeleteAsync(long id) => await baseRepository.DeleteAsync(id);
 
     public async Task DeleteRangeAsync(IEnumerable<T> entities) => await baseRepository.DeleteRangeAsync(entities);
 
