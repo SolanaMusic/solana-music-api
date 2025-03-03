@@ -111,22 +111,22 @@ SET IDENTITY_INSERT dbo.Tracks OFF;
 
 
 -- TrackGenres
-IF NOT EXISTS (SELECT 1 FROM dbo.TrackGenres WHERE GenresId = 1 AND TracksId = 1)
+IF NOT EXISTS (SELECT 1 FROM dbo.TrackGenres WHERE TrackId = 1 AND GenreId = 1)
 BEGIN
-    INSERT INTO dbo.TrackGenres ([GenresId], [TracksId])
+    INSERT INTO dbo.TrackGenres ([TrackId], [GenreId])
     VALUES (1, 1);
 END
 
-IF NOT EXISTS (SELECT 1 FROM dbo.TrackGenres WHERE GenresId = 2 AND TracksId = 2)
+IF NOT EXISTS (SELECT 1 FROM dbo.TrackGenres WHERE TrackId = 2 AND GenreId = 2)
 BEGIN
-    INSERT INTO dbo.TrackGenres ([GenresId], [TracksId])
+    INSERT INTO dbo.TrackGenres ([TrackId], [GenreId])
     VALUES (2, 2);
 END
 
-IF NOT EXISTS (SELECT 1 FROM dbo.TrackGenres WHERE GenresId = 2 AND TracksId = 3)
+IF NOT EXISTS (SELECT 1 FROM dbo.TrackGenres WHERE TrackId = 3 AND GenreId = 2)
 BEGIN
-    INSERT INTO dbo.TrackGenres ([GenresId], [TracksId])
-    VALUES (2, 3);
+    INSERT INTO dbo.TrackGenres ([TrackId], [GenreId])
+    VALUES (3, 2);
 END
 
 
@@ -139,9 +139,9 @@ END
 
 
 -- ArtistTracks
-IF NOT EXISTS (SELECT 1 FROM dbo.ArtistTracks WHERE ArtistsId = 1 AND TracksId = 1)
+IF NOT EXISTS (SELECT 1 FROM dbo.ArtistTracks WHERE ArtistId = 1 AND TrackId = 1)
 BEGIN
-    INSERT INTO dbo.ArtistTracks ([ArtistsId], [TracksId])
+    INSERT INTO dbo.ArtistTracks ([ArtistId], [TrackId])
     VALUES (1, 1);
 END
 

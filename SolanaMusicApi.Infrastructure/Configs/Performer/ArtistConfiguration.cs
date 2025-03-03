@@ -34,10 +34,6 @@ public class ArtistConfiguration : IEntityTypeConfiguration<Artist>
             .WithMany(a => a.Artists)
             .UsingEntity(j => j.ToTable("ArtistAlbums"));
 
-        builder.HasMany(a => a.Tracks)
-            .WithMany(t => t.Artists)
-            .UsingEntity(j => j.ToTable("ArtistTracks"));
-
         builder.HasMany(a => a.Subscribers)
             .WithMany(u => u.SubscribedArtists)
             .UsingEntity(j => j.ToTable("ArtistSubscribers"));

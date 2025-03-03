@@ -13,8 +13,8 @@ public class Track : BaseEntity
     public uint PlaysCount { get; set; } = 0;
     public DateTime ReleaseDate { get; set; }
 
-    public ICollection<Artist> Artists { get; set; } = [];
     public Album? Album { get; set; }
-    public ICollection<Genre> Genres { get; set; } = [];
+    public ICollection<TrackGenre> TrackGenres { get; set; } = [];
+    public ICollection<ArtistTrack> ArtistTracks { get; set; } = [];
     public ICollection<PlaylistTrack> PlaylistTracks { get; set; } = [];
 }

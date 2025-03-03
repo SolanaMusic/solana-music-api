@@ -32,8 +32,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     public DbSet<UserSubscription> UserSubscriptions { get; set; }
 
     public DbSet<Artist> Artists { get; set; }
+    public DbSet<ArtistTrack> ArtistTracks { get; set; }
     public DbSet<Album> Albums { get; set; }
     public DbSet<Track> Tracks { get; set; }
+    public DbSet<TrackGenre> TrackGenres { get; set; }
     public DbSet<Genre> Genres { get; set; }
 
     public DbSet<Playlist> Playlists { get; set; }
@@ -52,8 +54,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
         modelBuilder.ApplyConfiguration(new UserSubscriptionConfiguration());
 
         modelBuilder.ApplyConfiguration(new ArtistConfiguration());
+        modelBuilder.ApplyConfiguration(new ArtistTrackConfiguration());
         modelBuilder.ApplyConfiguration(new AlbumConfiguration());
         modelBuilder.ApplyConfiguration(new TrackConfiguration());
+        modelBuilder.ApplyConfiguration(new TrackGenreConfiguration());
         modelBuilder.ApplyConfiguration(new GenreConfiguration());
 
         modelBuilder.ApplyConfiguration(new PlaylistConfiguration());

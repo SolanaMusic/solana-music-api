@@ -34,9 +34,5 @@ public class TrackConfiguration : IEntityTypeConfiguration<Track>
             .WithMany(a => a.Tracks)
             .HasForeignKey(t => t.AlbumId)
             .OnDelete(DeleteBehavior.SetNull);
-
-        builder.HasMany(t => t.Genres)
-            .WithMany(g => g.Tracks)
-            .UsingEntity(j => j.ToTable("TrackGenres"));
     }
 }

@@ -30,6 +30,9 @@ public class MappingProfiles : Profile
         CreateMap<GenreRequestDto, Genre>();
         CreateMap<Genre, GenreResponseDto>();
 
-        CreateMap<Track, TrackResponseDto>();
+        CreateMap<TrackRequestDto, Track>();
+        CreateMap<Track, TrackResponseDto>()
+            .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.TrackGenres.Select(tg => tg.Genre)))
+            .ForMember(dest => dest.Artists, opt => opt.MapFrom(src => src.ArtistTracks.Select(at => at.Artist)));
     }
 }
