@@ -24,7 +24,8 @@ public class BaseService<T>(IBaseRepository<T> baseRepository) : IBaseService<T>
 
     public async Task BeginTransactionAsync() => await baseRepository.BeginTransactionAsync();
 
-    public async Task CommitTransactionAsync() => await baseRepository.CommitTransactionAsync();
+    public async Task CommitTransactionAsync(params Func<Task>[]? rollbackActions) => await baseRepository.CommitTransactionAsync(rollbackActions);
 
-    public async Task RollbackTransactionAsync(Exception ex) => await baseRepository.RollbackTransactionAsync(ex);
+    public async Task RollbackTransactionAsync(Exception ex, params Func<Task>[]? rollbackActions) => 
+        await baseRepository.RollbackTransactionAsync(ex, rollbackActions);
 }

@@ -12,6 +12,6 @@ public interface IBaseRepository<T>
     Task DeleteRangeAsync(IEnumerable<T> entities);
 
     Task BeginTransactionAsync();
-    Task CommitTransactionAsync();
-    Task RollbackTransactionAsync(Exception ex);
+    Task CommitTransactionAsync(params Func<Task>[]? rollbackActions);
+    Task RollbackTransactionAsync(Exception ex, params Func<Task>[]? rollbackActions);
 }

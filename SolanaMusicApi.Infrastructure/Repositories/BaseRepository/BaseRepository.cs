@@ -108,7 +108,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         _transaction = await _context.Database.BeginTransactionAsync();
     }
 
-    public async Task CommitTransactionAsync()
+    public async Task CommitTransactionAsync(params Func<Task>[]? rollbackActions)
     {
         if (_transaction == null)
             throw new InvalidOperationException("Transaction has not been started");
@@ -120,7 +120,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         }
         catch (Exception ex)
         {
-            await RollbackTransactionAsync(ex);
+            await RollbackTransactionAsync(ex, rollbackActions);
         }
         finally
         {
@@ -128,9 +128,9 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         }
     }
 
-    public async Task RollbackTransactionAsync(Exception ex)
+    public async Task RollbackTransactionAsync(Exception ex, params Func<Task>[]? rollbackActions)
     {
-        if (_transaction == null) 
+        if (_transaction == null)
             return;
 
         try
@@ -144,6 +144,12 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         }
         finally
         {
+            if (rollbackActions != null)
+            {
+                foreach (var action in rollbackActions)
+                    await action();
+            }
+
             await _transaction.DisposeAsync();
         }
     }
