@@ -8,6 +8,7 @@ using SixLabors.ImageSharp.Formats.Webp;
 using SolanaMusicApi.Domain.Enums.File;
 using SolanaMusicApi.Application.Factories.FilePathFactory;
 using SolanaMusicApi.Domain.Constants;
+using NAudio.Wave;
 
 namespace SolanaMusicApi.Application.Services.FileService;
 
@@ -48,10 +49,24 @@ public class FileService(IFilePathFactory filePathFactory) : IFileService
         return true;
     }
 
+    public TimeSpan GetAudioDuration(IFormFile file)
+    {
+        using var stream = file.OpenReadStream();
+        using var reader = Path.GetExtension(file.FileName).ToLower() == ".mp3"
+            ? new Mp3FileReader(stream)
+            : new WaveFileReader(stream) as WaveStream;
+
+        return TimeSpan.FromSeconds(Math.Round(reader.TotalTime.TotalSeconds));
+    }
+
     private string ValidateFileExtension(IFormFile file, FileTypes type)
     {
         var extension = Path.GetExtension(file.FileName).ToLower();
+
         if (!ExtensionConstants.AllowedExtensions.TryGetValue(type, out var allowedExtensions))
+            throw new InvalidOperationException("File type is not supported");
+
+        if (!allowedExtensions.Contains(extension))
             throw new InvalidOperationException("Extension is not supported");
 
         return extension;

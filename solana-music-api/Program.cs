@@ -37,6 +37,7 @@ await app.CreateDefaultRolesAsync();
 await app.CreateDefaultUsersAsync();
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
