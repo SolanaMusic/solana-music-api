@@ -2,7 +2,7 @@
 
 namespace SolanaMusicApi.Domain.Entities.Performer;
 
-public class ArtistTrack
+public class ArtistTrack : BaseEntity
 {
     public long ArtistId { get; set; }
     public long TrackId { get; set; }

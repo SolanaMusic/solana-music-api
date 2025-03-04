@@ -52,16 +52,18 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities)
     {
         var date = DateTime.UtcNow;
-        foreach (var entity in entities)
+        var entityList = entities.ToList();
+
+        foreach (var entity in entityList)
         {
             entity.CreatedDate = date;
             entity.UpdatedDate = date;
         }
 
-        await dbSet.AddRangeAsync(entities);
+        await dbSet.AddRangeAsync(entityList);
         await _context.SaveChangesAsync();
 
-        return entities;
+        return entityList;
     }
 
     public async Task<T> UpdateAsync(long id, T entity)
@@ -80,12 +82,14 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     public async Task<IEnumerable<T>> UpdateRangeAsync(IEnumerable<T> entities)
     {
         var date = DateTime.UtcNow;
-        foreach (var entity in entities)
+        var entityList = entities.ToList();
+
+        foreach (var entity in entityList)
             entity.UpdatedDate = date;
 
-        dbSet.UpdateRange(entities);
+        dbSet.UpdateRange(entityList);
         await _context.SaveChangesAsync();
-        return entities;
+        return entityList;
     }
 
     public async Task<T> DeleteAsync(long id)
@@ -97,10 +101,11 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         return entity;
     }
 
-    public async Task DeleteRangeAsync(IEnumerable<T> entities)
+    public async Task<IEnumerable<T>> DeleteRangeAsync(IEnumerable<T> entities)
     {
         _context.RemoveRange(entities);
         await _context.SaveChangesAsync();
+        return entities;
     }
 
     public async Task BeginTransactionAsync()

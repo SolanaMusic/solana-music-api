@@ -1,17 +1,27 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using SolanaMusicApi.Application;
+using SolanaMusicApi.Application.Factories.FilePathFactory;
 using SolanaMusicApi.Application.Factories.RedirectUrlFactory;
+using SolanaMusicApi.Application.Services.ArtistService;
+using SolanaMusicApi.Application.Services.ArtistTrackService;
 using SolanaMusicApi.Application.Services.AuthService;
 using SolanaMusicApi.Application.Services.BaseService;
 using SolanaMusicApi.Application.Services.CountryService;
+using SolanaMusicApi.Application.Services.FileService;
+using SolanaMusicApi.Application.Services.GenreService;
 using SolanaMusicApi.Application.Services.LocationService;
+using SolanaMusicApi.Application.Services.TrackGenreService;
 using SolanaMusicApi.Application.Services.TracksService;
 using SolanaMusicApi.Application.Services.UserProfileService;
 using SolanaMusicApi.Application.Services.UserService;
 using SolanaMusicApi.Domain.Entities.User;
+using SolanaMusicApi.Infrastructure.Repositories.ArtistRepository;
+using SolanaMusicApi.Infrastructure.Repositories.ArtistTrackRepository;
 using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 using SolanaMusicApi.Infrastructure.Repositories.CountryRepository;
+using SolanaMusicApi.Infrastructure.Repositories.Genre;
+using SolanaMusicApi.Infrastructure.Repositories.TrackGenreRepository;
 using SolanaMusicApi.Infrastructure.Repositories.TrackRepository;
 using SolanaMusicApi.Infrastructure.Repositories.UserProfileRepository;
 
@@ -25,19 +35,28 @@ public static class Configurator
         services.AddScoped<ICountryRepository, CountryRepository>();
 
         services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+        services.AddScoped<IGenreRepository, GenreRepository>();
         services.AddScoped<ITrackRepository, TrackRepository>();
+        services.AddScoped<ITrackGenreRepository, TrackGenreRepository>();
+        services.AddScoped<IArtistTrackRepository, ArtistTrackRepository>();
     }
 
     public static void ConfigureServices(this IServiceCollection services)
     {
         services.AddScoped<IRedirectUrlFactory, RedirectUrlFactory>();
+        services.AddScoped<IFilePathFactory, FilePathFactory>();
+
+        services.AddScoped<IFileService, FileService>();
         services.AddScoped<ILocationService, LocationService>();
         services.AddScoped<ICountryService, CountryService>();
 
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserProfileService, UserProfileService>();
-        services.AddScoped<ITracksService, TracksService>();
+
+        services.AddScoped<IGenreService, GenreService>();
+        services.AddScoped<ITrackGenreService, TrackGenreService>();
+        services.AddScoped<IArtistTrackService, ArtistTrackService>();
     }
 
     public static void ConfigureGeneral(this IServiceCollection services)

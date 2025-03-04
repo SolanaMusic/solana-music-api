@@ -9,7 +9,7 @@ public interface IBaseRepository<T>
     Task<T> UpdateAsync(long id, T entity);
     Task<IEnumerable<T>> UpdateRangeAsync(IEnumerable<T> entities);
     Task<T> DeleteAsync(long id);
-    Task DeleteRangeAsync(IEnumerable<T> entities);
+    Task<IEnumerable<T>> DeleteRangeAsync(IEnumerable<T> entities);
 
     Task BeginTransactionAsync();
     Task CommitTransactionAsync(params Func<Task>[]? rollbackActions);
