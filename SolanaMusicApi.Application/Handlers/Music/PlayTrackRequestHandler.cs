@@ -8,7 +8,6 @@ public class PlayTrackRequestHandler(ITracksService tracksService) : IRequestHan
 {
     public async Task<FileStream> Handle(PlayTrackRequest request, CancellationToken cancellationToken)
     {
-        var response = await tracksService.GetByIdAsync(request.Id); 
-        return new FileStream(response.FileUrl, FileMode.Open, FileAccess.Read, FileShare.Read);
+        return await tracksService.GetTrackFileStreamAsync(request.Id);
     }
 }

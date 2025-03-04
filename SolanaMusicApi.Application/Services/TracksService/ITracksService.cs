@@ -1,6 +1,13 @@
 ﻿using SolanaMusicApi.Application.Services.BaseService;
+using SolanaMusicApi.Domain.DTO.Track;
 using SolanaMusicApi.Domain.Entities.Music;
 
 namespace SolanaMusicApi.Application.Services.TracksService;
 
-public interface ITracksService : IBaseService<Track>;
+public interface ITracksService : IBaseService<Track>
+{
+    Task<TrackResponseDto> GetTrackAsync(long id);
+    Task<FileStream> GetTrackFileStreamAsync(long id);
+    Task<TrackResponseDto> CreateTrackAsync(TrackRequestDto trackRequestDto);
+    Task<TrackResponseDto> DeleteTrackAsync(long id);
+}

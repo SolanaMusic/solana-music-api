@@ -10,7 +10,7 @@ public class DeleteTrackRequestHandler(ITracksService tracksService, IMapper map
 {
     public async Task<TrackResponseDto> Handle(DeleteTrackRequest request, CancellationToken cancellationToken)
     {
-        var response = await tracksService.DeleteAsync(request.Id);
+        var response = await tracksService.DeleteTrackAsync(request.Id);
         return mapper.Map<TrackResponseDto>(response);
     }
 }
