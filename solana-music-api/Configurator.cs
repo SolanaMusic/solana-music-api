@@ -8,6 +8,7 @@ using SolanaMusicApi.Application.Services.ArtistTrackService;
 using SolanaMusicApi.Application.Services.AuthService;
 using SolanaMusicApi.Application.Services.BaseService;
 using SolanaMusicApi.Application.Services.CountryService;
+using SolanaMusicApi.Application.Services.CurrencyService;
 using SolanaMusicApi.Application.Services.FileService;
 using SolanaMusicApi.Application.Services.GenreService;
 using SolanaMusicApi.Application.Services.LocationService;
@@ -20,7 +21,8 @@ using SolanaMusicApi.Infrastructure.Repositories.ArtistRepository;
 using SolanaMusicApi.Infrastructure.Repositories.ArtistTrackRepository;
 using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 using SolanaMusicApi.Infrastructure.Repositories.CountryRepository;
-using SolanaMusicApi.Infrastructure.Repositories.Genre;
+using SolanaMusicApi.Infrastructure.Repositories.CurrencyRepository;
+using SolanaMusicApi.Infrastructure.Repositories.GenreRepository;
 using SolanaMusicApi.Infrastructure.Repositories.TrackGenreRepository;
 using SolanaMusicApi.Infrastructure.Repositories.TrackRepository;
 using SolanaMusicApi.Infrastructure.Repositories.UserProfileRepository;
@@ -39,6 +41,8 @@ public static class Configurator
         services.AddScoped<ITrackRepository, TrackRepository>();
         services.AddScoped<ITrackGenreRepository, TrackGenreRepository>();
         services.AddScoped<IArtistTrackRepository, ArtistTrackRepository>();
+
+        services.AddScoped<ICurrencyRepository, CurrencyRepository>();
     }
 
     public static void ConfigureServices(this IServiceCollection services)
@@ -58,6 +62,8 @@ public static class Configurator
         services.AddScoped<ITracksService, TracksService>();
         services.AddScoped<ITrackGenreService, TrackGenreService>();
         services.AddScoped<IArtistTrackService, ArtistTrackService>();
+
+        services.AddScoped<ICurrencyService, CurrencyService>();
     }
 
     public static void ConfigureGeneral(this IServiceCollection services)
