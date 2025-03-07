@@ -2,7 +2,7 @@
 using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 using SolanaMusicApi.Application;
 
-namespace SolanaMusicApi.Infrastructure.Repositories.Genre;
+namespace SolanaMusicApi.Infrastructure.Repositories.GenreRepository;
 
 public class GenreRepository : BaseRepository<GenreEntity>, IGenreRepository
 {

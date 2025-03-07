@@ -6,6 +6,7 @@ namespace SolanaMusicApi.Application.Services.TracksService;
 
 public interface ITracksService : IBaseService<Track>
 {
+    Task<List<TrackResponseDto>> GetTracksAsync();
     Task<TrackResponseDto> GetTrackAsync(long id);
     Task<FileStream> GetTrackFileStreamAsync(long id);
     Task<TrackResponseDto> CreateTrackAsync(TrackRequestDto trackRequestDto);

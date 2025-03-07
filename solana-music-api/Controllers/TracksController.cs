@@ -10,6 +10,13 @@ namespace solana_music_api.Controllers;
 [ApiController]
 public class TracksController(IMediator mediator) : ControllerBase
 {
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var response = await mediator.Send(new GetTracksRequest());
+        return Ok(response);
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(long id)
     {

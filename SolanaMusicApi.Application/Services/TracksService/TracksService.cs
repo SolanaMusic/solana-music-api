@@ -34,11 +34,8 @@ public class TracksService : BaseService<Track>, ITracksService
         _artistTrackService = artistTrackService;
     }
 
-    public async Task<TrackResponseDto> GetTrackAsync(long id)
+    public void MapProperties(Track track)
     {
-        var trackQuery = await GetTrackQueryAsync(id);
-        var track = await trackQuery.FirstOrDefaultAsync(t => t.Id == id) ?? throw new KeyNotFoundException("Track not found");
-
         if (string.IsNullOrEmpty(track.ImageUrl) && track.Album?.ImageUrl != null)
             track.ImageUrl = track.Album.ImageUrl;
 
@@ -49,6 +46,24 @@ public class TracksService : BaseService<Track>, ITracksService
             if (artistTracksList != null)
                 artistTracksList.AddRange(track.Album.Artists.Select(artist => new ArtistTrack { Track = track, Artist = artist }));
         }
+    }
+
+    public async Task<List<TrackResponseDto>> GetTracksAsync()
+    {
+        var tracks = await GetTracksQueryAsync();
+        var response = await tracks.ToListAsync();
+       
+        foreach (var track in response)
+            MapProperties(track);
+
+        return _mapper.Map<List<TrackResponseDto>>(response);
+    }
+
+    public async Task<TrackResponseDto> GetTrackAsync(long id)
+    {
+        var trackQuery = await GetTracksQueryAsync();
+        var track = await trackQuery.FirstOrDefaultAsync(t => t.Id == id) ?? throw new KeyNotFoundException("Track not found");
+        MapProperties(track);
 
         return _mapper.Map<TrackResponseDto>(track);
     }
@@ -121,7 +136,7 @@ public class TracksService : BaseService<Track>, ITracksService
         return _mapper.Map<TrackResponseDto>(response);
     }
 
-    private async Task<IQueryable<Track>> GetTrackQueryAsync(long id)
+    private async Task<IQueryable<Track>> GetTracksQueryAsync()
     {
         var trackQuery = GetAll()
             .Include(t => t.ArtistTracks)
