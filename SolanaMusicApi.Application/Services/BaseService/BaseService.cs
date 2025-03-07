@@ -16,6 +16,8 @@ public class BaseService<T>(IBaseRepository<T> baseRepository) : IBaseService<T>
 
     public async Task<T> UpdateAsync(long id, T entity) => await baseRepository.UpdateAsync(id, entity);
 
+    public async Task<T> UpdateAsync(T entity) => await baseRepository.UpdateAsync(entity);
+
     public async Task<IEnumerable<T>> UpdateRangeAsync(IEnumerable<T> entities) => await baseRepository.UpdateRangeAsync(entities);
 
     public async Task<T> DeleteAsync(long id) => await baseRepository.DeleteAsync(id);
@@ -28,4 +30,6 @@ public class BaseService<T>(IBaseRepository<T> baseRepository) : IBaseService<T>
 
     public async Task RollbackTransactionAsync(Exception ex, params Func<Task>[]? rollbackActions) => 
         await baseRepository.RollbackTransactionAsync(ex, rollbackActions);
+
+    public async Task ProcessRollBackActions(Func<Task>[]? rollbackActions) => await baseRepository.ProcessRollBackActions(rollbackActions);
 }

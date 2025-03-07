@@ -79,6 +79,15 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         return existingEntity;
     }
 
+    public async Task<T> UpdateAsync(T entity)
+    {
+        entity.UpdatedDate = DateTime.UtcNow;
+        dbSet.Update(entity);
+
+        await _context.SaveChangesAsync();
+        return entity;
+    }
+
     public async Task<IEnumerable<T>> UpdateRangeAsync(IEnumerable<T> entities)
     {
         var date = DateTime.UtcNow;
@@ -149,12 +158,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         }
         finally
         {
-            if (rollbackActions != null)
-            {
-                foreach (var action in rollbackActions)
-                    await action();
-            }
-
+            await ProcessRollBackActions(rollbackActions);
             await _transaction.DisposeAsync();
         }
     }
@@ -169,5 +173,11 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
             throw new NullReferenceException($"{typeof(T).Name} not found.");
 
         return response;
+    }
+
+    public async Task ProcessRollBackActions(Func<Task>[]? rollbackActions)
+    {
+        if (rollbackActions != null)
+            await Task.WhenAll(rollbackActions.Select(action => action()));
     }
 }
