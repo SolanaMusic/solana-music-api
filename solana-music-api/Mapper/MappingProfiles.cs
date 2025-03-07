@@ -4,12 +4,14 @@ using SolanaMusicApi.Domain.DTO.Auth;
 using SolanaMusicApi.Domain.DTO.Currency;
 using SolanaMusicApi.Domain.DTO.General.CountryDto;
 using SolanaMusicApi.Domain.DTO.Genre;
+using SolanaMusicApi.Domain.DTO.SubscriptionPlan;
 using SolanaMusicApi.Domain.DTO.Track;
 using SolanaMusicApi.Domain.DTO.User;
 using SolanaMusicApi.Domain.DTO.User.Profile;
 using SolanaMusicApi.Domain.Entities.General;
 using SolanaMusicApi.Domain.Entities.Music;
 using SolanaMusicApi.Domain.Entities.Performer;
+using SolanaMusicApi.Domain.Entities.Subscription;
 using SolanaMusicApi.Domain.Entities.Transaction;
 using SolanaMusicApi.Domain.Entities.User;
 
@@ -38,5 +40,8 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Artists, opt => opt.MapFrom(src => src.ArtistTracks.Select(at => at.Artist)));
         CreateMap<CurrencyRequestDto, Currency>();
         CreateMap<Currency, CurrencyResponseDto>();
+
+        CreateMap<SubscriptionPlanRequestDto, SubscriptionPlan>();
+        CreateMap<SubscriptionPlan, SubscriptionPlanResponseDto>();
     }
 }
