@@ -9,5 +9,6 @@ public interface ITracksService : IBaseService<Track>
     Task<TrackResponseDto> GetTrackAsync(long id);
     Task<FileStream> GetTrackFileStreamAsync(long id);
     Task<TrackResponseDto> CreateTrackAsync(TrackRequestDto trackRequestDto);
+    Task<TrackResponseDto> UpdateTrackAsync(long id, TrackRequestDto trackRequestDto);
     Task<TrackResponseDto> DeleteTrackAsync(long id);
 }

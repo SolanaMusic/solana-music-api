@@ -82,7 +82,12 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     public async Task<T> UpdateAsync(T entity)
     {
         entity.UpdatedDate = DateTime.UtcNow;
-        dbSet.Update(entity);
+        var entry = _context.Entry(entity);
+        if (entry.State == EntityState.Detached)
+            _context.Set<T>().Attach(entity);
+
+        entry.State = EntityState.Modified;
+        _context.Entry(entity).CurrentValues.SetValues(entity);
 
         await _context.SaveChangesAsync();
         return entity;

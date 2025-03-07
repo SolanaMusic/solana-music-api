@@ -55,6 +55,7 @@ public static class Configurator
         services.AddScoped<IUserProfileService, UserProfileService>();
 
         services.AddScoped<IGenreService, GenreService>();
+        services.AddScoped<ITracksService, TracksService>();
         services.AddScoped<ITrackGenreService, TrackGenreService>();
         services.AddScoped<IArtistTrackService, ArtistTrackService>();
     }

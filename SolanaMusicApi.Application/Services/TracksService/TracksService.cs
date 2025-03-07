@@ -36,19 +36,8 @@ public class TracksService : BaseService<Track>, ITracksService
 
     public async Task<TrackResponseDto> GetTrackAsync(long id)
     {
-        var track = await GetAll()
-            .Include(t => t.ArtistTracks)
-                .ThenInclude(x => x.Artist)
-                    .ThenInclude(ar => ar.Country)
-
-            .Include(t => t.Album)
-                .ThenInclude(al => al.Artists)
-                    .ThenInclude(ar => ar.Country)
-
-            .Include(t => t.TrackGenres)
-                .ThenInclude(x => x.Genre)
-
-            .FirstOrDefaultAsync(t => t.Id == id) ?? throw new KeyNotFoundException("Track not found");
+        var trackQuery = await GetTrackQueryAsync(id);
+        var track = await trackQuery.FirstOrDefaultAsync(t => t.Id == id) ?? throw new KeyNotFoundException("Track not found");
 
         if (string.IsNullOrEmpty(track.ImageUrl) && track.Album?.ImageUrl != null)
             track.ImageUrl = track.Album.ImageUrl;
@@ -73,16 +62,48 @@ public class TracksService : BaseService<Track>, ITracksService
     public async Task<TrackResponseDto> CreateTrackAsync(TrackRequestDto trackRequestDto)
     {
         await BeginTransactionAsync();
-        var (coverPath, trackPath) = await SaveTrackFiles(trackRequestDto);
+        var (coverPath, trackPath) = await SaveTrackFilesAsync(trackRequestDto);
 
         try
         {
             var track = MapTrack(trackRequestDto, trackPath, coverPath);
             var added = await AddAsync(track);
-            await InsertIntermediateTables(trackRequestDto, added);
+            await InsertLinkedDataAsync(added, trackRequestDto);
             await CommitTransactionAsync(GetRollBackActions(coverPath, trackPath));
 
             var response = await GetTrackAsync(added.Id);
+            return _mapper.Map<TrackResponseDto>(response);
+        }
+        catch (Exception ex)
+        {
+            await RollbackTransactionAsync(ex, GetRollBackActions(coverPath, trackPath));
+            throw;
+        }
+    }
+
+    public async Task<TrackResponseDto> UpdateTrackAsync(long id, TrackRequestDto trackRequestDto)
+    {
+        await BeginTransactionAsync();
+        var (coverPath, trackPath) = await SaveTrackFilesAsync(trackRequestDto);
+
+        try
+        {
+            var track = await GetAll()
+                .Include(x => x.TrackGenres)
+                .Include(x => x.ArtistTracks)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (track == null)
+                throw new Exception("Track not found");
+
+            var (imageSnapshot, fileSnapshot) = (track.ImageUrl, track.FileUrl);
+            await MapTrackAsync(track, trackRequestDto, trackPath, coverPath);
+
+            var updated = await UpdateAsync(track);
+            await ProcessRollBackActions(GetRollBackActions(imageSnapshot, fileSnapshot));
+            await CommitTransactionAsync(GetRollBackActions(coverPath, trackPath));
+
+            var response = await GetTrackAsync(id);
             return _mapper.Map<TrackResponseDto>(response);
         }
         catch (Exception ex)
@@ -100,10 +121,32 @@ public class TracksService : BaseService<Track>, ITracksService
         return _mapper.Map<TrackResponseDto>(response);
     }
 
-    private Track MapTrack(TrackRequestDto trackRequestDto, string trackFile, string coverFile)
+    private async Task<IQueryable<Track>> GetTrackQueryAsync(long id)
+    {
+        var trackQuery = GetAll()
+            .Include(t => t.ArtistTracks)
+                .ThenInclude(x => x.Artist)
+                    .ThenInclude(ar => ar.Country)
+
+            .Include(t => t.TrackGenres)
+                .ThenInclude(x => x.Genre)
+
+            .Include(t => t.Album)
+            .AsQueryable();
+
+        if (await trackQuery.AnyAsync(t => t.Album != null))
+        {
+            trackQuery = trackQuery
+                .Include(t => t.Album!.Artists)
+                    .ThenInclude(ar => ar.Country);
+        }
+
+        return trackQuery;
+    }
+
+    private Track MapTrack(TrackRequestDto trackRequestDto, string trackFile, string? coverFile)
     {
         var track = _mapper.Map<Track>(trackRequestDto);
-
         track.FileUrl = trackFile;
         track.ImageUrl = coverFile;
         track.Duration = _fileService.GetAudioDuration(trackRequestDto.TrackFile);
@@ -111,40 +154,85 @@ public class TracksService : BaseService<Track>, ITracksService
         return track;
     }
 
-    private async Task InsertIntermediateTables(TrackRequestDto trackRequestDto, Track track)
+    private async Task MapTrackAsync(Track track, TrackRequestDto trackRequestDto, string trackFile, string? coverFile)
     {
-        var genres = await _genreService
-            .GetAll()
-            .Where(x => trackRequestDto.GenreIds.Contains(x.Id))
-            .ToListAsync();
-
-        var trackGenres = genres.Select(genre => new TrackGenre { TrackId = track.Id, GenreId = genre.Id });
-        await _trackGenreService.AddRangeAsync(trackGenres);
-
-        if (trackRequestDto.ArtistIds == null)
-            return;
-
-        var artists = await _artistService
-            .GetAll()
-            .Where(x => trackRequestDto.ArtistIds!.Contains(x.Id))
-            .ToListAsync();
+        track.Title = trackRequestDto.Title;
+        track.AlbumId = trackRequestDto.AlbumId;
+        track.FileUrl = trackFile;
+        track.ImageUrl = coverFile;
+        track.Duration = _fileService.GetAudioDuration(trackRequestDto.TrackFile);
         
-        var artistTracks = artists.Select(artist => new ArtistTrack { ArtistId = artist.Id, TrackId = track.Id });      
-        await _artistTrackService.AddRangeAsync(artistTracks);
+        if (track.TrackGenres.Count() != trackRequestDto.GenreIds.Count() || track.ArtistTracks.Count() != trackRequestDto.ArtistIds.Count())
+            await UpdateLinkedDataAsync(track, trackRequestDto);
     }
 
-    private async Task<(string, string)> SaveTrackFiles(TrackRequestDto trackRequestDto)
+    private async Task<Track> UpdateLinkedDataAsync(Track track, TrackRequestDto trackRequestDto)
+    {
+        var existingGenres = track.TrackGenres.Select(x => x.GenreId);
+        var genresToAdd = trackRequestDto.GenreIds.Except(existingGenres).ToList();
+        var genresToRemove = existingGenres.Except(trackRequestDto.GenreIds).ToList();
+
+        var existingArtists = track.ArtistTracks.Select(x => x.ArtistId);
+        var artistsToAdd = trackRequestDto.ArtistIds.Except(existingArtists).ToList();
+        var artistsToRemove = existingArtists.Except(trackRequestDto.ArtistIds).ToList();
+
+        if (genresToRemove.Any())
+        {
+            var genresToDelete = track.TrackGenres.Where(x => genresToRemove.Contains(x.GenreId)).ToList();
+            await _trackGenreService.DeleteRangeAsync(genresToDelete);
+        }
+
+        if (artistsToRemove.Any())
+        {
+            var artistsToDelete = track.ArtistTracks.Where(x => artistsToRemove.Contains(x.ArtistId)).ToList();
+            await _artistTrackService.DeleteRangeAsync(artistsToDelete);
+        }
+
+        if (genresToAdd.Any() || artistsToAdd.Any())
+        {
+            trackRequestDto.GenreIds = genresToAdd;
+            trackRequestDto.ArtistIds = artistsToAdd;
+            await InsertLinkedDataAsync(track, trackRequestDto);
+        }
+
+        return track;
+    }
+
+    private async Task InsertLinkedDataAsync(Track track, TrackRequestDto trackRequestDto)
+    {
+        var (genres, artists) = GetLinkedData(track, trackRequestDto);
+        await _trackGenreService.AddRangeAsync(genres);             
+        await _artistTrackService.AddRangeAsync(artists);
+    }
+
+    private (IQueryable<TrackGenre>, IQueryable<ArtistTrack>) GetLinkedData(Track track, TrackRequestDto trackRequestDto)
+    {
+        var genres = _genreService
+            .GetAll()
+            .Where(x => trackRequestDto.GenreIds.Contains(x.Id));
+
+        var artists = _artistService
+            .GetAll()
+            .Where(x => trackRequestDto.ArtistIds!.Contains(x.Id));
+
+        var trackGenres = genres.Select(genre => new TrackGenre { TrackId = track.Id, GenreId = genre.Id });
+        var artistTracks = artists.Select(artist => new ArtistTrack { ArtistId = artist.Id, TrackId = track.Id });
+
+        return (trackGenres, artistTracks);
+    }
+
+    private async Task<(string?, string)> SaveTrackFilesAsync(TrackRequestDto trackRequestDto)
     {
         var coverPath = trackRequestDto.Image != null
             ? await _fileService.SaveFileAsync(trackRequestDto.Image, FileTypes.TrackCover)
-            : string.Empty;
+            : null;
 
         var trackPath = await _fileService.SaveFileAsync(trackRequestDto.TrackFile, FileTypes.Track);
 
         return (coverPath, trackPath);
     }
 
-    private Func<Task>[] GetRollBackActions(string coverPath, string trackPath)
+    private Func<Task>[] GetRollBackActions(string? coverPath, string trackPath)
     {
         return
         [

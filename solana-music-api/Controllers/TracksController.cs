@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests.Music;
+using SolanaMusicApi.Application.Services.TracksService;
 using SolanaMusicApi.Domain.DTO.Track;
 
 namespace solana_music_api.Controllers;
@@ -24,10 +25,17 @@ public class TracksController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateTrack(TrackRequestDto trackRequestDto)
+    public async Task<IActionResult> CreateTrack([FromForm]TrackRequestDto trackRequestDto)
     {
         var response = await mediator.Send(new CreateTrackRequest(trackRequestDto));
         return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> UpdateTrack(long id, [FromForm]TrackRequestDto trackRequestDto)
+    {
+        var response = await mediator.Send(new UpdateTrackRequest(id, trackRequestDto));
+        return Ok(response);
     }
 
     [HttpDelete("{id}")]

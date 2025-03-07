@@ -5,24 +5,22 @@ namespace SolanaMusicApi.Domain.Attributes;
 
 public class AlbumOrArtistRequiredAttribute : ValidationAttribute
 {
-    private const string message = "Either AlbumId or ArtistIds must be provided";
-
-    public AlbumOrArtistRequiredAttribute() : base(message) { }
+    public AlbumOrArtistRequiredAttribute() : base() { }
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
         var trackRequestDto = (TrackRequestDto)validationContext.ObjectInstance;
 
-        if (trackRequestDto.Image == null && !trackRequestDto.AlbumId.HasValue)
-            throw new Exception("Either Image should be provided or AlbumId must be specified");
+        if (!trackRequestDto.GenreIds.Any())
+            throw new Exception("Genres must be specified");
 
         if (trackRequestDto.Image != null && trackRequestDto.AlbumId.HasValue)
             throw new Exception("Both Image and AlbumId cannot be specified together");
 
-        if (trackRequestDto.AlbumId.HasValue || (trackRequestDto.ArtistIds != null && trackRequestDto.ArtistIds.Any()))
-            return ValidationResult.Success;
+        if (trackRequestDto.Image == null && !trackRequestDto.AlbumId.HasValue)
+            throw new Exception("Image or AlbumId must be specified");
 
-        throw new Exception(message);
+        return ValidationResult.Success;
     }
 }
 
