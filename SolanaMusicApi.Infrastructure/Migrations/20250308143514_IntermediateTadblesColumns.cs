@@ -19,7 +19,7 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ReleaseDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -159,30 +159,6 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AlbumGenres",
-                columns: table => new
-                {
-                    AlbumsId = table.Column<long>(type: "bigint", nullable: false),
-                    GenresId = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AlbumGenres", x => new { x.AlbumsId, x.GenresId });
-                    table.ForeignKey(
-                        name: "FK_AlbumGenres_Albums_AlbumsId",
-                        column: x => x.AlbumsId,
-                        principalTable: "Albums",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AlbumGenres_Genres_GenresId",
-                        column: x => x.GenresId,
-                        principalTable: "Genres",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SubscriptionPlanCurrency",
                 columns: table => new
                 {
@@ -243,15 +219,19 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 name: "ArtistAlbums",
                 columns: table => new
                 {
-                    AlbumsId = table.Column<long>(type: "bigint", nullable: false),
-                    ArtistsId = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ArtistId = table.Column<long>(type: "bigint", nullable: false),
+                    AlbumId = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ArtistAlbums", x => new { x.AlbumsId, x.ArtistsId });
+                    table.PrimaryKey("PK_ArtistAlbums", x => new { x.ArtistId, x.AlbumId });
                     table.ForeignKey(
-                        name: "FK_ArtistAlbums_Albums_AlbumsId",
-                        column: x => x.AlbumsId,
+                        name: "FK_ArtistAlbums_Albums_AlbumId",
+                        column: x => x.AlbumId,
                         principalTable: "Albums",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -610,14 +590,9 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AlbumGenres_GenresId",
-                table: "AlbumGenres",
-                column: "GenresId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ArtistAlbums_ArtistsId",
+                name: "IX_ArtistAlbums_AlbumId",
                 table: "ArtistAlbums",
-                column: "ArtistsId");
+                column: "AlbumId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Artists_CountryId",
@@ -757,9 +732,9 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 column: "SubscriptionId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ArtistAlbums_Artists_ArtistsId",
+                name: "FK_ArtistAlbums_Artists_ArtistId",
                 table: "ArtistAlbums",
-                column: "ArtistsId",
+                column: "ArtistId",
                 principalTable: "Artists",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
@@ -819,9 +794,6 @@ namespace SolanaMusicApi.Infrastructure.Migrations
             migrationBuilder.DropForeignKey(
                 name: "FK_Subscriptions_AspNetUsers_OwnerId",
                 table: "Subscriptions");
-
-            migrationBuilder.DropTable(
-                name: "AlbumGenres");
 
             migrationBuilder.DropTable(
                 name: "ArtistAlbums");

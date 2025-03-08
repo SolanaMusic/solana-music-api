@@ -76,7 +76,7 @@ IF NOT EXISTS (SELECT 1 FROM dbo.Albums WHERE Id = 1)
 BEGIN
     SET IDENTITY_INSERT dbo.Albums ON;
     INSERT INTO dbo.Albums ([Id], [Title], [ReleaseDate], [ImageUrl], [Description], [CreatedDate], [UpdatedDate])
-    VALUES (1, 'Rock Classics', '2024-02-26', 'covers\albums\album-image1.png',
+    VALUES (1, 'Rock Classics', '2024-02-26', 'covers\albums\album-image1.jfif',
             'A collection of the best rock hits', GETDATE(), GETDATE());
     SET IDENTITY_INSERT dbo.Albums OFF;
 END
@@ -132,30 +132,36 @@ END
 SET IDENTITY_INSERT dbo.TrackGenres OFF;
 
 
--- AlbumGenres
-IF NOT EXISTS (SELECT 1 FROM dbo.AlbumGenres WHERE GenresId = 2 AND AlbumsId = 1)
-BEGIN
-    INSERT INTO dbo.AlbumGenres ([AlbumsId], [GenresId])
-    VALUES (1, 2);
-END
-
-
 -- ArtistTracks
+SET IDENTITY_INSERT dbo.ArtistTracks ON;
 IF NOT EXISTS (SELECT 1 FROM dbo.ArtistTracks WHERE ArtistId = 1 AND TrackId = 1)
 BEGIN
-SET IDENTITY_INSERT dbo.ArtistTracks ON;
     INSERT INTO dbo.ArtistTracks ([Id], [ArtistId], [TrackId], [CreatedDate], [UpdatedDate])
     VALUES (1, 1, 1, GETDATE(), GETDATE());
-    SET IDENTITY_INSERT dbo.ArtistTracks OFF;
 END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.ArtistTracks WHERE ArtistId = 1 AND TrackId = 2)
+BEGIN
+    INSERT INTO dbo.ArtistTracks ([Id], [ArtistId], [TrackId], [CreatedDate], [UpdatedDate])
+    VALUES (2, 1, 2, GETDATE(), GETDATE());
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.ArtistTracks WHERE ArtistId = 1 AND TrackId = 3)
+BEGIN
+    INSERT INTO dbo.ArtistTracks ([Id], [ArtistId], [TrackId], [CreatedDate], [UpdatedDate])
+    VALUES (3, 1, 3, GETDATE(), GETDATE());
+END
+SET IDENTITY_INSERT dbo.ArtistTracks OFF;
 
 
 -- ArtistAlbums
-IF NOT EXISTS (SELECT 1 FROM dbo.ArtistAlbums WHERE AlbumsId = 1 AND ArtistsId = 1)
+SET IDENTITY_INSERT dbo.ArtistAlbums ON;
+IF NOT EXISTS (SELECT 1 FROM dbo.ArtistAlbums WHERE AlbumId = 1 AND ArtistId = 1)
 BEGIN
-    INSERT INTO dbo.ArtistAlbums ([AlbumsId], [ArtistsId])
-    VALUES (1, 1);
+    INSERT INTO dbo.ArtistAlbums ([Id], [AlbumId], [ArtistId], [CreatedDate] ,[UpdatedDate])
+    VALUES (1, 1, 1, GETDATE(), GETDATE());
 END
+SET IDENTITY_INSERT dbo.ArtistAlbums OFF;
 
 
 -- ArtistSubscribers
@@ -231,19 +237,13 @@ END
 IF NOT EXISTS (SELECT 1 FROM dbo.Currencies WHERE Id = 2)
 BEGIN
     INSERT INTO dbo.Currencies ([Id], [Code], [Symbol], [CreatedDate], [UpdatedDate])
-    VALUES (2, 'EUR', 'ˆ', GETDATE(), GETDATE());
+    VALUES (2, 'SOL', 'SOL', GETDATE(), GETDATE());
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.Currencies WHERE Id = 3)
 BEGIN
     INSERT INTO dbo.Currencies ([Id], [Code], [Symbol], [CreatedDate], [UpdatedDate])
-    VALUES (3, 'SOL', 'SOL', GETDATE(), GETDATE());
-END
-
-IF NOT EXISTS (SELECT 1 FROM dbo.Currencies WHERE Id = 4)
-BEGIN
-    INSERT INTO dbo.Currencies ([Id], [Code], [Symbol], [CreatedDate], [UpdatedDate])
-    VALUES (4, 'SLMC', 'SLMC', GETDATE(), GETDATE());
+    VALUES (3, 'SLMC', 'SLMC', GETDATE(), GETDATE());
 END
 SET IDENTITY_INSERT dbo.Currencies OFF;
 
@@ -265,7 +265,7 @@ END
 IF NOT EXISTS (SELECT 1 FROM dbo.SubscriptionPlanCurrency WHERE Id = 3)
 BEGIN
     INSERT INTO dbo.SubscriptionPlanCurrency ([Id], [CurrencyId], [SubscriptionPlanId], [Price], [CreatedDate], [UpdatedDate])
-    VALUES (3, 4, 3, 1000, GETDATE(), GETDATE());
+    VALUES (3, 3, 3, 1000, GETDATE(), GETDATE());
 END
 SET IDENTITY_INSERT dbo.SubscriptionPlanCurrency OFF;
 

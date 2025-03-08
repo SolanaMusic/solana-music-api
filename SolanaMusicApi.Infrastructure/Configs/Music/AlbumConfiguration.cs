@@ -22,9 +22,5 @@ public class AlbumConfiguration : IEntityTypeConfiguration<Album>
 
         builder.Property(a => a.Description)
             .HasMaxLength(1000);
-
-        builder.HasMany(t => t.Genres)
-            .WithMany(g => g.Albums)
-            .UsingEntity(j => j.ToTable("AlbumGenres"));
     }
 }

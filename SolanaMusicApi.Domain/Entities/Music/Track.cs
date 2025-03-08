@@ -10,7 +10,7 @@ public class Track : BaseEntity
     public string? ImageUrl { get; set; }
     public TimeSpan Duration { get; set; }
     public string FileUrl { get; set; } = string.Empty;
-    public uint PlaysCount { get; set; } = 0;
+    public long PlaysCount { get; set; } = 0;
     public DateTime ReleaseDate { get; set; }
 
     public Album? Album { get; set; }

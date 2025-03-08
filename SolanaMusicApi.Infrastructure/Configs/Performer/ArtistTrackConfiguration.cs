@@ -27,5 +27,4 @@ public class ArtistTrackConfiguration : IEntityTypeConfiguration<ArtistTrack>
             .HasForeignKey(ta => ta.ArtistId)
             .OnDelete(DeleteBehavior.Cascade);
     }
-
 }

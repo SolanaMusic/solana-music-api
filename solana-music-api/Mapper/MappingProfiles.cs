@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using SolanaMusicApi.Domain.DTO.Album;
 using SolanaMusicApi.Domain.DTO.Artist;
+using SolanaMusicApi.Domain.DTO.ArtistTrack;
 using SolanaMusicApi.Domain.DTO.Auth;
 using SolanaMusicApi.Domain.DTO.Currency;
 using SolanaMusicApi.Domain.DTO.General.CountryDto;
@@ -38,6 +40,23 @@ public class MappingProfiles : Profile
         CreateMap<Track, TrackResponseDto>()
             .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.TrackGenres.Select(tg => tg.Genre)))
             .ForMember(dest => dest.Artists, opt => opt.MapFrom(src => src.ArtistTracks.Select(at => at.Artist)));
+        CreateMap<Track, GetAlbumTrackResponseDto>()
+            .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.TrackGenres.Select(tg => tg.Genre)))
+            .ForMember(dest => dest.Artists, opt => opt.MapFrom(src => src.ArtistTracks.Select(at => at.Artist)));
+
+        CreateMap<AlbumRequestDto, Album>();
+        CreateMap<Album, AlbumResponseDto>()
+            .ForMember(dest => dest.Artists, opt => opt.MapFrom(src => src.ArtistAlbums.Select(x => x.Artist)))
+            .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.Tracks
+                .SelectMany(at => at.TrackGenres)
+                .Select(tg => tg.Genre)
+                .DistinctBy(g => g.Id)
+            ))
+            .ForMember(dest => dest.PlaysCount, opt => opt.MapFrom(src => src.Tracks.Sum(t => t.PlaysCount)));
+
+        CreateMap<Artist, ArtistTrackResponseDto>();
+        CreateMap<Artist, GetAlbumArtistResponseDto>();
+        CreateMap<Artist, ArtistResponseDto>()
         CreateMap<CurrencyRequestDto, Currency>();
         CreateMap<Currency, CurrencyResponseDto>();
 

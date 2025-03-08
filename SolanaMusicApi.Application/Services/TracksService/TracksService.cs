@@ -39,12 +39,13 @@ public class TracksService : BaseService<Track>, ITracksService
         if (string.IsNullOrEmpty(track.ImageUrl) && track.Album?.ImageUrl != null)
             track.ImageUrl = track.Album.ImageUrl;
 
-        if (!track.ArtistTracks.Any() && track.Album?.Artists.Any() == true)
+        var artists = track.Album?.ArtistAlbums.Select(x => x.Artist);
+        if (!track.ArtistTracks.Any() && artists != null && artists.Any())
         {
             var artistTracksList = track.ArtistTracks as List<ArtistTrack>;
 
             if (artistTracksList != null)
-                artistTracksList.AddRange(track.Album.Artists.Select(artist => new ArtistTrack { Track = track, Artist = artist }));
+                artistTracksList.AddRange(artists.Select(artist => new ArtistTrack { Track = track, Artist = artist }));
         }
     }
 
@@ -115,8 +116,8 @@ public class TracksService : BaseService<Track>, ITracksService
             await MapTrackAsync(track, trackRequestDto, trackPath, coverPath);
 
             var updated = await UpdateAsync(track);
-            await ProcessRollBackActions(GetRollBackActions(imageSnapshot, fileSnapshot));
             await CommitTransactionAsync(GetRollBackActions(coverPath, trackPath));
+            await ProcessRollBackActions(GetRollBackActions(imageSnapshot, fileSnapshot));
 
             var response = await GetTrackAsync(id);
             return _mapper.Map<TrackResponseDto>(response);
@@ -152,8 +153,9 @@ public class TracksService : BaseService<Track>, ITracksService
         if (await trackQuery.AnyAsync(t => t.Album != null))
         {
             trackQuery = trackQuery
-                .Include(t => t.Album!.Artists)
-                    .ThenInclude(ar => ar.Country);
+                .Include(t => t.Album!.ArtistAlbums)
+                    .ThenInclude(x => x.Artist)
+                        .ThenInclude(ar => ar.Country);
         }
 
         return trackQuery;
@@ -176,9 +178,8 @@ public class TracksService : BaseService<Track>, ITracksService
         track.FileUrl = trackFile;
         track.ImageUrl = coverFile;
         track.Duration = _fileService.GetAudioDuration(trackRequestDto.TrackFile);
-        
-        if (track.TrackGenres.Count() != trackRequestDto.GenreIds.Count() || track.ArtistTracks.Count() != trackRequestDto.ArtistIds.Count())
-            await UpdateLinkedDataAsync(track, trackRequestDto);
+
+        await UpdateLinkedDataAsync(track, trackRequestDto);
     }
 
     private async Task<Track> UpdateLinkedDataAsync(Track track, TrackRequestDto trackRequestDto)

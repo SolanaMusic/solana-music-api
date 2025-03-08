@@ -41,6 +41,9 @@ public class FileService(IFilePathFactory filePathFactory) : IFileService
 
     public bool DeleteFile(string filePath)
     {
+        if (string.IsNullOrEmpty(filePath))
+            return false;
+
         var fullPath = Path.Combine(_basePath, filePath);
         if (!File.Exists(fullPath))
             throw new FileNotFoundException();

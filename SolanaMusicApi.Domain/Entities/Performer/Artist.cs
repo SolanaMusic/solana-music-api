@@ -14,7 +14,7 @@ public class Artist : BaseEntity
 
     public ApplicationUser? User { get; set; }
     public Country Country { get; set; } = new();
-    public ICollection<Album> Albums { get; set; } = [];
+    public ICollection<ArtistAlbum> ArtistAlbums { get; set; } = [];
     public ICollection<ArtistTrack> ArtistTracks { get; set; } = [];
     public ICollection<ApplicationUser> Subscribers { get; set; } = [];
 }

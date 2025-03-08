@@ -3,6 +3,8 @@ using Microsoft.OpenApi.Models;
 using SolanaMusicApi.Application;
 using SolanaMusicApi.Application.Factories.FilePathFactory;
 using SolanaMusicApi.Application.Factories.RedirectUrlFactory;
+using SolanaMusicApi.Application.Services.AlbumService;
+using SolanaMusicApi.Application.Services.ArtistAlbumService;
 using SolanaMusicApi.Application.Services.ArtistService;
 using SolanaMusicApi.Application.Services.ArtistTrackService;
 using SolanaMusicApi.Application.Services.AuthService;
@@ -18,6 +20,8 @@ using SolanaMusicApi.Application.Services.TracksService;
 using SolanaMusicApi.Application.Services.UserProfileService;
 using SolanaMusicApi.Application.Services.UserService;
 using SolanaMusicApi.Domain.Entities.User;
+using SolanaMusicApi.Infrastructure.Repositories.AlbumRepository;
+using SolanaMusicApi.Infrastructure.Repositories.ArtistAlbumRepository;
 using SolanaMusicApi.Infrastructure.Repositories.ArtistRepository;
 using SolanaMusicApi.Infrastructure.Repositories.ArtistTrackRepository;
 using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
@@ -42,7 +46,9 @@ public static class Configurator
         services.AddScoped<IGenreRepository, GenreRepository>();
         services.AddScoped<ITrackRepository, TrackRepository>();
         services.AddScoped<ITrackGenreRepository, TrackGenreRepository>();
+        services.AddScoped<IAlbumRepository, AlbumRepository>();
         services.AddScoped<IArtistTrackRepository, ArtistTrackRepository>();
+        services.AddScoped<IArtistAlbumRepository, ArtistAlbumRepository>();
 
         services.AddScoped<ICurrencyRepository, CurrencyRepository>();
         services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
@@ -64,7 +70,9 @@ public static class Configurator
         services.AddScoped<IGenreService, GenreService>();
         services.AddScoped<ITracksService, TracksService>();
         services.AddScoped<ITrackGenreService, TrackGenreService>();
+        services.AddScoped<IAlbumService, AlbumService>();
         services.AddScoped<IArtistTrackService, ArtistTrackService>();
+        services.AddScoped<IArtistAlbumService, ArtistAlbumService>();
 
         services.AddScoped<ICurrencyService, CurrencyService>();
         services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
