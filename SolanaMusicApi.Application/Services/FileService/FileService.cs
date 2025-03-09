@@ -79,8 +79,8 @@ public class FileService(IFilePathFactory filePathFactory) : IFileService
         format switch
         {
             ImageFormats.Png => new PngEncoder(),
-            ImageFormats.Jpeg => new JpegEncoder { Quality = 85 },
-            ImageFormats.Webp => new WebpEncoder { Quality = 80 },
+            ImageFormats.Jpeg => new JpegEncoder { Quality = 70 },
+            ImageFormats.Webp => new WebpEncoder { Quality = 70 },
             _ => throw new ArgumentException("Unsupported format")
         };
 

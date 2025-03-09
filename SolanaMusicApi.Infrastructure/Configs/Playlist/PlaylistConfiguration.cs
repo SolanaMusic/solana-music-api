@@ -14,6 +14,9 @@ public class PlaylistConfiguration : IEntityTypeConfiguration<PlaylistEntity>
             .IsRequired()
             .HasMaxLength(150);
 
+        builder.Property(a => a.CoverUrl)
+            .HasMaxLength(500);
+
         builder.HasOne(p => p.Owner)
             .WithMany(u => u.Playlists)
             .HasForeignKey(p => p.OwnerId)

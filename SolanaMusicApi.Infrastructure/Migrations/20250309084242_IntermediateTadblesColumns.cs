@@ -410,6 +410,7 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
+                    CoverUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -518,8 +519,12 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 name: "PlaylistTracks",
                 columns: table => new
                 {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     PlaylistId = table.Column<long>(type: "bigint", nullable: false),
-                    TrackId = table.Column<long>(type: "bigint", nullable: false)
+                    TrackId = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {

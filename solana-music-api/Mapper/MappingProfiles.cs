@@ -6,6 +6,7 @@ using SolanaMusicApi.Domain.DTO.Auth;
 using SolanaMusicApi.Domain.DTO.Currency;
 using SolanaMusicApi.Domain.DTO.General.CountryDto;
 using SolanaMusicApi.Domain.DTO.Genre;
+using SolanaMusicApi.Domain.DTO.Playlist;
 using SolanaMusicApi.Domain.DTO.SubscriptionPlan;
 using SolanaMusicApi.Domain.DTO.Track;
 using SolanaMusicApi.Domain.DTO.User;
@@ -13,6 +14,7 @@ using SolanaMusicApi.Domain.DTO.User.Profile;
 using SolanaMusicApi.Domain.Entities.General;
 using SolanaMusicApi.Domain.Entities.Music;
 using SolanaMusicApi.Domain.Entities.Performer;
+using SolanaMusicApi.Domain.Entities.Playlist;
 using SolanaMusicApi.Domain.Entities.Subscription;
 using SolanaMusicApi.Domain.Entities.Transaction;
 using SolanaMusicApi.Domain.Entities.User;
@@ -53,6 +55,10 @@ public class MappingProfiles : Profile
                 .DistinctBy(g => g.Id)
             ))
             .ForMember(dest => dest.PlaysCount, opt => opt.MapFrom(src => src.Tracks.Sum(t => t.PlaysCount)));
+
+        CreateMap<CreatePlaylistRequestDto, Playlist>();
+        CreateMap<Playlist, PlaylistResponseDto>()
+            .ForMember(dest => dest.Tracks, opt => opt.MapFrom(src => src.PlaylistTracks.Select(tg => tg.Track)));
 
         CreateMap<Artist, ArtistTrackResponseDto>();
         CreateMap<Artist, GetAlbumArtistResponseDto>();

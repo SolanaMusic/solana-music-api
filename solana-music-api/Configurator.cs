@@ -14,6 +14,8 @@ using SolanaMusicApi.Application.Services.CurrencyService;
 using SolanaMusicApi.Application.Services.FileService;
 using SolanaMusicApi.Application.Services.GenreService;
 using SolanaMusicApi.Application.Services.LocationService;
+using SolanaMusicApi.Application.Services.PlaylistServices.PlaylistService;
+using SolanaMusicApi.Application.Services.PlaylistServices.PlaylistTrackService;
 using SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionPlanService;
 using SolanaMusicApi.Application.Services.TrackServices.TrackGenreService;
 using SolanaMusicApi.Application.Services.TrackServices.TracksService;
@@ -28,6 +30,8 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 using SolanaMusicApi.Infrastructure.Repositories.CountryRepository;
 using SolanaMusicApi.Infrastructure.Repositories.CurrencyRepository;
 using SolanaMusicApi.Infrastructure.Repositories.GenreRepository;
+using SolanaMusicApi.Infrastructure.Repositories.PlaylistRespositories.PlaylistRespository;
+using SolanaMusicApi.Infrastructure.Repositories.PlaylistRespositories.PlaylistTrackRespository;
 using SolanaMusicApi.Infrastructure.Repositories.SubscriptionRepositories.SubscriptionPlanRepository;
 using SolanaMusicApi.Infrastructure.Repositories.TrackRepositories.TrackGenreRepository;
 using SolanaMusicApi.Infrastructure.Repositories.TrackRepositories.TrackRepository;
@@ -41,8 +45,8 @@ public static class Configurator
     {
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<ICountryRepository, CountryRepository>();
-
         services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+
         services.AddScoped<IGenreRepository, GenreRepository>();
         services.AddScoped<ITrackRepository, TrackRepository>();
         services.AddScoped<ITrackGenreRepository, TrackGenreRepository>();
@@ -50,6 +54,8 @@ public static class Configurator
         services.AddScoped<IArtistRepository, ArtistRepository>();
         services.AddScoped<IArtistTrackRepository, ArtistTrackRepository>();
         services.AddScoped<IArtistAlbumRepository, ArtistAlbumRepository>();
+        services.AddScoped<IPlaylistRespository, PlaylistRespository>();
+        services.AddScoped<IPlaylistTrackRespository, PlaylistTrackRespository>();
 
         services.AddScoped<ICurrencyRepository, CurrencyRepository>();
         services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
@@ -75,6 +81,8 @@ public static class Configurator
         services.AddScoped<IArtistService, ArtistService>();
         services.AddScoped<IArtistTrackService, ArtistTrackService>();
         services.AddScoped<IArtistAlbumService, ArtistAlbumService>();
+        services.AddScoped<IPlaylistService, PlaylistService>();
+        services.AddScoped<IPlaylistTrackService, PlaylistTrackService>();
 
         services.AddScoped<ICurrencyService, CurrencyService>();
         services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();

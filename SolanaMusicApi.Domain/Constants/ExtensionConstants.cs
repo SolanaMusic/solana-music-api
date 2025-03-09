@@ -14,6 +14,7 @@ public class ExtensionConstants
         { FileTypes.Track, new List<string> { ".mp3", ".wav", ".flac", "aac" } },
         { FileTypes.AlbumCover, ImageTypes },
         { FileTypes.TrackCover, ImageTypes },
+        { FileTypes.PlaylistCover, ImageTypes },
         { FileTypes.ArtistImage, ImageTypes },
         { FileTypes.UserImage, ImageTypes }
     };

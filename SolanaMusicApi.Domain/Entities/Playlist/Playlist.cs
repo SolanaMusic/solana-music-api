@@ -6,7 +6,8 @@ public class Playlist : BaseEntity
 {
     public string Name { get; set; } = string.Empty;
     public long OwnerId { get; set; }
+    public string? CoverUrl { get; set; }
 
     public ApplicationUser Owner { get; set; } = null!;
-    public ICollection<PlaylistTrack> Tracks { get; set; } = [];
+    public ICollection<PlaylistTrack> PlaylistTracks { get; set; } = [];
 }

@@ -6,6 +6,7 @@ public enum FileTypes
     Track,
     AlbumCover,
     TrackCover,
+    PlaylistCover,
     ArtistImage,
     UserImage
 }

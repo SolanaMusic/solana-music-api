@@ -10,8 +10,15 @@ public class PlaylistTrackConfiguration : IEntityTypeConfiguration<PlaylistTrack
     {
         builder.HasKey(pt => new { pt.PlaylistId, pt.TrackId });
 
+        builder.Property(pt => pt.Id)
+            .HasColumnOrder(0)
+            .ValueGeneratedOnAdd();
+
+        builder.Property(pt => pt.PlaylistId).HasColumnOrder(1);
+        builder.Property(pt => pt.TrackId).HasColumnOrder(2);
+
         builder.HasOne(pt => pt.Playlist)
-            .WithMany(p => p.Tracks)
+            .WithMany(p => p.PlaylistTracks)
             .HasForeignKey(pt => pt.PlaylistId)
             .OnDelete(DeleteBehavior.Cascade);
 

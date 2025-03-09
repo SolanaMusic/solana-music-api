@@ -2,7 +2,7 @@
 
 namespace SolanaMusicApi.Domain.Entities.Playlist;
 
-public class PlaylistTrack
+public class PlaylistTrack : BaseEntity
 {
     public long PlaylistId { get; set; }
     public long TrackId { get; set; }

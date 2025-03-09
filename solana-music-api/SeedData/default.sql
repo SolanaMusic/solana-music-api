@@ -176,26 +176,28 @@ END
 IF EXISTS (SELECT 1 FROM dbo.AspNetUsers WHERE Id = 1) AND NOT EXISTS (SELECT 1 FROM dbo.Playlists WHERE Id = 1)
 BEGIN
     SET IDENTITY_INSERT dbo.Playlists ON;
-    INSERT INTO dbo.Playlists ([Id], [Name], [OwnerId], [CreatedDate], [UpdatedDate])
-    VALUES (1, 'My Favorite Songs', 1, GETDATE(), GETDATE());
+    INSERT INTO dbo.Playlists ([Id], [Name], [OwnerId], [CoverUrl], [CreatedDate], [UpdatedDate])
+    VALUES (1, 'My Favorite Songs', 1, 'covers\playlists\playlist-image1.jpg', GETDATE(), GETDATE());
     SET IDENTITY_INSERT dbo.Playlists OFF;
 END
 
 
 -- PlaylistTracks
+SET IDENTITY_INSERT dbo.PlaylistTracks ON;
 IF EXISTS (SELECT 1 FROM dbo.Playlists WHERE Id = 1) AND EXISTS (SELECT 1 FROM dbo.Tracks WHERE Id = 1)
    AND NOT EXISTS (SELECT 1 FROM dbo.PlaylistTracks WHERE PlaylistId = 1 AND TrackId = 1)
 BEGIN
-    INSERT INTO dbo.PlaylistTracks ([PlaylistId], [TrackId])
-    VALUES (1, 1);
+    INSERT INTO dbo.PlaylistTracks ([Id], [PlaylistId], [TrackId], [CreatedDate] ,[UpdatedDate])
+    VALUES (1, 1, 1, GETDATE(), GETDATE());
 END
 
 IF EXISTS (SELECT 1 FROM dbo.Playlists WHERE Id = 1) AND EXISTS (SELECT 1 FROM dbo.Tracks WHERE Id = 3)
    AND NOT EXISTS (SELECT 1 FROM dbo.PlaylistTracks WHERE PlaylistId = 1 AND TrackId = 3)
 BEGIN
-    INSERT INTO dbo.PlaylistTracks ([PlaylistId], [TrackId])
-    VALUES (1, 3);
+    INSERT INTO dbo.PlaylistTracks ([Id], [PlaylistId], [TrackId], [CreatedDate] ,[UpdatedDate])
+    VALUES (2, 1, 3, GETDATE(), GETDATE());
 END
+SET IDENTITY_INSERT dbo.PlaylistTracks OFF;
 
 
 -- UserProfiles
