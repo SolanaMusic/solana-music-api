@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SolanaMusicApi.Application;
 using SolanaMusicApi.Domain.Entities;
+using System.Linq.Expressions;
 
 namespace SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
@@ -115,6 +116,15 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         return entity;
     }
 
+    public async Task<T> DeleteAsync(Expression<Func<T, bool>> expression)
+    {
+        var entity = await GetByIdAsyncTraking(expression);
+        dbSet.Remove(entity);
+        await _context.SaveChangesAsync();
+
+        return entity;
+    }
+
     public async Task<IEnumerable<T>> DeleteRangeAsync(IEnumerable<T> entities)
     {
         _context.RemoveRange(entities);
@@ -173,6 +183,18 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         var response = await dbSet
             .AsQueryable()
             .SingleOrDefaultAsync(x => x.Id == id);
+
+        if (response == null)
+            throw new NullReferenceException($"{typeof(T).Name} not found.");
+
+        return response;
+    }
+
+    private async Task<T> GetByIdAsyncTraking(Expression<Func<T, bool>> expression)
+    {
+        var response = await dbSet
+            .AsQueryable()
+            .SingleOrDefaultAsync(expression);
 
         if (response == null)
             throw new NullReferenceException($"{typeof(T).Name} not found.");

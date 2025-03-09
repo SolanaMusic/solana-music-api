@@ -46,9 +46,16 @@ public class AlbumsController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("add-to-album")]
-    public async Task<IActionResult> AddToAlbum(long? albumId, [Required]long trackId)
+    public async Task<IActionResult> AddToAlbum(AddToAlbumDto addToAlbumDto)
     {
-        await mediator.Send(new AddToAlbumRequest(albumId, trackId));
-        return Ok();
+        await mediator.Send(new AddToAlbumRequest(addToAlbumDto));
+        return NoContent();
+    }
+
+    [HttpPost("remove-from-album{trackId}")]
+    public async Task<IActionResult> RemoveFromAlbum(long trackId)
+    {
+        await mediator.Send(new RemoveFromAlbumRequest(trackId));
+        return NoContent();
     }
 }

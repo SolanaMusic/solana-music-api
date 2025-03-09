@@ -1,4 +1,6 @@
-﻿namespace SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
+﻿using System.Linq.Expressions;
+
+namespace SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
 public interface IBaseRepository<T>
 {
@@ -10,6 +12,7 @@ public interface IBaseRepository<T>
     Task<T> UpdateAsync(long id, T entity);
     Task<IEnumerable<T>> UpdateRangeAsync(IEnumerable<T> entities);
     Task<T> DeleteAsync(long id);
+    Task<T> DeleteAsync(Expression<Func<T, bool>> expression);
     Task<IEnumerable<T>> DeleteRangeAsync(IEnumerable<T> entities);
 
     Task BeginTransactionAsync();

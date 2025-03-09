@@ -1,4 +1,6 @@
-﻿namespace SolanaMusicApi.Application.Services.BaseService;
+﻿using System.Linq.Expressions;
+
+namespace SolanaMusicApi.Application.Services.BaseService;
 
 public interface IBaseService<T>
 {
@@ -10,6 +12,7 @@ public interface IBaseService<T>
     Task<T> UpdateAsync(T entity);
     Task<IEnumerable<T>> UpdateRangeAsync(IEnumerable<T> entities);
     Task<T> DeleteAsync(long id);
+    Task<T> DeleteAsync(Expression<Func<T, bool>> expression);
     Task DeleteRangeAsync(IEnumerable<T> entities);
 
     Task BeginTransactionAsync();

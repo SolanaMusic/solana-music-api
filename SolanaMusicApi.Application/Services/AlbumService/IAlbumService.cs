@@ -11,5 +11,6 @@ public interface IAlbumService : IBaseService<Album>
     Task<AlbumResponseDto> UpdateAlbumAsync(long id, AlbumRequestDto albumRequestDto);
     Task<AlbumResponseDto> CreateAlbumAsync(AlbumRequestDto albumRequestDto);
     Task<AlbumResponseDto> DeleteAlbumAsync(long id);
-    Task AddToAlbum(long? albumId, long trackId);
+    Task AddToAlbumAsync(AddToAlbumDto addToAlbumDto);
+    Task RemoveFromAlbumAsync(long trackId);
 }

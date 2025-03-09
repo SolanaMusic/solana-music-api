@@ -1,11 +1,11 @@
 ﻿using SolanaMusicApi.Domain.Entities;
 using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
+using System.Linq.Expressions;
 
 namespace SolanaMusicApi.Application.Services.BaseService;
 
 public class BaseService<T>(IBaseRepository<T> baseRepository) : IBaseService<T> where T : BaseEntity
 {
-
     public IQueryable<T> GetAll() => baseRepository.GetAll();
 
     public async Task<T> GetByIdAsync(long id) => await baseRepository.GetByIdAsync(id);
@@ -21,8 +21,10 @@ public class BaseService<T>(IBaseRepository<T> baseRepository) : IBaseService<T>
     public async Task<IEnumerable<T>> UpdateRangeAsync(IEnumerable<T> entities) => await baseRepository.UpdateRangeAsync(entities);
 
     public async Task<T> DeleteAsync(long id) => await baseRepository.DeleteAsync(id);
+    public async Task<T> DeleteAsync(Expression<Func<T, bool>> expression) => await baseRepository.DeleteAsync(expression);
 
     public async Task DeleteRangeAsync(IEnumerable<T> entities) => await baseRepository.DeleteRangeAsync(entities);
+
 
     public async Task BeginTransactionAsync() => await baseRepository.BeginTransactionAsync();
 

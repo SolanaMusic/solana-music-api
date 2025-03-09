@@ -120,11 +120,18 @@ public class AlbumService : BaseService<Album>, IAlbumService
         return _mapper.Map<AlbumResponseDto>(response);
     }
 
-    public async Task AddToAlbum(long? albumId, long trackId)
+    public async Task AddToAlbumAsync(AddToAlbumDto addToAlbumDto)
+    {
+        var track = await _tracksService.GetByIdAsync(addToAlbumDto.TrackId);
+        track.AlbumId = addToAlbumDto.AlbumId;
+        await _tracksService.UpdateAsync(track);
+    }
+
+    public async Task RemoveFromAlbumAsync(long trackId)
     {
         var track = await _tracksService.GetByIdAsync(trackId);
-        track.AlbumId = albumId;
-        await _tracksService.UpdateAsync(trackId, track);
+        track.AlbumId = null;
+        await _tracksService.UpdateAsync(track);
     }
 
     private IEnumerable<ArtistAlbum> GetArtistAlbums(AlbumRequestDto albumRequestDto, Album album)

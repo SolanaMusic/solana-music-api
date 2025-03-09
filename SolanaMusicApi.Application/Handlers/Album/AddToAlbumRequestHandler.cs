@@ -8,6 +8,6 @@ public class AddToAlbumRequestHandler(IAlbumService albumService) : IRequestHand
 {
     public async Task Handle(AddToAlbumRequest request, CancellationToken cancellationToken)
     {
-        await albumService.AddToAlbum(request.AlbumId, request.TrackId);
+        await albumService.AddToAlbumAsync(request.AddToAlbumDto);
     }
 }
