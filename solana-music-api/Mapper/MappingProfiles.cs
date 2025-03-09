@@ -56,7 +56,7 @@ public class MappingProfiles : Profile
 
         CreateMap<Artist, ArtistTrackResponseDto>();
         CreateMap<Artist, GetAlbumArtistResponseDto>();
-        CreateMap<Artist, ArtistResponseDto>()
+        CreateMap<Artist, ArtistResponseDto>();
         CreateMap<CurrencyRequestDto, Currency>();
         CreateMap<Currency, CurrencyResponseDto>();
 

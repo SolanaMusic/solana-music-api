@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using SolanaMusicApi.Application.Requests.Music;
-using SolanaMusicApi.Application.Services.TracksService;
+using SolanaMusicApi.Application.Services.TrackServices.TracksService;
 
 namespace SolanaMusicApi.Application.Handlers.Music;
 

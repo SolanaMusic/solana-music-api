@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using SolanaMusicApi.Application.Requests.SubscriptionPlan;
-using SolanaMusicApi.Application.Services.SubscriptionPlanService;
+using SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionPlanService;
 using SolanaMusicApi.Domain.DTO.SubscriptionPlan;
 using SubscriptionPlanEntity = SolanaMusicApi.Domain.Entities.Subscription.SubscriptionPlan;
 

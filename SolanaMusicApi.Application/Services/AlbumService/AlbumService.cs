@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using SolanaMusicApi.Application.Services.ArtistAlbumService;
+using SolanaMusicApi.Application.Services.ArtistServices.ArtistAlbumService;
 using SolanaMusicApi.Application.Services.BaseService;
 using SolanaMusicApi.Application.Services.FileService;
-using SolanaMusicApi.Application.Services.TracksService;
+using SolanaMusicApi.Application.Services.TrackServices.TracksService;
 using SolanaMusicApi.Domain.DTO.Album;
 using SolanaMusicApi.Domain.Entities.Music;
 using SolanaMusicApi.Domain.Entities.Performer;

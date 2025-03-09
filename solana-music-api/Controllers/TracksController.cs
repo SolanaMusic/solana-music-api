@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests.Music;
-using SolanaMusicApi.Application.Services.TracksService;
 using SolanaMusicApi.Domain.DTO.Track;
 
 namespace solana_music_api.Controllers;
