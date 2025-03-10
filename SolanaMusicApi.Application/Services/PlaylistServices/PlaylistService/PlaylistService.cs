@@ -119,7 +119,18 @@ public class PlaylistService : BaseService<Playlist>, IPlaylistService
                         .ThenInclude(x => x.Artist)
 
             .Include(x => x.Owner)
-                .ThenInclude(x => x.Profile);
+                .ThenInclude(x => x.Profile)
+
+            .Select(x => new Playlist
+            {
+                Id = x.Id,
+                Name = x.Name,
+                PlaylistTracks = x.PlaylistTracks,
+                Owner = x.Owner,
+                CoverUrl = !string.IsNullOrEmpty(x.CoverUrl)
+                    ? x.CoverUrl
+                    : x.PlaylistTracks.Select(pt => pt.Track.ImageUrl).FirstOrDefault()
+            });
     }
 
     private Func<Task>[] GetRollBackActions(string coverPath) => [() => Task.Run(() => _fileService.DeleteFile(coverPath))];

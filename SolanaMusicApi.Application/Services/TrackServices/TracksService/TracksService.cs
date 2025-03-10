@@ -72,7 +72,12 @@ public class TracksService : BaseService<Track>, ITracksService
     public async Task<FileStream> GetTrackFileStreamAsync(long id)
     {
         var response = await GetByIdAsync(id);
-        return new FileStream(response.FileUrl, FileMode.Open, FileAccess.Read, FileShare.Read);
+        var filePath = response.FileUrl;
+
+        if (!Path.IsPathRooted(filePath))
+            filePath = Path.Combine("wwwroot", filePath);
+
+        return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
     }
 
     public async Task<TrackResponseDto> CreateTrackAsync(TrackRequestDto trackRequestDto)
