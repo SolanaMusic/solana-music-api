@@ -1,5 +1,4 @@
 ﻿using SolanaMusicApi.Domain.Entities.General;
-using SolanaMusicApi.Domain.Entities.Music;
 using SolanaMusicApi.Domain.Entities.User;
 
 namespace SolanaMusicApi.Domain.Entities.Performer;
@@ -16,5 +15,5 @@ public class Artist : BaseEntity
     public Country Country { get; set; } = new();
     public ICollection<ArtistAlbum> ArtistAlbums { get; set; } = [];
     public ICollection<ArtistTrack> ArtistTracks { get; set; } = [];
-    public ICollection<ApplicationUser> Subscribers { get; set; } = [];
+    public ICollection<ArtistSubscriber> ArtistSubscribers { get; set; } = [];
 }

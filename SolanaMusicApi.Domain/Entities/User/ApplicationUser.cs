@@ -15,7 +15,7 @@ public class ApplicationUser : IdentityUser<long>
     public Artist? Artist { get; set; }
     public SubscriptionEntity? ActiveSubscription { get; set; }
     public ICollection<UserSubscription> UserSubscriptions { get; set; } = [];
-    public ICollection<Artist> SubscribedArtists { get; set; } = [];
+    public ICollection<ArtistSubscriber> ArtistSubscribers { get; set; } = [];
     public ICollection<PlaylistEntity> Playlists { get; set; } = [];
     public ICollection<TransactionEntity>? Transactions { get; set; }
 }

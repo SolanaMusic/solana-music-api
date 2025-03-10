@@ -22,21 +22,6 @@ namespace SolanaMusicApi.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ApplicationUserArtist", b =>
-                {
-                    b.Property<long>("SubscribedArtistsId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("SubscribersId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("SubscribedArtistsId", "SubscribersId");
-
-                    b.HasIndex("SubscribersId");
-
-                    b.ToTable("ArtistSubscribers", (string)null);
-                });
-
             modelBuilder.Entity("ApplicationUserSubscription", b =>
                 {
                     b.Property<long>("FamilyMembersId")
@@ -429,6 +414,36 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                     b.HasIndex("AlbumId");
 
                     b.ToTable("ArtistAlbums");
+                });
+
+            modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Performer.ArtistSubscriber", b =>
+                {
+                    b.Property<long>("ArtistId")
+                        .HasColumnType("bigint")
+                        .HasColumnOrder(1);
+
+                    b.Property<long>("SubscriberId")
+                        .HasColumnType("bigint")
+                        .HasColumnOrder(2);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnOrder(0);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ArtistId", "SubscriberId");
+
+                    b.HasIndex("SubscriberId");
+
+                    b.ToTable("ArtistSubscribers");
                 });
 
             modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Performer.ArtistTrack", b =>
@@ -834,21 +849,6 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                     b.ToTable("UserProfiles");
                 });
 
-            modelBuilder.Entity("ApplicationUserArtist", b =>
-                {
-                    b.HasOne("SolanaMusicApi.Domain.Entities.Performer.Artist", null)
-                        .WithMany()
-                        .HasForeignKey("SubscribedArtistsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SolanaMusicApi.Domain.Entities.User.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("SubscribersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("ApplicationUserSubscription", b =>
                 {
                     b.HasOne("SolanaMusicApi.Domain.Entities.User.ApplicationUser", null)
@@ -981,6 +981,25 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                     b.Navigation("Artist");
                 });
 
+            modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Performer.ArtistSubscriber", b =>
+                {
+                    b.HasOne("SolanaMusicApi.Domain.Entities.Performer.Artist", "Artist")
+                        .WithMany("ArtistSubscribers")
+                        .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SolanaMusicApi.Domain.Entities.User.ApplicationUser", "Subscriber")
+                        .WithMany("ArtistSubscribers")
+                        .HasForeignKey("SubscriberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Artist");
+
+                    b.Navigation("Subscriber");
+                });
+
             modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Performer.ArtistTrack", b =>
                 {
                     b.HasOne("SolanaMusicApi.Domain.Entities.Performer.Artist", "Artist")
@@ -1014,7 +1033,7 @@ namespace SolanaMusicApi.Infrastructure.Migrations
             modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Playlist.PlaylistTrack", b =>
                 {
                     b.HasOne("SolanaMusicApi.Domain.Entities.Playlist.Playlist", "Playlist")
-                        .WithMany("Tracks")
+                        .WithMany("PlaylistTracks")
                         .HasForeignKey("PlaylistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1165,12 +1184,14 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 {
                     b.Navigation("ArtistAlbums");
 
+                    b.Navigation("ArtistSubscribers");
+
                     b.Navigation("ArtistTracks");
                 });
 
             modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Playlist.Playlist", b =>
                 {
-                    b.Navigation("Tracks");
+                    b.Navigation("PlaylistTracks");
                 });
 
             modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Subscription.Subscription", b =>
@@ -1197,6 +1218,8 @@ namespace SolanaMusicApi.Infrastructure.Migrations
             modelBuilder.Entity("SolanaMusicApi.Domain.Entities.User.ApplicationUser", b =>
                 {
                     b.Navigation("Artist");
+
+                    b.Navigation("ArtistSubscribers");
 
                     b.Navigation("Playlists");
 

@@ -165,10 +165,12 @@ SET IDENTITY_INSERT dbo.ArtistAlbums OFF;
 
 
 -- ArtistSubscribers
-IF NOT EXISTS (SELECT 1 FROM dbo.ArtistSubscribers WHERE SubscribedArtistsId = 1 AND SubscribersId = 1)
+IF NOT EXISTS (SELECT 1 FROM dbo.ArtistSubscribers WHERE ArtistId = 1 AND SubscriberId = 1)
 BEGIN
-    INSERT INTO dbo.ArtistSubscribers ([SubscribedArtistsId], [SubscribersId])
-    VALUES (1, 1);
+    SET IDENTITY_INSERT dbo.ArtistSubscribers ON;
+    INSERT INTO dbo.ArtistSubscribers ([Id], [ArtistId], [SubscriberId], [CreatedDate] ,[UpdatedDate])
+    VALUES (1, 1, 1, GETDATE(), GETDATE());
+    SET IDENTITY_INSERT dbo.ArtistSubscribers OFF;
 END
 
 

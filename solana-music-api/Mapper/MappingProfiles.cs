@@ -45,10 +45,19 @@ public class MappingProfiles : Profile
         CreateMap<Track, GetAlbumTrackResponseDto>()
             .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.TrackGenres.Select(tg => tg.Genre)))
             .ForMember(dest => dest.Artists, opt => opt.MapFrom(src => src.ArtistTracks.Select(at => at.Artist)));
+        CreateMap<Track, GetArtistTrackResponseDto>()
+            .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.TrackGenres.Select(tg => tg.Genre)));
 
         CreateMap<AlbumRequestDto, Album>();
         CreateMap<Album, AlbumResponseDto>()
             .ForMember(dest => dest.Artists, opt => opt.MapFrom(src => src.ArtistAlbums.Select(x => x.Artist)))
+            .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.Tracks
+                .SelectMany(at => at.TrackGenres)
+                .Select(tg => tg.Genre)
+                .DistinctBy(g => g.Id)
+            ))
+            .ForMember(dest => dest.PlaysCount, opt => opt.MapFrom(src => src.Tracks.Sum(t => t.PlaysCount)));
+        CreateMap<Album, GetArtistAlbumResponseDto>()
             .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.Tracks
                 .SelectMany(at => at.TrackGenres)
                 .Select(tg => tg.Genre)
@@ -60,9 +69,14 @@ public class MappingProfiles : Profile
         CreateMap<Playlist, PlaylistResponseDto>()
             .ForMember(dest => dest.Tracks, opt => opt.MapFrom(src => src.PlaylistTracks.Select(tg => tg.Track)));
 
+        CreateMap<ArtistRequestDto, Artist>();
         CreateMap<Artist, ArtistTrackResponseDto>();
         CreateMap<Artist, GetAlbumArtistResponseDto>();
-        CreateMap<Artist, ArtistResponseDto>();
+        CreateMap<Artist, ArtistResponseDto>()
+            .ForMember(dest => dest.SubscribersCount, opt => opt.MapFrom(src => src.ArtistSubscribers.Count()))
+            .ForMember(dest => dest.Albums, opt => opt.MapFrom(src => src.ArtistAlbums.Select(x => x.Album)))
+            .ForMember(dest => dest.Tracks, opt => opt.MapFrom(src => src.ArtistTracks.Select(x => x.Track)));
+
         CreateMap<CurrencyRequestDto, Currency>();
         CreateMap<Currency, CurrencyResponseDto>();
 

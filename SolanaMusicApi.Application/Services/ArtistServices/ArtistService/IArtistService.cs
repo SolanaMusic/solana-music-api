@@ -1,6 +1,18 @@
-﻿using SolanaMusicApi.Application.Services.BaseService;
+﻿using Microsoft.AspNetCore.Http;
+using SolanaMusicApi.Application.Services.BaseService;
+using SolanaMusicApi.Domain.DTO.Artist;
 using SolanaMusicApi.Domain.Entities.Performer;
 
 namespace SolanaMusicApi.Application.Services.ArtistServices.ArtistService;
 
-public interface IArtistService : IBaseService<Artist>;
+public interface IArtistService : IBaseService<Artist>
+{
+    IQueryable<Artist> GetArtists();
+    Task<Artist> GetArtistAsync(long id);
+    bool CheckArtistSubscription(Artist artist, long userId);
+    Task<Artist> CreateArtistAsync(Artist artist, IFormFile? file);
+    Task<Artist> UpdateArtistAsync(long id, ArtistRequestDto artistRequestDto);
+    Task<Artist> DeleteArtistAsync(long id);
+    Task SubscribeToArtist(long id, long userId);
+    Task UnsubscribeFromArtist(long id, long userId);
+}

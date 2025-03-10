@@ -294,15 +294,19 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 name: "ArtistSubscribers",
                 columns: table => new
                 {
-                    SubscribedArtistsId = table.Column<long>(type: "bigint", nullable: false),
-                    SubscribersId = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ArtistId = table.Column<long>(type: "bigint", nullable: false),
+                    SubscriberId = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ArtistSubscribers", x => new { x.SubscribedArtistsId, x.SubscribersId });
+                    table.PrimaryKey("PK_ArtistSubscribers", x => new { x.ArtistId, x.SubscriberId });
                     table.ForeignKey(
-                        name: "FK_ArtistSubscribers_Artists_SubscribedArtistsId",
-                        column: x => x.SubscribedArtistsId,
+                        name: "FK_ArtistSubscribers_Artists_ArtistId",
+                        column: x => x.ArtistId,
                         principalTable: "Artists",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -612,9 +616,9 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 filter: "[UserId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ArtistSubscribers_SubscribersId",
+                name: "IX_ArtistSubscribers_SubscriberId",
                 table: "ArtistSubscribers",
-                column: "SubscribersId");
+                column: "SubscriberId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArtistTracks_ArtistId",
@@ -753,9 +757,9 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ArtistSubscribers_AspNetUsers_SubscribersId",
+                name: "FK_ArtistSubscribers_AspNetUsers_SubscriberId",
                 table: "ArtistSubscribers",
-                column: "SubscribersId",
+                column: "SubscriberId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);

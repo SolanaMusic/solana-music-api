@@ -29,9 +29,5 @@ public class ArtistConfiguration : IEntityTypeConfiguration<Artist>
 
         builder.Property(a => a.ImageUrl)
             .HasMaxLength(500);
-
-        builder.HasMany(a => a.Subscribers)
-            .WithMany(u => u.SubscribedArtists)
-            .UsingEntity(j => j.ToTable("ArtistSubscribers"));
     }
 }

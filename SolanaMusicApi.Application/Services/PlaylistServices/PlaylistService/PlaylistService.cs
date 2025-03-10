@@ -38,16 +38,15 @@ public class PlaylistService : BaseService<Playlist>, IPlaylistService
         await BeginTransactionAsync();
         var coverPath = playlistRequestDto.CoverFile != null
             ? await _fileService.SaveFileAsync(playlistRequestDto.CoverFile, FileTypes.PlaylistCover)
-            : string.Empty;
+            : null;
 
         try
         {
             playlist.CoverUrl = coverPath;
-            var added = await AddAsync(playlist);
-            await CommitTransactionAsync(GetRollBackActions(coverPath));
+            var response = await AddAsync(playlist);
 
-            var response = await GetPlaylistAsync(added.Id);
-            return response;
+            await CommitTransactionAsync(GetRollBackActions(coverPath));
+            return await GetPlaylistAsync(response.Id);
         }
         catch (Exception ex)
         {
@@ -61,7 +60,7 @@ public class PlaylistService : BaseService<Playlist>, IPlaylistService
         await BeginTransactionAsync();
         var coverPath = playlistRequestDto.CoverFile != null
             ? await _fileService.SaveFileAsync(playlistRequestDto.CoverFile, FileTypes.PlaylistCover)
-            : string.Empty;
+            : null;
 
         try
         {
@@ -70,14 +69,13 @@ public class PlaylistService : BaseService<Playlist>, IPlaylistService
             playlist.CoverUrl = coverPath;
             playlist.Name = playlistRequestDto.Name;
 
-            var updated = await UpdateAsync(id, playlist);
+            var response = await UpdateAsync(playlist);
             await CommitTransactionAsync(GetRollBackActions(coverPath));
             
             if (!string.IsNullOrEmpty(coverSnapshot))
                 await ProcessRollBackActions(GetRollBackActions(coverSnapshot));
 
-            var response = await GetPlaylistAsync(updated.Id);
-            return response;
+            return await GetPlaylistAsync(response.Id);
         }
         catch (Exception ex)
         {
@@ -133,5 +131,11 @@ public class PlaylistService : BaseService<Playlist>, IPlaylistService
             });
     }
 
-    private Func<Task>[] GetRollBackActions(string coverPath) => [() => Task.Run(() => _fileService.DeleteFile(coverPath))];
+    private Func<Task>[] GetRollBackActions(string? coverPath)
+    {
+        if (!string.IsNullOrEmpty(coverPath))
+            return [() => Task.Run(() => _fileService.DeleteFile(coverPath))];
+
+        return [];
+    }
 }
