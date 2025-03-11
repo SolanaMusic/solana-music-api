@@ -17,6 +17,7 @@ using SolanaMusicApi.Application.Services.GenreService;
 using SolanaMusicApi.Application.Services.LocationService;
 using SolanaMusicApi.Application.Services.PlaylistServices.PlaylistService;
 using SolanaMusicApi.Application.Services.PlaylistServices.PlaylistTrackService;
+using SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionPlanCurrencyService;
 using SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionPlanService;
 using SolanaMusicApi.Application.Services.TrackServices.TrackGenreService;
 using SolanaMusicApi.Application.Services.TrackServices.TracksService;
@@ -34,6 +35,7 @@ using SolanaMusicApi.Infrastructure.Repositories.CurrencyRepository;
 using SolanaMusicApi.Infrastructure.Repositories.GenreRepository;
 using SolanaMusicApi.Infrastructure.Repositories.PlaylistRespositories.PlaylistRespository;
 using SolanaMusicApi.Infrastructure.Repositories.PlaylistRespositories.PlaylistTrackRespository;
+using SolanaMusicApi.Infrastructure.Repositories.SubscriptionRepositories.SubscriptionPlanCurrencyRepository;
 using SolanaMusicApi.Infrastructure.Repositories.SubscriptionRepositories.SubscriptionPlanRepository;
 using SolanaMusicApi.Infrastructure.Repositories.TrackRepositories.TrackGenreRepository;
 using SolanaMusicApi.Infrastructure.Repositories.TrackRepositories.TrackRepository;
@@ -62,6 +64,7 @@ public static class Configurator
 
         services.AddScoped<ICurrencyRepository, CurrencyRepository>();
         services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
+        services.AddScoped<ISubscriptionPlanCurrencyRepository, SubscriptionPlanCurrencyRepository>();
     }
 
     public static void ConfigureServices(this IServiceCollection services)
@@ -90,6 +93,7 @@ public static class Configurator
 
         services.AddScoped<ICurrencyService, CurrencyService>();
         services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
+        services.AddScoped<ISubscriptionPlanCurrencyService, SubscriptionPlanCurrencyService>();
     }
 
     public static void ConfigureGeneral(this IServiceCollection services)

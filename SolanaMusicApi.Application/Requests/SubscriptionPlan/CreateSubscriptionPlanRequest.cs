@@ -3,4 +3,4 @@ using SolanaMusicApi.Domain.DTO.SubscriptionPlan;
 
 namespace SolanaMusicApi.Application.Requests.SubscriptionPlan;
 
-public record CreateSubscriptionPlanRequest(SubscriptionPlanRequestDto SubscriptionPlanRequestDto) : IRequest<SubscriptionPlanResponseDto>;
+public record CreateSubscriptionPlanRequest(CreateSubscriptionPlanRequestDto SubscriptionPlanRequestDto) : IRequest<SubscriptionPlanResponseDto>;

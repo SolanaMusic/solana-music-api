@@ -159,28 +159,28 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SubscriptionPlanCurrency",
+                name: "SubscriptionPlanCurrencies",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CurrencyId = table.Column<long>(type: "bigint", nullable: false),
                     SubscriptionPlanId = table.Column<long>(type: "bigint", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CurrencyId = table.Column<long>(type: "bigint", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SubscriptionPlanCurrency", x => x.Id);
+                    table.PrimaryKey("PK_SubscriptionPlanCurrencies", x => new { x.SubscriptionPlanId, x.CurrencyId });
                     table.ForeignKey(
-                        name: "FK_SubscriptionPlanCurrency_Currencies_CurrencyId",
+                        name: "FK_SubscriptionPlanCurrencies_Currencies_CurrencyId",
                         column: x => x.CurrencyId,
                         principalTable: "Currencies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_SubscriptionPlanCurrency_SubscriptionPlans_SubscriptionPlanId",
+                        name: "FK_SubscriptionPlanCurrencies_SubscriptionPlans_SubscriptionPlanId",
                         column: x => x.SubscriptionPlanId,
                         principalTable: "SubscriptionPlans",
                         principalColumn: "Id",
@@ -685,14 +685,9 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 column: "SubscriptionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SubscriptionPlanCurrency_CurrencyId",
-                table: "SubscriptionPlanCurrency",
+                name: "IX_SubscriptionPlanCurrencies_CurrencyId",
+                table: "SubscriptionPlanCurrencies",
                 column: "CurrencyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SubscriptionPlanCurrency_SubscriptionPlanId",
-                table: "SubscriptionPlanCurrency",
-                column: "SubscriptionPlanId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subscriptions_OwnerId",
@@ -835,7 +830,7 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 name: "SubscriptionFamilyMembers");
 
             migrationBuilder.DropTable(
-                name: "SubscriptionPlanCurrency");
+                name: "SubscriptionPlanCurrencies");
 
             migrationBuilder.DropTable(
                 name: "TrackGenres");

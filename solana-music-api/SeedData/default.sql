@@ -253,25 +253,25 @@ SET IDENTITY_INSERT dbo.Currencies OFF;
 
 
 -- SubscriptionPlanCurrency
-SET IDENTITY_INSERT dbo.SubscriptionPlanCurrency ON;
-IF NOT EXISTS (SELECT 1 FROM dbo.SubscriptionPlanCurrency WHERE Id = 1)
+SET IDENTITY_INSERT dbo.SubscriptionPlanCurrencies ON;
+IF NOT EXISTS (SELECT 1 FROM dbo.SubscriptionPlanCurrencies WHERE Id = 1)
 BEGIN
-    INSERT INTO dbo.SubscriptionPlanCurrency ([Id], [CurrencyId], [SubscriptionPlanId], [Price], [CreatedDate], [UpdatedDate])
+    INSERT INTO dbo.SubscriptionPlanCurrencies ([Id], [SubscriptionPlanId], [CurrencyId], [Price], [CreatedDate], [UpdatedDate])
     VALUES (1, 1, 1, 4.99, GETDATE(), GETDATE());
 END
 
-IF NOT EXISTS (SELECT 1 FROM dbo.SubscriptionPlanCurrency WHERE Id = 2)
+IF NOT EXISTS (SELECT 1 FROM dbo.SubscriptionPlanCurrencies WHERE Id = 2)
 BEGIN
-    INSERT INTO dbo.SubscriptionPlanCurrency ([Id], [CurrencyId], [SubscriptionPlanId], [Price], [CreatedDate], [UpdatedDate])
+    INSERT INTO dbo.SubscriptionPlanCurrencies ([Id], [SubscriptionPlanId], [CurrencyId], [Price], [CreatedDate], [UpdatedDate])
     VALUES (2, 1, 3, 10.99, GETDATE(), GETDATE());
 END
 
-IF NOT EXISTS (SELECT 1 FROM dbo.SubscriptionPlanCurrency WHERE Id = 3)
+IF NOT EXISTS (SELECT 1 FROM dbo.SubscriptionPlanCurrencies WHERE Id = 3)
 BEGIN
-    INSERT INTO dbo.SubscriptionPlanCurrency ([Id], [CurrencyId], [SubscriptionPlanId], [Price], [CreatedDate], [UpdatedDate])
+    INSERT INTO dbo.SubscriptionPlanCurrencies ([Id], [SubscriptionPlanId], [CurrencyId], [Price], [CreatedDate], [UpdatedDate])
     VALUES (3, 3, 3, 1000, GETDATE(), GETDATE());
 END
-SET IDENTITY_INSERT dbo.SubscriptionPlanCurrency OFF;
+SET IDENTITY_INSERT dbo.SubscriptionPlanCurrencies OFF;
 
 
 -- Subscriptions

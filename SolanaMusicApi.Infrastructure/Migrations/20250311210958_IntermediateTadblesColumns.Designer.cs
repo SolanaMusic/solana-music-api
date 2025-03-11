@@ -12,7 +12,7 @@ using SolanaMusicApi.Application;
 namespace SolanaMusicApi.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250310194838_IntermediateTadblesColumns")]
+    [Migration("20250311210958_IntermediateTadblesColumns")]
     partial class IntermediateTadblesColumns
     {
         /// <inheritdoc />
@@ -612,6 +612,17 @@ namespace SolanaMusicApi.Infrastructure.Migrations
 
             modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Subscription.SubscriptionPlanCurrency", b =>
                 {
+                    b.Property<long>("SubscriptionPlanId")
+                        .HasColumnType("bigint")
+                        .HasColumnOrder(1);
+
+                    b.Property<long>("CurrencyId")
+                        .HasColumnType("bigint")
+                        .HasColumnOrder(2);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
@@ -619,28 +630,18 @@ namespace SolanaMusicApi.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("CurrencyId")
-                        .HasColumnType("bigint");
-
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<long>("SubscriptionPlanId")
-                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.HasKey("SubscriptionPlanId", "CurrencyId");
 
                     b.HasIndex("CurrencyId");
 
-                    b.HasIndex("SubscriptionPlanId");
-
-                    b.ToTable("SubscriptionPlanCurrency");
+                    b.ToTable("SubscriptionPlanCurrencies");
                 });
 
             modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Subscription.UserSubscription", b =>

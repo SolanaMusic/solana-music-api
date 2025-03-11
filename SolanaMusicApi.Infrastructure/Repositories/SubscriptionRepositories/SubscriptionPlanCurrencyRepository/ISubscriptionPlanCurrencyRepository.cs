@@ -1,0 +1,6 @@
+﻿using SolanaMusicApi.Domain.Entities.Subscription;
+using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
+
+namespace SolanaMusicApi.Infrastructure.Repositories.SubscriptionRepositories.SubscriptionPlanCurrencyRepository;
+
+public interface ISubscriptionPlanCurrencyRepository : IBaseRepository<SubscriptionPlanCurrency>;

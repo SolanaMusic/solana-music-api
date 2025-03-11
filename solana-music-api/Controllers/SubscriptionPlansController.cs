@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests.SubscriptionPlan;
 using SolanaMusicApi.Domain.DTO.SubscriptionPlan;
+using SolanaMusicApi.Domain.DTO.SubscriptionPlanCurrency;
 
 namespace solana_music_api.Controllers;
 
@@ -24,14 +25,14 @@ public class SubscriptionPlansController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateSubscriptionPlan(SubscriptionPlanRequestDto subscriptionPlanRequestDto)
+    public async Task<IActionResult> CreateSubscriptionPlan(CreateSubscriptionPlanRequestDto subscriptionPlanRequestDto)
     {
         var response = await mediator.Send(new CreateSubscriptionPlanRequest(subscriptionPlanRequestDto));
         return Ok(response);
     }
 
     [HttpPatch("{id}")]
-    public async Task<IActionResult> UpdateSubscriptionPlan(long id, SubscriptionPlanRequestDto subscriptionPlanRequestDto)
+    public async Task<IActionResult> UpdateSubscriptionPlan(long id, UpdateSubscriptionPlanRequestDto subscriptionPlanRequestDto)
     {
         var response = await mediator.Send(new UpdateSubscriptionPlanRequest(id, subscriptionPlanRequestDto));
         return Ok(response);
@@ -42,5 +43,19 @@ public class SubscriptionPlansController(IMediator mediator) : ControllerBase
     {
         var response = await mediator.Send(new DeleteSubscriptionPlanRequest(id));
         return Ok(response);
+    }
+
+    [HttpPost("add-subscription-currencies{id}")]
+    public async Task<IActionResult> AddSubscriptionCurrencies(long id, List<SubscriptionPlanCurrencyRequestDto> subscriptionPlanCurrencyRequestDtos)
+    {
+        await mediator.Send(new AddSubscriptionCurrenciesRequest(id, subscriptionPlanCurrencyRequestDtos));
+        return NoContent();
+    }
+
+    [HttpPost("remove-subscription-currencies{id}")]
+    public async Task<IActionResult> RemoveSubscriptionCurrencies(long id, List<long> currencyIds)
+    {
+        await mediator.Send(new RemoveSubscriptionCurrenciesRequest(id, currencyIds));
+        return NoContent();
     }
 }

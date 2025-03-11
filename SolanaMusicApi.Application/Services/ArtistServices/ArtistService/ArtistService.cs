@@ -28,7 +28,7 @@ public class ArtistService : BaseService<Artist>, IArtistService
         return GetAll()
             .Include(x => x.Country)
             .Include(x => x.User)
-                .ThenInclude(x => x.Profile)
+                .ThenInclude(x => x != null ? x.Profile : null)
 
             .Include(x => x.ArtistSubscribers)
                 .ThenInclude(x => x.Subscriber)

@@ -28,6 +28,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     public DbSet<Transaction> Transactions { get; set; }
 
     public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+    public DbSet<SubscriptionPlanCurrency> SubscriptionPlanCurrencies { get; set; }
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<UserSubscription> UserSubscriptions { get; set; }
 
@@ -53,6 +54,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
 
         modelBuilder.ApplyConfiguration(new SubscriptionPlanConfiguration());
         modelBuilder.ApplyConfiguration(new SubscriptionConfiguration());
+        modelBuilder.ApplyConfiguration(new SubscriptionPlanCurrencyConfiguration());
         modelBuilder.ApplyConfiguration(new UserSubscriptionConfiguration());
 
         modelBuilder.ApplyConfiguration(new ArtistConfiguration());

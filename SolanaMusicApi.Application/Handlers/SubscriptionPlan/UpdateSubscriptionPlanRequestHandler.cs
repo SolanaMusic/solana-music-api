@@ -13,7 +13,9 @@ public class UpdateSubscriptionPlanRequestHandler(ISubscriptionPlanService subsc
     public async Task<SubscriptionPlanResponseDto> Handle(UpdateSubscriptionPlanRequest request, CancellationToken cancellationToken)
     {
         var subPlan = mapper.Map<SubscriptionPlanEntity>(request.SubscriptionPlanRequestDto);
-        var response = await subscriptionPlanService.UpdateAsync(request.Id, subPlan);
+        await subscriptionPlanService.UpdateAsync(request.Id, subPlan);
+        var response = await subscriptionPlanService.GetSubscriptionPlan(request.Id);
+
         return mapper.Map<SubscriptionPlanResponseDto>(response);
     }
 }
