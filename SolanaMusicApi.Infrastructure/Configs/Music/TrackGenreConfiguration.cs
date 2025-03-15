@@ -8,7 +8,8 @@ class TrackGenreConfiguration : IEntityTypeConfiguration<TrackGenre>
 {
     public void Configure(EntityTypeBuilder<TrackGenre> builder)
     {
-        builder.HasKey(tg => new { tg.TrackId, tg.GenreId });
+        builder.HasKey(x => new { x.TrackId, x.GenreId });
+        builder.HasIndex(x => x.Id).IsUnique();
 
         builder.Property(tg => tg.Id)
             .HasColumnOrder(0)

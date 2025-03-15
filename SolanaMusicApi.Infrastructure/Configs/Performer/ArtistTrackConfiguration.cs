@@ -8,23 +8,24 @@ public class ArtistTrackConfiguration : IEntityTypeConfiguration<ArtistTrack>
 {
     public void Configure(EntityTypeBuilder<ArtistTrack> builder)
     {
-        builder.HasKey(ta => new { ta.TrackId, ta.ArtistId });
+        builder.HasKey(x => new { x.TrackId, x.ArtistId });
+        builder.HasIndex(x => x.Id).IsUnique();
 
-        builder.Property(ta => ta.Id)
+        builder.Property(x => x.Id)
             .HasColumnOrder(0)
             .ValueGeneratedOnAdd();
 
-        builder.Property(ta => ta.ArtistId).HasColumnOrder(1);
-        builder.Property(ta => ta.TrackId).HasColumnOrder(2);
+        builder.Property(x => x.ArtistId).HasColumnOrder(1);
+        builder.Property(x => x.TrackId).HasColumnOrder(2);
 
-        builder.HasOne(ta => ta.Track)
+        builder.HasOne(at => at.Track)
             .WithMany(t => t.ArtistTracks)
-            .HasForeignKey(ta => ta.TrackId)
+            .HasForeignKey(at => at.TrackId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(ta => ta.Artist)
+        builder.HasOne(at => at.Artist)
             .WithMany(a => a.ArtistTracks)
-            .HasForeignKey(ta => ta.ArtistId)
+            .HasForeignKey(at => at.ArtistId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

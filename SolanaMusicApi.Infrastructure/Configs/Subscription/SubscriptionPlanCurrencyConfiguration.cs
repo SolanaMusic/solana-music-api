@@ -8,14 +8,15 @@ public class SubscriptionPlanCurrencyConfiguration : IEntityTypeConfiguration<Su
 {
     public void Configure(EntityTypeBuilder<SubscriptionPlanCurrency> builder)
     {
-        builder.HasKey(pt => new { pt.SubscriptionPlanId, pt.CurrencyId});
+        builder.HasKey(x => new { x.SubscriptionPlanId, x.CurrencyId});
+        builder.HasIndex(x => x.Id).IsUnique();
 
-        builder.Property(pt => pt.Id)
+        builder.Property(x => x.Id)
             .HasColumnOrder(0)
             .ValueGeneratedOnAdd();
 
-        builder.Property(pt => pt.SubscriptionPlanId).HasColumnOrder(1);
-        builder.Property(pt => pt.CurrencyId).HasColumnOrder(2);
+        builder.Property(x => x.SubscriptionPlanId).HasColumnOrder(1);
+        builder.Property(x => x.CurrencyId).HasColumnOrder(2);
 
         builder.Property(spc => spc.Price)
             .IsRequired()

@@ -25,11 +25,20 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
             .AsNoTracking();
     }
 
+    public async Task<T> GetAsync(Expression<Func<T, bool>> expression)
+    {
+        var response = await GetAll()
+            .SingleOrDefaultAsync(expression);
+
+        if (response == null)
+            throw new NullReferenceException($"{typeof(T).Name} not found.");
+
+        return response;
+    }
+
     public async Task<T> GetByIdAsync(long id)
     {
-        var response = await dbSet
-            .AsQueryable()
-            .AsNoTracking()
+        var response = await GetAll()
             .SingleOrDefaultAsync(x => x.Id == id);
 
         if (response == null)

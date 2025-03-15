@@ -8,7 +8,15 @@ public class UserSubscriptionConfiguration : IEntityTypeConfiguration<UserSubscr
 {
     public void Configure(EntityTypeBuilder<UserSubscription> builder)
     {
-        builder.HasKey(us => new { us.UserId, us.SubscriptionId });
+        builder.HasKey(x => new { x.UserId, x.SubscriptionId });
+        builder.HasIndex(x => x.Id).IsUnique();
+
+        builder.Property(x => x.Id)
+            .HasColumnOrder(0)
+            .ValueGeneratedOnAdd();
+
+        builder.Property(x => x.UserId).HasColumnOrder(1);
+        builder.Property(x => x.SubscriptionId).HasColumnOrder(2);
 
         builder.HasOne(us => us.User)
             .WithMany(u => u.UserSubscriptions)
@@ -18,6 +26,6 @@ public class UserSubscriptionConfiguration : IEntityTypeConfiguration<UserSubscr
         builder.HasOne(us => us.Subscription)
             .WithMany(s => s.UserSubscriptions)
             .HasForeignKey(us => us.SubscriptionId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

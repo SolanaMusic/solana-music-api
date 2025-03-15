@@ -8,14 +8,15 @@ public class PlaylistTrackConfiguration : IEntityTypeConfiguration<PlaylistTrack
 {
     public void Configure(EntityTypeBuilder<PlaylistTrack> builder)
     {
-        builder.HasKey(pt => new { pt.PlaylistId, pt.TrackId });
+        builder.HasKey(x => new { x.PlaylistId, x.TrackId });
+        builder.HasIndex(x => x.Id).IsUnique();
 
-        builder.Property(pt => pt.Id)
+        builder.Property(x => x.Id)
             .HasColumnOrder(0)
             .ValueGeneratedOnAdd();
 
-        builder.Property(pt => pt.PlaylistId).HasColumnOrder(1);
-        builder.Property(pt => pt.TrackId).HasColumnOrder(2);
+        builder.Property(x => x.PlaylistId).HasColumnOrder(1);
+        builder.Property(x => x.TrackId).HasColumnOrder(2);
 
         builder.HasOne(pt => pt.Playlist)
             .WithMany(p => p.PlaylistTracks)

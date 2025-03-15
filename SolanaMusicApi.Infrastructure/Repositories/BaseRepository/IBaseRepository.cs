@@ -5,6 +5,7 @@ namespace SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 public interface IBaseRepository<T>
 {
     IQueryable<T> GetAll();
+    Task<T> GetAsync(Expression<Func<T, bool>> expression);
     Task<T> GetByIdAsync(long id);
     Task<T> AddAsync(T entity);
     Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities);

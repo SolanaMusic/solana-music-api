@@ -19,6 +19,8 @@ using SolanaMusicApi.Application.Services.PlaylistServices.PlaylistService;
 using SolanaMusicApi.Application.Services.PlaylistServices.PlaylistTrackService;
 using SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionPlanCurrencyService;
 using SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionPlanService;
+using SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionService;
+using SolanaMusicApi.Application.Services.SubscriptionServices.UserSubscriptionService;
 using SolanaMusicApi.Application.Services.TrackServices.TrackGenreService;
 using SolanaMusicApi.Application.Services.TrackServices.TracksService;
 using SolanaMusicApi.Application.Services.UserServices.UserProfileService;
@@ -37,6 +39,8 @@ using SolanaMusicApi.Infrastructure.Repositories.PlaylistRespositories.PlaylistR
 using SolanaMusicApi.Infrastructure.Repositories.PlaylistRespositories.PlaylistTrackRespository;
 using SolanaMusicApi.Infrastructure.Repositories.SubscriptionRepositories.SubscriptionPlanCurrencyRepository;
 using SolanaMusicApi.Infrastructure.Repositories.SubscriptionRepositories.SubscriptionPlanRepository;
+using SolanaMusicApi.Infrastructure.Repositories.SubscriptionRepositories.SubscriptionRepository;
+using SolanaMusicApi.Infrastructure.Repositories.SubscriptionRepositories.UserSubscriptionRepository;
 using SolanaMusicApi.Infrastructure.Repositories.TrackRepositories.TrackGenreRepository;
 using SolanaMusicApi.Infrastructure.Repositories.TrackRepositories.TrackRepository;
 using SolanaMusicApi.Infrastructure.Repositories.UserProfileRepository;
@@ -65,6 +69,8 @@ public static class Configurator
         services.AddScoped<ICurrencyRepository, CurrencyRepository>();
         services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
         services.AddScoped<ISubscriptionPlanCurrencyRepository, SubscriptionPlanCurrencyRepository>();
+        services.AddScoped<IUserSubscriptionRepository, UserSubscriptionRepository>();
+        services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
     }
 
     public static void ConfigureServices(this IServiceCollection services)
@@ -94,6 +100,8 @@ public static class Configurator
         services.AddScoped<ICurrencyService, CurrencyService>();
         services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
         services.AddScoped<ISubscriptionPlanCurrencyService, SubscriptionPlanCurrencyService>();
+        services.AddScoped<IUserSubscriptionService, UserSubscriptionService>();
+        services.AddScoped<ISubscriptionService, SubscriptionService>();
     }
 
     public static void ConfigureGeneral(this IServiceCollection services)

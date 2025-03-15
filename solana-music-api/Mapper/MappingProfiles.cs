@@ -7,6 +7,7 @@ using SolanaMusicApi.Domain.DTO.Currency;
 using SolanaMusicApi.Domain.DTO.General.CountryDto;
 using SolanaMusicApi.Domain.DTO.Genre;
 using SolanaMusicApi.Domain.DTO.Playlist;
+using SolanaMusicApi.Domain.DTO.Subscription;
 using SolanaMusicApi.Domain.DTO.SubscriptionPlan;
 using SolanaMusicApi.Domain.DTO.SubscriptionPlanCurrency;
 using SolanaMusicApi.Domain.DTO.Track;
@@ -87,5 +88,11 @@ public class MappingProfiles : Profile
         CreateMap<SubscriptionPlanCurrencyRequestDto, SubscriptionPlanCurrency>();
         CreateMap<SubscriptionPlan, SubscriptionPlanResponseDto>();
         CreateMap<SubscriptionPlanCurrency, SubscriptionPlanCurrencyResponseDto>();
+        CreateMap<SubscriptionRequestDto, Subscription>();
+        CreateMap<Subscription, SubscriptionResponseDto>()
+            .ForMember(dest => dest.Memebers, opt => opt.MapFrom(src => src.UserSubscriptions.Select(x => x.User)))
+            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src =>
+                src.UpdatedDate.AddMonths(src.SubscriptionPlan.DurationInMonths).Date.AddDays(1)))
+            .ForMember(dest => dest.IsActive, opt => opt.Ignore());
     }
 }

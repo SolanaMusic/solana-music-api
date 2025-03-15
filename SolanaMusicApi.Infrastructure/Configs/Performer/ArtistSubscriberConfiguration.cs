@@ -8,14 +8,15 @@ public class ArtistSubscriberConfiguration : IEntityTypeConfiguration<ArtistSubs
 {
     public void Configure(EntityTypeBuilder<ArtistSubscriber> builder)
     {
-        builder.HasKey(ta => new { ta.ArtistId, ta.SubscriberId });
+        builder.HasKey(x => new { x.ArtistId, x.SubscriberId });
+        builder.HasIndex(x => x.Id).IsUnique();
 
-        builder.Property(ta => ta.Id)
+        builder.Property(x => x.Id)
             .HasColumnOrder(0)
             .ValueGeneratedOnAdd();
 
-        builder.Property(ta => ta.ArtistId).HasColumnOrder(1);
-        builder.Property(ta => ta.SubscriberId).HasColumnOrder(2);
+        builder.Property(x => x.ArtistId).HasColumnOrder(1);
+        builder.Property(x => x.SubscriberId).HasColumnOrder(2);
 
         builder.HasOne(ta => ta.Artist)
             .WithMany(t => t.ArtistSubscribers)
@@ -23,7 +24,7 @@ public class ArtistSubscriberConfiguration : IEntityTypeConfiguration<ArtistSubs
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(ta => ta.Subscriber)
-            .WithMany(a => a.ArtistSubscribers)
+            .WithMany(a => a.ArtistSubscribes)
             .HasForeignKey(ta => ta.SubscriberId)
             .OnDelete(DeleteBehavior.Cascade);
     }

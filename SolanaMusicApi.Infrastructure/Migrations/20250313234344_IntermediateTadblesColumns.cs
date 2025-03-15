@@ -45,6 +45,32 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Countries",
                 columns: table => new
                 {
@@ -159,160 +185,6 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SubscriptionPlanCurrencies",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SubscriptionPlanId = table.Column<long>(type: "bigint", nullable: false),
-                    CurrencyId = table.Column<long>(type: "bigint", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SubscriptionPlanCurrencies", x => new { x.SubscriptionPlanId, x.CurrencyId });
-                    table.ForeignKey(
-                        name: "FK_SubscriptionPlanCurrencies_Currencies_CurrencyId",
-                        column: x => x.CurrencyId,
-                        principalTable: "Currencies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_SubscriptionPlanCurrencies_SubscriptionPlans_SubscriptionPlanId",
-                        column: x => x.SubscriptionPlanId,
-                        principalTable: "SubscriptionPlans",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TrackGenres",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TrackId = table.Column<long>(type: "bigint", nullable: false),
-                    GenreId = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TrackGenres", x => new { x.TrackId, x.GenreId });
-                    table.ForeignKey(
-                        name: "FK_TrackGenres_Genres_GenreId",
-                        column: x => x.GenreId,
-                        principalTable: "Genres",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TrackGenres_Tracks_TrackId",
-                        column: x => x.TrackId,
-                        principalTable: "Tracks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ArtistAlbums",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ArtistId = table.Column<long>(type: "bigint", nullable: false),
-                    AlbumId = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ArtistAlbums", x => new { x.ArtistId, x.AlbumId });
-                    table.ForeignKey(
-                        name: "FK_ArtistAlbums_Albums_AlbumId",
-                        column: x => x.AlbumId,
-                        principalTable: "Albums",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Artists",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<long>(type: "bigint", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    CountryId = table.Column<long>(type: "bigint", nullable: false),
-                    Bio = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Artists", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Artists_Countries_CountryId",
-                        column: x => x.CountryId,
-                        principalTable: "Countries",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ArtistTracks",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ArtistId = table.Column<long>(type: "bigint", nullable: false),
-                    TrackId = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ArtistTracks", x => new { x.TrackId, x.ArtistId });
-                    table.ForeignKey(
-                        name: "FK_ArtistTracks_Artists_ArtistId",
-                        column: x => x.ArtistId,
-                        principalTable: "Artists",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ArtistTracks_Tracks_TrackId",
-                        column: x => x.TrackId,
-                        principalTable: "Tracks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ArtistSubscribers",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ArtistId = table.Column<long>(type: "bigint", nullable: false),
-                    SubscriberId = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ArtistSubscribers", x => new { x.ArtistId, x.SubscriberId });
-                    table.ForeignKey(
-                        name: "FK_ArtistSubscribers_Artists_ArtistId",
-                        column: x => x.ArtistId,
-                        principalTable: "Artists",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -325,6 +197,12 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -339,6 +217,12 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -357,33 +241,12 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ActiveSubscriptionId = table.Column<long>(type: "bigint", nullable: true),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -430,29 +293,62 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Subscriptions",
+                name: "Artists",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OwnerId = table.Column<long>(type: "bigint", nullable: false),
-                    SubscriptionPlanId = table.Column<long>(type: "bigint", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CountryId = table.Column<long>(type: "bigint", nullable: false),
+                    Bio = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Subscriptions", x => x.Id);
+                    table.PrimaryKey("PK_Artists", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Subscriptions_AspNetUsers_OwnerId",
-                        column: x => x.OwnerId,
+                        name: "FK_Artists_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Subscriptions_SubscriptionPlans_SubscriptionPlanId",
-                        column: x => x.SubscriptionPlanId,
-                        principalTable: "SubscriptionPlans",
+                        name: "FK_Artists_Countries_CountryId",
+                        column: x => x.CountryId,
+                        principalTable: "Countries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserProfiles",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    CountryId = table.Column<long>(type: "bigint", nullable: false),
+                    AvatarUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    TokensAmount = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserProfiles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserProfiles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserProfiles_Countries_CountryId",
+                        column: x => x.CountryId,
+                        principalTable: "Countries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -490,33 +386,88 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserProfiles",
+                name: "SubscriptionPlanCurrencies",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
-                    CountryId = table.Column<long>(type: "bigint", nullable: false),
-                    AvatarUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    TokensAmount = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
+                    SubscriptionPlanId = table.Column<long>(type: "bigint", nullable: false),
+                    CurrencyId = table.Column<long>(type: "bigint", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserProfiles", x => x.Id);
+                    table.PrimaryKey("PK_SubscriptionPlanCurrencies", x => new { x.SubscriptionPlanId, x.CurrencyId });
                     table.ForeignKey(
-                        name: "FK_UserProfiles_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_SubscriptionPlanCurrencies_Currencies_CurrencyId",
+                        column: x => x.CurrencyId,
+                        principalTable: "Currencies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SubscriptionPlanCurrencies_SubscriptionPlans_SubscriptionPlanId",
+                        column: x => x.SubscriptionPlanId,
+                        principalTable: "SubscriptionPlans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subscriptions",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OwnerId = table.Column<long>(type: "bigint", nullable: false),
+                    SubscriptionPlanId = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subscriptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Subscriptions_AspNetUsers_OwnerId",
+                        column: x => x.OwnerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserProfiles_Countries_CountryId",
-                        column: x => x.CountryId,
-                        principalTable: "Countries",
+                        name: "FK_Subscriptions_SubscriptionPlans_SubscriptionPlanId",
+                        column: x => x.SubscriptionPlanId,
+                        principalTable: "SubscriptionPlans",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TrackGenres",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TrackId = table.Column<long>(type: "bigint", nullable: false),
+                    GenreId = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TrackGenres", x => new { x.TrackId, x.GenreId });
+                    table.ForeignKey(
+                        name: "FK_TrackGenres_Genres_GenreId",
+                        column: x => x.GenreId,
+                        principalTable: "Genres",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TrackGenres_Tracks_TrackId",
+                        column: x => x.TrackId,
+                        principalTable: "Tracks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -548,25 +499,85 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SubscriptionFamilyMembers",
+                name: "ArtistAlbums",
                 columns: table => new
                 {
-                    FamilyMembersId = table.Column<long>(type: "bigint", nullable: false),
-                    SubscriptionId = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ArtistId = table.Column<long>(type: "bigint", nullable: false),
+                    AlbumId = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SubscriptionFamilyMembers", x => new { x.FamilyMembersId, x.SubscriptionId });
+                    table.PrimaryKey("PK_ArtistAlbums", x => new { x.ArtistId, x.AlbumId });
                     table.ForeignKey(
-                        name: "FK_SubscriptionFamilyMembers_AspNetUsers_FamilyMembersId",
-                        column: x => x.FamilyMembersId,
-                        principalTable: "AspNetUsers",
+                        name: "FK_ArtistAlbums_Albums_AlbumId",
+                        column: x => x.AlbumId,
+                        principalTable: "Albums",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_SubscriptionFamilyMembers_Subscriptions_SubscriptionId",
-                        column: x => x.SubscriptionId,
-                        principalTable: "Subscriptions",
+                        name: "FK_ArtistAlbums_Artists_ArtistId",
+                        column: x => x.ArtistId,
+                        principalTable: "Artists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ArtistSubscribers",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ArtistId = table.Column<long>(type: "bigint", nullable: false),
+                    SubscriberId = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ArtistSubscribers", x => new { x.ArtistId, x.SubscriberId });
+                    table.ForeignKey(
+                        name: "FK_ArtistSubscribers_Artists_ArtistId",
+                        column: x => x.ArtistId,
+                        principalTable: "Artists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ArtistSubscribers_AspNetUsers_SubscriberId",
+                        column: x => x.SubscriberId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ArtistTracks",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ArtistId = table.Column<long>(type: "bigint", nullable: false),
+                    TrackId = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ArtistTracks", x => new { x.TrackId, x.ArtistId });
+                    table.ForeignKey(
+                        name: "FK_ArtistTracks_Artists_ArtistId",
+                        column: x => x.ArtistId,
+                        principalTable: "Artists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ArtistTracks_Tracks_TrackId",
+                        column: x => x.TrackId,
+                        principalTable: "Tracks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -575,9 +586,11 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 name: "UserSubscriptions",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     SubscriptionId = table.Column<long>(type: "bigint", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -595,13 +608,19 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                         column: x => x.SubscriptionId,
                         principalTable: "Subscriptions",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArtistAlbums_AlbumId",
                 table: "ArtistAlbums",
                 column: "AlbumId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ArtistAlbums_Id",
+                table: "ArtistAlbums",
+                column: "Id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Artists_CountryId",
@@ -616,6 +635,12 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 filter: "[UserId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ArtistSubscribers_Id",
+                table: "ArtistSubscribers",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ArtistSubscribers_SubscriberId",
                 table: "ArtistSubscribers",
                 column: "SubscriberId");
@@ -624,6 +649,12 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 name: "IX_ArtistTracks_ArtistId",
                 table: "ArtistTracks",
                 column: "ArtistId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ArtistTracks_Id",
+                table: "ArtistTracks",
+                column: "Id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -658,11 +689,6 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_ActiveSubscriptionId",
-                table: "AspNetUsers",
-                column: "ActiveSubscriptionId");
-
-            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
@@ -675,14 +701,15 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PlaylistTracks_Id",
+                table: "PlaylistTracks",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PlaylistTracks_TrackId",
                 table: "PlaylistTracks",
                 column: "TrackId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SubscriptionFamilyMembers_SubscriptionId",
-                table: "SubscriptionFamilyMembers",
-                column: "SubscriptionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SubscriptionPlanCurrencies_CurrencyId",
@@ -690,9 +717,16 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 column: "CurrencyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Subscriptions_OwnerId",
+                name: "IX_SubscriptionPlanCurrencies_Id",
+                table: "SubscriptionPlanCurrencies",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_OwnerId_SubscriptionPlanId",
                 table: "Subscriptions",
-                column: "OwnerId");
+                columns: new[] { "OwnerId", "SubscriptionPlanId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subscriptions_SubscriptionPlanId",
@@ -703,6 +737,12 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 name: "IX_TrackGenres_GenreId",
                 table: "TrackGenres",
                 column: "GenreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TrackGenres_Id",
+                table: "TrackGenres",
+                column: "Id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tracks_AlbumId",
@@ -731,74 +771,20 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserSubscriptions_Id",
+                table: "UserSubscriptions",
+                column: "Id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserSubscriptions_SubscriptionId",
                 table: "UserSubscriptions",
                 column: "SubscriptionId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ArtistAlbums_Artists_ArtistId",
-                table: "ArtistAlbums",
-                column: "ArtistId",
-                principalTable: "Artists",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Artists_AspNetUsers_UserId",
-                table: "Artists",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ArtistSubscribers_AspNetUsers_SubscriberId",
-                table: "ArtistSubscribers",
-                column: "SubscriberId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                table: "AspNetUserClaims",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserLogins_AspNetUsers_UserId",
-                table: "AspNetUserLogins",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUserRoles_AspNetUsers_UserId",
-                table: "AspNetUserRoles",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AspNetUsers_Subscriptions_ActiveSubscriptionId",
-                table: "AspNetUsers",
-                column: "ActiveSubscriptionId",
-                principalTable: "Subscriptions",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Subscriptions_AspNetUsers_OwnerId",
-                table: "Subscriptions");
-
             migrationBuilder.DropTable(
                 name: "ArtistAlbums");
 
@@ -825,9 +811,6 @@ namespace SolanaMusicApi.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "PlaylistTracks");
-
-            migrationBuilder.DropTable(
-                name: "SubscriptionFamilyMembers");
 
             migrationBuilder.DropTable(
                 name: "SubscriptionPlanCurrencies");
@@ -863,6 +846,9 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 name: "Currencies");
 
             migrationBuilder.DropTable(
+                name: "Subscriptions");
+
+            migrationBuilder.DropTable(
                 name: "Countries");
 
             migrationBuilder.DropTable(
@@ -870,9 +856,6 @@ namespace SolanaMusicApi.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "Subscriptions");
 
             migrationBuilder.DropTable(
                 name: "SubscriptionPlans");

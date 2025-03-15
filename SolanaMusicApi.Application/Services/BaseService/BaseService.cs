@@ -8,6 +8,8 @@ public class BaseService<T>(IBaseRepository<T> baseRepository) : IBaseService<T>
 {
     public IQueryable<T> GetAll() => baseRepository.GetAll();
 
+    public async Task<T> GetAsync(Expression<Func<T, bool>> expression) => await baseRepository.GetAsync(expression);
+
     public async Task<T> GetByIdAsync(long id) => await baseRepository.GetByIdAsync(id);
 
     public async Task<T> AddAsync(T entity) => await baseRepository.AddAsync(entity);

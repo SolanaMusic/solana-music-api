@@ -64,9 +64,8 @@ SET IDENTITY_INSERT dbo.Genres OFF;
 IF NOT EXISTS (SELECT 1 FROM dbo.Artists WHERE Id = 1)
 BEGIN
     SET IDENTITY_INSERT dbo.Artists ON;
-    INSERT INTO dbo.Artists ([Id], [Name], [CountryId], [Bio], [ImageUrl], [UserId], [CreatedDate], [UpdatedDate])
-    VALUES (1, 'John Doe', 1, 'An emerging artist in the rock music scene.',
-        'images\artists\artist-image1.png', null, GETDATE(), GETDATE());
+    INSERT INTO dbo.Artists ([Id], [UserId], [Name], [CountryId], [Bio], [ImageUrl], [CreatedDate], [UpdatedDate])
+    VALUES (1, 2, 'John Doe', 1, 'An emerging artist in the rock music scene.', 'images\artists\artist-image1.png', GETDATE(), GETDATE());
     SET IDENTITY_INSERT dbo.Artists OFF;
 END
 
@@ -290,61 +289,26 @@ END
 SET IDENTITY_INSERT dbo.Subscriptions OFF;
 
 
--- ActiveSubscription
-IF EXISTS (SELECT 1 FROM dbo.AspNetUsers WHERE UserName = 'User')
-BEGIN
-    UPDATE dbo.AspNetUsers
-    SET ActiveSubscriptionId = 1
-    WHERE UserName = 'User';
-END
-
-IF EXISTS (SELECT 1 FROM dbo.AspNetUsers WHERE UserName = 'Moderator')
-BEGIN
-    UPDATE dbo.AspNetUsers
-    SET ActiveSubscriptionId = 2
-    WHERE UserName = 'Moderator';
-END
-
-IF EXISTS (SELECT 1 FROM dbo.AspNetUsers WHERE UserName = 'Admin')
-BEGIN
-    UPDATE dbo.AspNetUsers
-    SET ActiveSubscriptionId = 2
-    WHERE UserName = 'Admin';
-END
-
-
 -- UserSubscriptions
+SET IDENTITY_INSERT dbo.UserSubscriptions ON;
 IF NOT EXISTS (SELECT 1 FROM dbo.UserSubscriptions WHERE UserId = 1 AND SubscriptionId = 1)
 BEGIN
-    INSERT INTO dbo.UserSubscriptions ([Id], [UserId], [SubscriptionId], [CreatedDate], [UpdatedDate])
-    VALUES (1, 1, 1, GETDATE(), GETDATE());
+    INSERT INTO dbo.UserSubscriptions ([Id], [UserId], [SubscriptionId], [IsActive], [CreatedDate], [UpdatedDate])
+    VALUES (1, 1, 1, 1, GETDATE(), GETDATE());
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UserSubscriptions WHERE UserId = 3 AND SubscriptionId = 2)
 BEGIN
-    INSERT INTO dbo.UserSubscriptions ([Id], [UserId], [SubscriptionId], [CreatedDate], [UpdatedDate])
-    VALUES (2, 3, 2, GETDATE(), GETDATE());
+    INSERT INTO dbo.UserSubscriptions ([Id], [UserId], [SubscriptionId], [IsActive], [CreatedDate], [UpdatedDate])
+    VALUES (2, 3, 2, 1, GETDATE(), GETDATE());
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UserSubscriptions WHERE UserId = 4 AND SubscriptionId = 2)
 BEGIN
-    INSERT INTO dbo.UserSubscriptions ([Id], [UserId], [SubscriptionId], [CreatedDate], [UpdatedDate])
-    VALUES (3, 4, 2, GETDATE(), GETDATE());
+    INSERT INTO dbo.UserSubscriptions ([Id], [UserId], [SubscriptionId], [IsActive], [CreatedDate], [UpdatedDate])
+    VALUES (3, 4, 2, 1, GETDATE(), GETDATE());
 END
-
-
--- SubscriptionFamilyMembers
-IF NOT EXISTS (SELECT 1 FROM dbo.SubscriptionFamilyMembers WHERE FamilyMembersId = 3 AND SubscriptionId = 2)
-BEGIN
-    INSERT INTO dbo.SubscriptionFamilyMembers ([FamilyMembersId], [SubscriptionId])
-    VALUES (3, 2);
-END
-
-IF NOT EXISTS (SELECT 1 FROM dbo.SubscriptionFamilyMembers WHERE FamilyMembersId = 4 AND SubscriptionId = 2)
-BEGIN
-    INSERT INTO dbo.SubscriptionFamilyMembers ([FamilyMembersId], [SubscriptionId])
-    VALUES (4, 2);
-END
+SET IDENTITY_INSERT dbo.UserSubscriptions OFF;
 
 
 -- Transactions

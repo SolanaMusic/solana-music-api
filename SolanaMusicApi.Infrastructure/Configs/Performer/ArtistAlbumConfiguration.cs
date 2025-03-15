@@ -9,6 +9,7 @@ public class ArtistAlbumConfiguration : IEntityTypeConfiguration<ArtistAlbum>
     public void Configure(EntityTypeBuilder<ArtistAlbum> builder)
     {
         builder.HasKey(x => new { x.ArtistId, x.AlbumId });
+        builder.HasIndex(x => x.Id).IsUnique();
 
         builder.Property(x => x.Id)
             .HasColumnOrder(0)
