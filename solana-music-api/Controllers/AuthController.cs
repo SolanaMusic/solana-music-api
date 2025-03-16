@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SolanaMusicApi.Application.Requests.Auth;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Auth;
 
 namespace solana_music_api.Controllers;

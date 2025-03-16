@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
-using SolanaMusicApi.Application.Requests.Artist;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.ArtistServices.ArtistService;
 using SolanaMusicApi.Domain.DTO.Artist;
 using ArtistEntity = SolanaMusicApi.Domain.Entities.Performer.Artist;

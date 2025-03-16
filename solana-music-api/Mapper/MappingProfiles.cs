@@ -69,7 +69,15 @@ public class MappingProfiles : Profile
 
         CreateMap<CreatePlaylistRequestDto, Playlist>();
         CreateMap<Playlist, PlaylistResponseDto>()
-            .ForMember(dest => dest.Tracks, opt => opt.MapFrom(src => src.PlaylistTracks.Select(tg => tg.Track)));
+            .ForMember(dest => dest.Tracks, opt => opt.MapFrom(src => src.PlaylistTracks.Select(tg => tg.Track)))
+            .ForMember(dest => dest.CoverUrl, opt => opt.MapFrom(src =>
+                !string.IsNullOrEmpty(src.CoverUrl)
+                    ? src.CoverUrl
+                    : src.PlaylistTracks
+                        .OrderBy(pt => pt.TrackId)
+                        .Select(pt => pt.Track.ImageUrl)
+                        .FirstOrDefault()
+            ));
 
         CreateMap<ArtistRequestDto, Artist>();
         CreateMap<Artist, ArtistTrackResponseDto>();

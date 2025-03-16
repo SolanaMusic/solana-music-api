@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SolanaMusicApi.Application.Requests.Music;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Track;
 
 namespace solana_music_api.Controllers;
@@ -26,7 +26,7 @@ public class TracksController(IMediator mediator) : ControllerBase
     [HttpGet("stream/{id}")]
     public async Task<IActionResult> StreamTrack(long id)
     {
-        var response = await mediator.Send(new PlayTrackRequest(id));
+        var response = await mediator.Send(new StreamTrackRequest(id));
         return File(response, "audio/mpeg", true);
     }
 

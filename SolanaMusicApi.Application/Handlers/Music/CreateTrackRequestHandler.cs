@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using SolanaMusicApi.Application.Requests.Music;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.TrackServices.TracksService;
 using SolanaMusicApi.Domain.DTO.Track;
 

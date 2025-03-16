@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SolanaMusicApi.Application.Requests.SubscriptionPlan;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.SubscriptionPlan;
 using SolanaMusicApi.Domain.DTO.SubscriptionPlanCurrency;
 

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
-using SolanaMusicApi.Application.Requests.SubscriptionPlan;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionPlanService;
 
 namespace SolanaMusicApi.Application.Handlers.SubscriptionPlan;

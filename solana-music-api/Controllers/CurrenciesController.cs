@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SolanaMusicApi.Application.Requests.Currency;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Currency;
 
 namespace solana_music_api.Controllers;

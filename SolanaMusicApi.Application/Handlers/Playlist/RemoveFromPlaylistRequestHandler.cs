@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using SolanaMusicApi.Application.Requests.Playlist;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.PlaylistServices.PlaylistService;
 
 namespace SolanaMusicApi.Application.Handlers.Playlist;

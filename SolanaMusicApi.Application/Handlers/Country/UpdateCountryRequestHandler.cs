@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
-using SolanaMusicApi.Application.Requests.Country;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.CountryService;
 using SolanaMusicApi.Domain.DTO.General.CountryDto;
 using CountryEntity = SolanaMusicApi.Domain.Entities.General.Country;

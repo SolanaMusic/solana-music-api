@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using SolanaMusicApi.Application.Requests.Location;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.LocationService;
 
 namespace SolanaMusicApi.Application.Handlers.Location;

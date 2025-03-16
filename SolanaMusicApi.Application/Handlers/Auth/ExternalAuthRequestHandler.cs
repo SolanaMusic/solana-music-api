@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using SolanaMusicApi.Application.Requests.Auth;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.AuthService;
 using SolanaMusicApi.Domain.Entities.User;
 

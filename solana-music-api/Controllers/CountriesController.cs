@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SolanaMusicApi.Application.Requests.Country;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.General.CountryDto;
 
 namespace solana_music_api.Controllers;
@@ -12,7 +12,7 @@ public class CountriesController(IMediator mediator) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var response = await mediator.Send(new GetAllCountriesRequest());
+        var response = await mediator.Send(new GetCountriesRequest());
         return Ok(response);
     }
 

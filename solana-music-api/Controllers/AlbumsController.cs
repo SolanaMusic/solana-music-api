@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SolanaMusicApi.Application.Requests.Album;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Album;
 using System.ComponentModel.DataAnnotations;
 

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
-using SolanaMusicApi.Application.Requests.Auth;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.AuthService;
 using SolanaMusicApi.Domain.DTO.Auth;
 

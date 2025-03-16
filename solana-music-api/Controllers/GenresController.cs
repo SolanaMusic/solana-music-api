@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SolanaMusicApi.Application.Requests.Genre;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Genre;
 
 namespace solana_music_api.Controllers;
@@ -12,7 +12,7 @@ public class GenresController(IMediator mediator) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var response = await mediator.Send(new GetAllGenresRequest());
+        var response = await mediator.Send(new GetGenresRequest());
         return Ok(response);
     }
 

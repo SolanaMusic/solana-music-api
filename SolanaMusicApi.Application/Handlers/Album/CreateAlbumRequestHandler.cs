@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using SolanaMusicApi.Application.Requests.Album;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.AlbumService;
 using SolanaMusicApi.Domain.DTO.Album;
 

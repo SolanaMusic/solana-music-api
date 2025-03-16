@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SolanaMusicApi.Application.Requests.Playlist;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.PlaylistServices.PlaylistService;
 using SolanaMusicApi.Domain.DTO.Playlist;
 

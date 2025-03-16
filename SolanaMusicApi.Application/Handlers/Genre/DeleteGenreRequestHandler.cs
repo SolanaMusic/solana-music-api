@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
-using SolanaMusicApi.Application.Requests.Genre;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.GenreService;
 using SolanaMusicApi.Domain.DTO.Genre;
 

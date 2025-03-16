@@ -1,10 +1,7 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SolanaMusicApi.Application.Requests.Playlist;
-using SolanaMusicApi.Application.Services.PlaylistServices.PlaylistService;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Playlist;
-using SolanaMusicApi.Domain.Entities.Playlist;
 
 namespace solana_music_api.Controllers;
 

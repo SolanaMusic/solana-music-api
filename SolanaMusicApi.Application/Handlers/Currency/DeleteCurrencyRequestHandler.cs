@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
-using SolanaMusicApi.Application.Requests.Currency;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.CurrencyService;
 using SolanaMusicApi.Domain.DTO.Currency;
 

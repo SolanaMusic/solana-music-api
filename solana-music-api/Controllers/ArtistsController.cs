@@ -1,11 +1,7 @@
-﻿using AutoMapper;
-using Azure;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SolanaMusicApi.Application.Requests.Artist;
-using SolanaMusicApi.Application.Services.ArtistServices.ArtistService;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Artist;
-using SolanaMusicApi.Domain.Entities.Performer;
 
 namespace solana_music_api.Controllers;
 
