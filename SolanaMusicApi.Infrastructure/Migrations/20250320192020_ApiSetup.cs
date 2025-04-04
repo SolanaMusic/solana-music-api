@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SolanaMusicApi.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class IntermediateTadblesColumns : Migration
+    public partial class ApiSetup : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -360,6 +360,7 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
+                    PaymentIntent = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     CurrencyId = table.Column<long>(type: "bigint", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -753,6 +754,11 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 name: "IX_Transactions_CurrencyId",
                 table: "Transactions",
                 column: "CurrencyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_PaymentIntent",
+                table: "Transactions",
+                column: "PaymentIntent");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_UserId",

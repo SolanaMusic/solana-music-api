@@ -51,10 +51,10 @@ public class SubscriptionsController(IMediator mediator) : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("resubscribe{id}")]
-    public async Task<IActionResult> Resubscribe(long id)
+    [HttpPost("resubscribe")]
+    public async Task<IActionResult> Resubscribe([FromBody]ResubscribeRequestDto resubscribeRequestDto)
     {
-        await mediator.Send(new ResubscribeRequest(id));
+        await mediator.Send(new ResubscribeRequest(resubscribeRequestDto.Id));
         return NoContent();
     }
 }

@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.ComponentModel.DataAnnotations;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Playlist;
@@ -51,10 +52,10 @@ public class PlaylistsController(IMediator mediator) : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("remove-from-playlist")]
-    public async Task<IActionResult> RemoveFromPlaylist(AddToPlaylistDto addToPlaylistDto)
+    [HttpDelete("remove-from-playlist")]
+    public async Task<IActionResult> RemoveFromPlaylist([Required]long playlistId, [Required]long trackId)
     {
-        await mediator.Send(new RemoveFromPlaylistRequest(addToPlaylistDto));
+        await mediator.Send(new RemoveFromPlaylistRequest(playlistId, trackId));
         return NoContent();
     }
 }

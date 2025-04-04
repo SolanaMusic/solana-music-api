@@ -11,6 +11,7 @@ using SolanaMusicApi.Domain.DTO.Subscription;
 using SolanaMusicApi.Domain.DTO.SubscriptionPlan;
 using SolanaMusicApi.Domain.DTO.SubscriptionPlanCurrency;
 using SolanaMusicApi.Domain.DTO.Track;
+using SolanaMusicApi.Domain.DTO.Transaction;
 using SolanaMusicApi.Domain.DTO.User;
 using SolanaMusicApi.Domain.DTO.User.Profile;
 using SolanaMusicApi.Domain.Entities.General;
@@ -102,5 +103,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src =>
                 src.UpdatedDate.AddMonths(src.SubscriptionPlan.DurationInMonths).Date.AddDays(1)))
             .ForMember(dest => dest.IsActive, opt => opt.Ignore());
+
+        CreateMap<Transaction, TransactionResponseDto>();
     }
 }

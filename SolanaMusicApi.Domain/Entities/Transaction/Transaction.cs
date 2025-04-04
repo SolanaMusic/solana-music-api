@@ -6,6 +6,7 @@ namespace SolanaMusicApi.Domain.Entities.Transaction;
 public class Transaction : BaseEntity
 {
     public long UserId { get; set; }
+    public string? PaymentIntent { get; set; }
     public long CurrencyId { get; set; }
     public decimal Amount { get; set; }
     public TransactionStatus Status { get; set; }

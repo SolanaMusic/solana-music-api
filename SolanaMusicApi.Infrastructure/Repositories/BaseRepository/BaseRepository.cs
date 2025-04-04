@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore;
-using SolanaMusicApi.Application;
 using SolanaMusicApi.Domain.Entities;
 using System.Linq.Expressions;
 
@@ -10,17 +9,17 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
 {
     private readonly ApplicationDbContext _context;
     private IDbContextTransaction? _transaction;
-    private readonly DbSet<T> dbSet;
+    private readonly DbSet<T> _dbSet;
 
     public BaseRepository(ApplicationDbContext context)
     {
         _context = context;
-        dbSet = _context.Set<T>();
+        _dbSet = _context.Set<T>();
     }
 
     public IQueryable<T> GetAll()
     {
-        return dbSet
+        return _dbSet
             .AsQueryable()
             .AsNoTracking();
     }
@@ -53,7 +52,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         entity.CreatedDate = date;
         entity.UpdatedDate = date;
 
-        dbSet.Add(entity);
+        _dbSet.Add(entity);
         await _context.SaveChangesAsync();
 
         return entity;
@@ -70,7 +69,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
             entity.UpdatedDate = date;
         }
 
-        await dbSet.AddRangeAsync(entityList);
+        await _dbSet.AddRangeAsync(entityList);
         await _context.SaveChangesAsync();
 
         return entityList;
@@ -111,7 +110,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
         foreach (var entity in entityList)
             entity.UpdatedDate = date;
 
-        dbSet.UpdateRange(entityList);
+        _dbSet.UpdateRange(entityList);
         await _context.SaveChangesAsync();
         return entityList;
     }
@@ -119,7 +118,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     public async Task<T> DeleteAsync(long id)
     {
         var entity = await GetByIdAsyncTraking(id);
-        dbSet.Remove(entity);
+        _dbSet.Remove(entity);
         await _context.SaveChangesAsync();
 
         return entity;
@@ -128,7 +127,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     public async Task<T> DeleteAsync(Expression<Func<T, bool>> expression)
     {
         var entity = await GetByIdAsyncTraking(expression);
-        dbSet.Remove(entity);
+        _dbSet.Remove(entity);
         await _context.SaveChangesAsync();
 
         return entity;
@@ -136,9 +135,10 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
 
     public async Task<IEnumerable<T>> DeleteRangeAsync(IEnumerable<T> entities)
     {
-        _context.RemoveRange(entities);
+        var deleteRangeAsync = entities.ToList();
+        _context.RemoveRange(deleteRangeAsync);
         await _context.SaveChangesAsync();
-        return entities;
+        return deleteRangeAsync;
     }
 
     public async Task BeginTransactionAsync()
@@ -189,7 +189,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
 
     private async Task<T> GetByIdAsyncTraking(long id)
     {
-        var response = await dbSet
+        var response = await _dbSet
             .AsQueryable()
             .SingleOrDefaultAsync(x => x.Id == id);
 
@@ -201,7 +201,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
 
     private async Task<T> GetByIdAsyncTraking(Expression<Func<T, bool>> expression)
     {
-        var response = await dbSet
+        var response = await _dbSet
             .AsQueryable()
             .SingleOrDefaultAsync(expression);
 

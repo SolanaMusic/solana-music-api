@@ -15,6 +15,8 @@ using SolanaMusicApi.Application.Services.CurrencyService;
 using SolanaMusicApi.Application.Services.FileService;
 using SolanaMusicApi.Application.Services.GenreService;
 using SolanaMusicApi.Application.Services.LocationService;
+using SolanaMusicApi.Application.Services.PaymentServices.PaymentService;
+using SolanaMusicApi.Application.Services.PaymentServices.TransactionService;
 using SolanaMusicApi.Application.Services.PlaylistServices.PlaylistService;
 using SolanaMusicApi.Application.Services.PlaylistServices.PlaylistTrackService;
 using SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionPlanCurrencyService;
@@ -26,6 +28,7 @@ using SolanaMusicApi.Application.Services.TrackServices.TracksService;
 using SolanaMusicApi.Application.Services.UserServices.UserProfileService;
 using SolanaMusicApi.Application.Services.UserServices.UserService;
 using SolanaMusicApi.Domain.Entities.User;
+using SolanaMusicApi.Infrastructure;
 using SolanaMusicApi.Infrastructure.Repositories.AlbumRepository;
 using SolanaMusicApi.Infrastructure.Repositories.ArtistRepositories.ArtistAlbumRepository;
 using SolanaMusicApi.Infrastructure.Repositories.ArtistRepositories.ArtistRepository;
@@ -35,14 +38,15 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 using SolanaMusicApi.Infrastructure.Repositories.CountryRepository;
 using SolanaMusicApi.Infrastructure.Repositories.CurrencyRepository;
 using SolanaMusicApi.Infrastructure.Repositories.GenreRepository;
-using SolanaMusicApi.Infrastructure.Repositories.PlaylistRespositories.PlaylistRespository;
-using SolanaMusicApi.Infrastructure.Repositories.PlaylistRespositories.PlaylistTrackRespository;
+using SolanaMusicApi.Infrastructure.Repositories.PlaylistRepositories.PlaylistRepository;
+using SolanaMusicApi.Infrastructure.Repositories.PlaylistRepositories.PlaylistTrackRepository;
 using SolanaMusicApi.Infrastructure.Repositories.SubscriptionRepositories.SubscriptionPlanCurrencyRepository;
 using SolanaMusicApi.Infrastructure.Repositories.SubscriptionRepositories.SubscriptionPlanRepository;
 using SolanaMusicApi.Infrastructure.Repositories.SubscriptionRepositories.SubscriptionRepository;
 using SolanaMusicApi.Infrastructure.Repositories.SubscriptionRepositories.UserSubscriptionRepository;
 using SolanaMusicApi.Infrastructure.Repositories.TrackRepositories.TrackGenreRepository;
 using SolanaMusicApi.Infrastructure.Repositories.TrackRepositories.TrackRepository;
+using SolanaMusicApi.Infrastructure.Repositories.TransactionRepository;
 using SolanaMusicApi.Infrastructure.Repositories.UserProfileRepository;
 
 namespace solana_music_api;
@@ -63,14 +67,15 @@ public static class Configurator
         services.AddScoped<IArtistTrackRepository, ArtistTrackRepository>();
         services.AddScoped<IArtistAlbumRepository, ArtistAlbumRepository>();
         services.AddScoped<IArtistSubscriberRepository, ArtistSubscriberRepository>();
-        services.AddScoped<IPlaylistRespository, PlaylistRespository>();
-        services.AddScoped<IPlaylistTrackRespository, PlaylistTrackRespository>();
+        services.AddScoped<IPlaylistRepository, PlaylistRepository>();
+        services.AddScoped<IPlaylistTrackRepository, PlaylistTrackRepository>();
 
         services.AddScoped<ICurrencyRepository, CurrencyRepository>();
         services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
         services.AddScoped<ISubscriptionPlanCurrencyRepository, SubscriptionPlanCurrencyRepository>();
         services.AddScoped<IUserSubscriptionRepository, UserSubscriptionRepository>();
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
     }
 
     public static void ConfigureServices(this IServiceCollection services)
@@ -102,6 +107,9 @@ public static class Configurator
         services.AddScoped<ISubscriptionPlanCurrencyService, SubscriptionPlanCurrencyService>();
         services.AddScoped<IUserSubscriptionService, UserSubscriptionService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
+
+        services.AddScoped<ITransactionService, TransactionService>();
+        services.AddScoped<IPaymentService, PaymentService>();
     }
 
     public static void ConfigureGeneral(this IServiceCollection services)
@@ -142,7 +150,7 @@ public static class Configurator
                     {
                         Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
                     },
-                    new string[] { }
+                    []
                 }
             });
         });

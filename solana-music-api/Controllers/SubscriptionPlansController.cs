@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.SubscriptionPlan;
-using SolanaMusicApi.Domain.DTO.SubscriptionPlanCurrency;
 
 namespace solana_music_api.Controllers;
 
@@ -45,17 +44,17 @@ public class SubscriptionPlansController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost("add-subscription-currencies{id}")]
-    public async Task<IActionResult> AddSubscriptionCurrencies(long id, List<SubscriptionPlanCurrencyRequestDto> subscriptionPlanCurrencyRequestDtos)
+    [HttpPost("add-subscription-currencies")]
+    public async Task<IActionResult> AddSubscriptionCurrencies(AddSubscriptionCurrenciesDto addSubscriptionCurrenciesDto)
     {
-        await mediator.Send(new AddSubscriptionCurrenciesRequest(id, subscriptionPlanCurrencyRequestDtos));
+        await mediator.Send(new AddSubscriptionCurrenciesRequest(addSubscriptionCurrenciesDto));
         return NoContent();
     }
 
-    [HttpPost("remove-subscription-currencies{id}")]
-    public async Task<IActionResult> RemoveSubscriptionCurrencies(long id, List<long> currencyIds)
+    [HttpDelete("remove-subscription-currencies")]
+    public async Task<IActionResult> RemoveSubscriptionCurrencies(RemoveSubscriptionCurrenciesDto removeCurrenciesDto)
     {
-        await mediator.Send(new RemoveSubscriptionCurrenciesRequest(id, currencyIds));
+        await mediator.Send(new RemoveSubscriptionCurrenciesRequest(removeCurrenciesDto));
         return NoContent();
     }
 }

@@ -8,6 +8,6 @@ public class ResubscribeRequestHandler(ISubscriptionService subscriptionService)
 {
     public async Task Handle(ResubscribeRequest request, CancellationToken cancellationToken)
     {
-        await subscriptionService.Resubscribe(request.Id);
+        await subscriptionService.ResubscribeAsync(request.Id);
     }
 }

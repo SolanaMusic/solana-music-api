@@ -1,10 +1,6 @@
-﻿using SolanaMusicApi.Application;
-using SolanaMusicApi.Domain.Entities.Music;
+﻿using SolanaMusicApi.Domain.Entities.Music;
 using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
 namespace SolanaMusicApi.Infrastructure.Repositories.TrackRepositories.TrackRepository;
 
-public class TrackRepository : BaseRepository<Track>, ITrackRepository
-{
-    public TrackRepository(ApplicationDbContext dbContext) : base(dbContext) { }
-}
+public class TrackRepository(ApplicationDbContext dbContext) : BaseRepository<Track>(dbContext), ITrackRepository;

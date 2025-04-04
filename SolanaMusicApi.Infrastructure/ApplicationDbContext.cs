@@ -16,12 +16,11 @@ using SolanaMusicApi.Infrastructure.Configs.Subscrioption;
 using SolanaMusicApi.Infrastructure.Configs.Subscription;
 using SolanaMusicApi.Infrastructure.Configs.User;
 
-namespace SolanaMusicApi.Application;
+namespace SolanaMusicApi.Infrastructure;
 
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<long>, long>
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    : IdentityDbContext<ApplicationUser, IdentityRole<long>, long>(options)
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-
     public DbSet<Country> Countries { get; set; }
     public DbSet<UserProfile> UserProfiles { get; set; }
     public DbSet<Currency> Currencies { get; set; }
@@ -48,6 +47,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.ApplyConfiguration(new CurrencyConfiguration());
         modelBuilder.ApplyConfiguration(new CountryConfiguration());
         modelBuilder.ApplyConfiguration(new UserProfileConfiguration());
         modelBuilder.ApplyConfiguration(new TransactionConfiguration());

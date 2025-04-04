@@ -2,23 +2,19 @@
 using SolanaMusicApi.Application.Services.BaseService;
 using SolanaMusicApi.Application.Services.SubscriptionServices.UserSubscriptionService;
 using SolanaMusicApi.Domain.Entities.Subscription;
+using SolanaMusicApi.Domain.Entities.Transaction;
+using SolanaMusicApi.Domain.Enums.Transaction;
 using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
 namespace SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionService;
 
-public class SubscriptionService : BaseService<Subscription>, ISubscriptionService
+public class SubscriptionService(IBaseRepository<Subscription> baseRepository, IUserSubscriptionService userSubscriptionService)
+    : BaseService<Subscription>(baseRepository), ISubscriptionService
 {
-    private readonly IUserSubscriptionService _userSubscriptionService;
-
-    public SubscriptionService(IBaseRepository<Subscription> baseRepository, IUserSubscriptionService userSubscriptionService) : base(baseRepository) 
-    {
-        _userSubscriptionService = userSubscriptionService;
-    }
-
     public IQueryable<Subscription> GetUserSubscriptions(long userId)
     {
         return GetUserSubscriptionsQuery()
-            .Where(x => x.OwnerId == userId || x.UserSubscriptions.Any(x => x.UserId == userId));
+            .Where(x => x.OwnerId == userId || x.UserSubscriptions.Any(us => us.UserId == userId));
     }
 
     public async Task<Subscription> GetSubscriptionAsync(long id, long userId)
@@ -30,10 +26,10 @@ public class SubscriptionService : BaseService<Subscription>, ISubscriptionServi
     public async Task<Subscription> CreateSubscriptionAsync(Subscription subscription)
     {
         var added = await AddAsync(subscription);
-        await DeactivateUsersSubscriptions(subscription.OwnerId);
+        await DeactivateUserSubscriptionsAsync(subscription.OwnerId);
 
         var userSubscription = new UserSubscription { SubscriptionId = added.Id, UserId = added.OwnerId, IsActive = true };
-        await _userSubscriptionService.AddAsync(userSubscription);
+        await userSubscriptionService.AddAsync(userSubscription);
 
         return await GetSubscriptionAsync(added.Id, added.OwnerId);
     }
@@ -45,14 +41,14 @@ public class SubscriptionService : BaseService<Subscription>, ISubscriptionServi
         if (subscription.OwnerId != userId)
             throw new InvalidOperationException("Only owner can add subscription members");
 
-        if (subscription.UserSubscriptions.Count() == subscription.SubscriptionPlan.MaxMembers)
+        if (subscription.UserSubscriptions.Count == subscription.SubscriptionPlan.MaxMembers)
             throw new InvalidOperationException("Max members count reached");
 
         if (subscription.UserSubscriptions.Any(x => x.UserId == requestedUserId))
-            throw new InvalidOperationException("User allready a member of the subscription");
+            throw new InvalidOperationException("User already a member of the subscription");
 
         var userSubscription = new UserSubscription { SubscriptionId = id, UserId = requestedUserId, IsActive = false };
-        await _userSubscriptionService.AddAsync(userSubscription);
+        await userSubscriptionService.AddAsync(userSubscription);
     }
 
     public async Task RemoveFromSubscriptionAsync(long id, long userId, long requestedUserId)
@@ -62,31 +58,56 @@ public class SubscriptionService : BaseService<Subscription>, ISubscriptionServi
         if (subscription.OwnerId != userId && userId != requestedUserId)
             throw new InvalidOperationException("You can not remove subscription member");
 
-        if (!subscription.UserSubscriptions.Any(x => x.UserId == requestedUserId))
+        if (subscription.UserSubscriptions.All(x => x.UserId != requestedUserId))
             throw new InvalidOperationException("User is not a member of the subscription");
 
-        await _userSubscriptionService.DeleteAsync(x => x.SubscriptionId == id && x.UserId == requestedUserId);
+        await userSubscriptionService.DeleteAsync(x => x.SubscriptionId == id && x.UserId == requestedUserId);
+    }
+    
+    public async Task DeleteSubscriptionAsync(long subscriptionPlanId, long userId)
+    {
+        var response = await GetAll()
+            .Include(x => x.UserSubscriptions)
+            .FirstOrDefaultAsync(x => x.SubscriptionPlanId == subscriptionPlanId && x.OwnerId == userId);
+
+        if (response == null)
+            throw new InvalidOperationException("Subscription not found");
+
+        await userSubscriptionService.DeleteRangeAsync(response.UserSubscriptions);
+        await DeleteAsync(response.Id);
     }
 
-    public async Task SelectSubscriptionAsync(long id, long userId)
+    public async Task SelectSubscriptionAsync(long id, long userId) 
     {
-        var subscription = await GetSubscriptionAsync(id, userId);
-        await DeactivateUsersSubscriptions(userId);
+        await DeactivateUserSubscriptionsAsync(userId);
 
-        await _userSubscriptionService.GetAll()
+        await userSubscriptionService.GetAll()
             .Where(x => x.SubscriptionId == id && x.UserId == userId)
             .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.IsActive, true));
     }
 
-    public async Task Resubscribe(long id)
+    public async Task ResubscribeAsync(long id)
     {
         var subscription = await GetByIdAsync(id);
         await UpdateAsync(subscription);
     }
 
-    public bool IsSubscriptionActive(Subscription subscription, long userId)
+    public bool IsSubscriptionActive(Subscription subscription, long userId) => 
+        subscription.UserSubscriptions.Any(x => x.UserId == userId && x.IsActive);
+    
+    public async Task ProcessSubscriptionAsync(Transaction transaction, TransactionStatus status, long subscriptionPlanId)
     {
-        return subscription.UserSubscriptions.Any(x => x.UserId == userId && x.IsActive);
+        var subscriptionCheck = await GetUserSubscriptions(transaction.UserId)
+            .FirstOrDefaultAsync(x => x.SubscriptionPlanId == subscriptionPlanId);
+
+        if (status == TransactionStatus.Completed && subscriptionCheck == null)
+        {
+            var subscription = new Subscription { OwnerId = transaction.UserId, SubscriptionPlanId = subscriptionPlanId };
+            await CreateSubscriptionAsync(subscription);
+        }
+
+        if (status == TransactionStatus.Completed && subscriptionCheck != null)
+            await ResubscribeAsync(subscriptionCheck.Id);
     }
 
     private IQueryable<Subscription> GetUserSubscriptionsQuery()
@@ -102,10 +123,10 @@ public class SubscriptionService : BaseService<Subscription>, ISubscriptionServi
             .Include(x => x.SubscriptionPlan);
     }
 
-    private async Task DeactivateUsersSubscriptions(long userId)
+    private async Task DeactivateUserSubscriptionsAsync(long userId)
     {
-        var userSubscriptions = await _userSubscriptionService.GetAll()
-                .Where(x => x.UserId == userId)
-                .ExecuteUpdateAsync(s => s.SetProperty(x => x.IsActive, false));
+        await userSubscriptionService.GetAll()
+            .Where(x => x.UserId == userId)
+            .ExecuteUpdateAsync(s => s.SetProperty(x => x.IsActive, false));
     }
 }

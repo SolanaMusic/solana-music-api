@@ -9,6 +9,7 @@ public class RemoveSubscriptionCurrenciesRequestHandler(ISubscriptionPlanService
 {
     public async Task Handle(RemoveSubscriptionCurrenciesRequest request, CancellationToken cancellationToken)
     {
-        await subscriptionPlanService.RemoveSubscriptionCurrencies(request.Id, request.CurrencyIds);
+        await subscriptionPlanService
+            .RemoveSubscriptionCurrencies(request.RemoveCurrenciesDto.Id, request.RemoveCurrenciesDto.CurrencyIds);
     }
 }

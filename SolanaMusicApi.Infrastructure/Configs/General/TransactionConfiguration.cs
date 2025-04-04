@@ -8,7 +8,11 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 {
     public void Configure(EntityTypeBuilder<Transaction> builder)
     {
-        builder.HasKey(t => t.Id);
+        builder.HasKey(x => x.Id);
+        builder.HasIndex(x => x.PaymentIntent);
+
+        builder.Property(t => t.PaymentIntent)
+            .HasMaxLength(200);
 
         builder.Property(t => t.Amount)
             .HasPrecision(18, 2)

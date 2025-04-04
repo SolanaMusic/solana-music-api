@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.ComponentModel.DataAnnotations;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Artist;
@@ -9,14 +10,14 @@ namespace solana_music_api.Controllers;
 [ApiController]
 public class ArtistsController(IMediator mediator) : ControllerBase
 {
-    [HttpGet("{userId}")]
+    [HttpGet]
     public async Task<IActionResult> GetAll(long userId)
     {
         var response = await mediator.Send(new GetArtistsRequest(userId));
         return Ok(response);
     }
 
-    [HttpGet("{id},{userId}")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetAll(long id, long userId)
     {
         var response = await mediator.Send(new GetArtistRequest(id, userId));
@@ -44,15 +45,15 @@ public class ArtistsController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost("subscribe-to-artist{id},{userId}")]
-    public async Task<IActionResult> SubscribeToArtist(long id, long userId)
+    [HttpPost("subscribe-to-artist")]
+    public async Task<IActionResult> SubscribeToArtist(SubscribeToArtistDto subscribeToArtistDto)
     {
-        await mediator.Send(new SubscribeToArtistRequest(id, userId));
+        await mediator.Send(new SubscribeToArtistRequest(subscribeToArtistDto));
         return NoContent();
     }
 
-    [HttpPost("unsubscribe-from-artist{id},{userId}")]
-    public async Task<IActionResult> UnsubscribeToArtist(long id, long userId)
+    [HttpDelete("unsubscribe-from-artist")]
+    public async Task<IActionResult> UnsubscribeToArtist([Required]long id, [Required]long userId)
     {
         await mediator.Send(new UnsubscribeFromArtistRequest(id, userId));
         return NoContent();

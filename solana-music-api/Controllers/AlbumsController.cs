@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Album;
-using System.ComponentModel.DataAnnotations;
 
 namespace solana_music_api.Controllers;
 
@@ -52,7 +51,7 @@ public class AlbumsController(IMediator mediator) : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("remove-from-album{trackId}")]
+    [HttpDelete("remove-from-album/{trackId}")]
     public async Task<IActionResult> RemoveFromAlbum(long trackId)
     {
         await mediator.Send(new RemoveFromAlbumRequest(trackId));

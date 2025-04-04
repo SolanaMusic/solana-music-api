@@ -5,15 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SolanaMusicApi.Application;
 
 #nullable disable
 
 namespace SolanaMusicApi.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250313234344_IntermediateTadblesColumns")]
-    partial class IntermediateTadblesColumns
+    [Migration("20250320192020_ApiSetup")]
+    partial class ApiSetup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -731,6 +730,10 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                     b.Property<long>("CurrencyId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("PaymentIntent")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("int");
 
@@ -749,6 +752,8 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CurrencyId");
+
+                    b.HasIndex("PaymentIntent");
 
                     b.HasIndex("UserId");
 

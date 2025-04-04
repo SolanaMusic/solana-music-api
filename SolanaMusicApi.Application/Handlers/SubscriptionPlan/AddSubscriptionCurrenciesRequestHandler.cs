@@ -11,7 +11,7 @@ public class AddSubscriptionCurrenciesRequestHandler(ISubscriptionPlanService su
 {
     public async Task Handle(AddSubscriptionCurrenciesRequest request, CancellationToken cancellationToken)
     {
-        var currencies = mapper.Map<List<SubscriptionPlanCurrency>>(request.SubscriptionPlanCurrencyRequestDtos);
-        await subscriptionPlanService.AddSubscriptionCurrencies(request.Id, currencies);
+        var currencies = mapper.Map<List<SubscriptionPlanCurrency>>(request.AddSubscriptionCurrenciesDto.SubscriptionPlanDtos);
+        await subscriptionPlanService.AddSubscriptionCurrencies(request.AddSubscriptionCurrenciesDto.Id, currencies);
     }
 }

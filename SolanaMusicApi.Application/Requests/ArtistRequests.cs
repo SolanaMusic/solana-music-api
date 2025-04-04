@@ -6,7 +6,7 @@ namespace SolanaMusicApi.Application.Requests;
 public record GetArtistsRequest(long UserId) : IRequest<List<ArtistResponseDto>>;
 public record GetArtistRequest(long Id, long UserId) : IRequest<ArtistResponseDto>;
 public record CreateArtistRequest(ArtistRequestDto ArtistRequestDto) : IRequest<ArtistResponseDto>;
-public record SubscribeToArtistRequest(long Id, long UserId) : IRequest;
+public record SubscribeToArtistRequest(SubscribeToArtistDto SubscribeToArtistDto) : IRequest;
 public record UnsubscribeFromArtistRequest(long Id, long UserId) : IRequest;
 public record UpdateArtistRequest(long Id, ArtistRequestDto ArtistRequestDto) : IRequest<ArtistResponseDto>;
 public record DeleteArtistRequest(long Id) : IRequest<ArtistResponseDto>;
