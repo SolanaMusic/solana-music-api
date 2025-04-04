@@ -15,7 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.ConfigureRepositories();
 builder.Services.ConfigureServices();
 builder.Services.ConfigureIdentity();
-builder.Services.ConfigureGeneral();s
+builder.Services.ConfigureGeneral();
 builder.AddJwtAuthentication();
 
 builder.Services.ConfigureSwagger();
