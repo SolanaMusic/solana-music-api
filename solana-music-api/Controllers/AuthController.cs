@@ -33,10 +33,10 @@ public class AuthController(IMediator mediator) : ControllerBase
         return Challenge(properties, authProvider);
     }
     
-    [HttpPost("phantom-auth")]
-    public async Task<IActionResult> PhantomAuth([FromBody] PhantomLoginDto phantomLoginDto)
+    [HttpPost("solana-wallet-auth")]
+    public async Task<IActionResult> SolanaWalletAuth([FromBody] SolanaWalletLoginDto solanaWalletLoginDto)
     {
-        var response = await mediator.Send(new PhantomAuthRequest(phantomLoginDto));
+        var response = await mediator.Send(new SolanaWalletAuthRequest(solanaWalletLoginDto));
         return Ok(response);
     }
 

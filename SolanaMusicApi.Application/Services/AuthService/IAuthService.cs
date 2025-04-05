@@ -9,6 +9,6 @@ public interface IAuthService
     Task<LoginResponseDto> LoginAsync(LoginDto loginDto);
     Task<LoginResponseDto> RegisterAsync(RegisterDto registerDto);
     Task<LoginResponseDto> LoginWithExternalAsync();
-    Task<LoginResponseDto> LoginWithPhantomAsync(PhantomLoginDto phantomLoginDto);
+    Task<LoginResponseDto> LoginWithSolanaWalletAsync(SolanaWalletLoginDto solanaWalletLoginDto);
     string CheckAuthProvider(string provider);
 }

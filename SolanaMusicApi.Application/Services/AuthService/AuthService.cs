@@ -83,17 +83,19 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
         return await GetLoginResponseAsync(user);
     }
 
-    public async Task<LoginResponseDto> LoginWithPhantomAsync(PhantomLoginDto phantomLoginDto)
+    public async Task<LoginResponseDto> LoginWithSolanaWalletAsync(SolanaWalletLoginDto solanaWalletLoginDto)
     {
-        AuthExtensions.VerifySignature(phantomLoginDto);
-        var email = AuthExtensions.GenerateEmail(phantomLoginDto.PublicKey[..6], "phantom");
+        var walletName = solanaWalletLoginDto.WalletName;
+        AuthExtensions.VerifySignature(solanaWalletLoginDto);
+        
+        var email = AuthExtensions.GenerateEmail(solanaWalletLoginDto.PublicKey[..6], walletName.ToLower());
         var checkUser = await userService.GetUserAsync(x => x.Email == email);
         
         if (checkUser != null)
             return await GetLoginResponseAsync(checkUser);
         
         var user = await CheckExternalLoginUserAsync(email);
-        var loginInfo = new UserLoginInfo("Phantom", phantomLoginDto.PublicKey, "PhantomWallet");
+        var loginInfo = new UserLoginInfo(walletName.CapitalizeFirst(), solanaWalletLoginDto.PublicKey, walletName.ToWalletProviderName());
         var loginResult = await userManager.AddLoginAsync(user, loginInfo);
         
         if (!loginResult.Succeeded)

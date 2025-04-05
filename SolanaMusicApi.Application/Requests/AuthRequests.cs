@@ -10,4 +10,4 @@ public record LoginRequest(LoginDto LoginDto) : IRequest<AuthResponseDto>;
 public record RegisterRequest(RegisterDto RegisterDto) : IRequest<AuthResponseDto>;
 public record ExternalAuthRequest(string Provider, string RedirectUrl) : IRequest<(string AuthProvider, AuthenticationProperties Properties)>;
 public record ExternalResponseRequest : IRequest<AuthResponseDto>;
-public record PhantomAuthRequest(PhantomLoginDto PhantomLoginDto) : IRequest<AuthResponseDto>;
+public record SolanaWalletAuthRequest(SolanaWalletLoginDto SolanaWalletLoginDto) : IRequest<AuthResponseDto>;
