@@ -3,6 +3,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Auth;
+using SolanaMusicApi.Domain.DTO.Auth.Default;
+using SolanaMusicApi.Domain.DTO.Auth.OAuth;
 
 namespace solana_music_api.Controllers;
 
@@ -29,6 +31,13 @@ public class AuthController(IMediator mediator) : ControllerBase
     {
         var (authProvider, properties) = await mediator.Send(new ExternalAuthRequest(provider, redirectUrl));
         return Challenge(properties, authProvider);
+    }
+    
+    [HttpPost("phantom-auth")]
+    public async Task<IActionResult> PhantomAuth([FromBody] PhantomLoginDto phantomLoginDto)
+    {
+        var response = await mediator.Send(new PhantomAuthRequest(phantomLoginDto));
+        return Ok(response);
     }
 
     [HttpGet("external-response")]

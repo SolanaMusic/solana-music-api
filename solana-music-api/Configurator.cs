@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
-using SolanaMusicApi.Application;
 using SolanaMusicApi.Application.Factories.FilePathFactory;
 using SolanaMusicApi.Application.Factories.RedirectUrlFactory;
 using SolanaMusicApi.Application.Services.AlbumService;
@@ -27,6 +26,7 @@ using SolanaMusicApi.Application.Services.TrackServices.TrackGenreService;
 using SolanaMusicApi.Application.Services.TrackServices.TracksService;
 using SolanaMusicApi.Application.Services.UserServices.UserProfileService;
 using SolanaMusicApi.Application.Services.UserServices.UserService;
+using SolanaMusicApi.Domain.DTO.Country;
 using SolanaMusicApi.Domain.Entities.User;
 using SolanaMusicApi.Infrastructure;
 using SolanaMusicApi.Infrastructure.Repositories.AlbumRepository;
@@ -112,10 +112,20 @@ public static class Configurator
         services.AddScoped<IPaymentService, PaymentService>();
     }
 
-    public static void ConfigureGeneral(this IServiceCollection services)
+    public static void ConfigureGeneral(this WebApplicationBuilder builder)
     {
-        services.AddAutoMapper(typeof(Program));
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IBaseService<>).Assembly));
+        builder.Services.Configure<LocationApiOptions>(builder.Configuration.GetSection("LocationApi"));
+        
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", policyBuilder =>
+                policyBuilder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+        });
+        
+        builder.Services.AddAutoMapper(typeof(Program));
+        builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IBaseService<>).Assembly));
     }
 
     public static void ConfigureIdentity(this IServiceCollection services)

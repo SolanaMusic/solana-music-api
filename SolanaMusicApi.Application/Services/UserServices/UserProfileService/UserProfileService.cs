@@ -8,13 +8,11 @@ using System.Text.RegularExpressions;
 
 namespace SolanaMusicApi.Application.Services.UserServices.UserProfileService;
 
-public class UserProfileService : BaseService<UserProfile>, IUserProfileService
+public class UserProfileService(IBaseRepository<UserProfile> baseRepository)
+    : BaseService<UserProfile>(baseRepository), IUserProfileService
 {
-    public UserProfileService(IBaseRepository<UserProfile> baseRepository) : base(baseRepository) { }
-
     public async Task CreateUserProfileAsync(long userId, Country country, UserProfileRequestDto userProfileRequestDto)
     {
-        var date = DateTime.UtcNow;
         var profile = new UserProfile
         {
             UserId = userId,
@@ -28,7 +26,6 @@ public class UserProfileService : BaseService<UserProfile>, IUserProfileService
 
     public async Task CreateUserProfileAsync(long userId, Country country, ExternalLoginInfo info)
     {
-        var date = DateTime.UtcNow;
         var profile = new UserProfile
         {
             UserId = userId,
@@ -40,7 +37,7 @@ public class UserProfileService : BaseService<UserProfile>, IUserProfileService
         await AddAsync(profile);
     }
 
-    private string GetAvatarUrl(ExternalLoginInfo info)
+    private static string GetAvatarUrl(ExternalLoginInfo info)
     {
         var avatar = info.Principal.Claims.FirstOrDefault(c => c.Type == "urn:google:picture")?.Value ?? string.Empty;
         return Regex.Replace(avatar, @"=s\d+", "=s300");

@@ -1,4 +1,4 @@
-﻿namespace SolanaMusicApi.Domain.DTO.General.CountryDto;
+﻿namespace SolanaMusicApi.Domain.DTO.Country;
 
 public class CountryRequestDto
 {

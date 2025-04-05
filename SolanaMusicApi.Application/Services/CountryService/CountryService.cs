@@ -5,12 +5,11 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
 namespace SolanaMusicApi.Application.Services.CountryService;
 
-public class CountryService : BaseService<Country>, ICountryService
+public class CountryService(IBaseRepository<Country> baseRepository) : BaseService<Country>(baseRepository), ICountryService
 {
-    public CountryService(IBaseRepository<Country> baseRepository) : base(baseRepository) { }
-
-    public async Task<Country?> GetCountryByNameAsync(string countryName)
+    public async Task<Country> GetCountryByNameAsync(string countryName)
     {
-        return await GetAll().FirstOrDefaultAsync(c => c.Name == countryName);
+        return await GetAll().FirstOrDefaultAsync(c => c.Name == countryName) 
+               ?? throw new ArgumentNullException(nameof(countryName), "Country not found");
     }
 }

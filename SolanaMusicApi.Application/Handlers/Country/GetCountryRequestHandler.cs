@@ -2,7 +2,7 @@
 using MediatR;
 using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.CountryService;
-using SolanaMusicApi.Domain.DTO.General.CountryDto;
+using SolanaMusicApi.Domain.DTO.Country;
 
 namespace SolanaMusicApi.Application.Handlers.Country;
 

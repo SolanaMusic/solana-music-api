@@ -15,7 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.ConfigureRepositories();
 builder.Services.ConfigureServices();
 builder.Services.ConfigureIdentity();
-builder.Services.ConfigureGeneral();
+builder.ConfigureGeneral();
 builder.AddJwtAuthentication();
 
 builder.Services.ConfigureSwagger();
@@ -31,6 +31,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowAll");
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 await app.CreateDefaultRolesAsync();

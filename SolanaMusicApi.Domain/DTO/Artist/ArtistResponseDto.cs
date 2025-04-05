@@ -1,5 +1,5 @@
 ﻿using SolanaMusicApi.Domain.DTO.Album;
-using SolanaMusicApi.Domain.DTO.General.CountryDto;
+using SolanaMusicApi.Domain.DTO.Country;
 using SolanaMusicApi.Domain.DTO.Track;
 using SolanaMusicApi.Domain.DTO.User;
 

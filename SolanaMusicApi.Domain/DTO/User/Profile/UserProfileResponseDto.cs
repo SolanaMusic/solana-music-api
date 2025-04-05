@@ -1,4 +1,4 @@
-﻿using SolanaMusicApi.Domain.DTO.General.CountryDto;
+﻿using SolanaMusicApi.Domain.DTO.Country;
 
 namespace SolanaMusicApi.Domain.DTO.User.Profile;
 

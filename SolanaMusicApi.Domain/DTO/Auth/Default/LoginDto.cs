@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SolanaMusicApi.Domain.DTO.Auth;
+namespace SolanaMusicApi.Domain.DTO.Auth.Default;
 
 public class LoginDto
 {

@@ -8,14 +8,12 @@ namespace SolanaMusicApi.Application.Services.UserServices.UserService;
 
 public class UserService(UserManager<ApplicationUser> userManager) : IUserService
 {
-    public async Task<ApplicationUser> GetUserAsync(Expression<Func<ApplicationUser, bool>> expression)
+    public async Task<ApplicationUser?> GetUserAsync(Expression<Func<ApplicationUser, bool>> expression)
     {
         var response = await userManager.Users
             .Include(u => u.Profile)
+                .ThenInclude(x => x.Country)
             .FirstOrDefaultAsync(expression);
-
-        if (response == null)
-            throw new NullReferenceException("User not found");
 
         return response;
     }

@@ -11,8 +11,12 @@ using SolanaMusicApi.Domain.DTO.Auth.OAuth;
 using SolanaMusicApi.Domain.Entities.General;
 using SolanaMusicApi.Domain.Entities.User;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
+using SolanaMusicApi.Application.Extensions;
+using SolanaMusicApi.Domain.DTO.Auth.Default;
+using SolanaMusicApi.Domain.DTO.User.Profile;
 
 namespace SolanaMusicApi.Application.Services.AuthService;
 
@@ -24,13 +28,13 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
 
     public async Task<LoginResponseDto> LoginAsync(LoginDto loginDto)
     {
-        var user = await userManager.FindByEmailAsync(loginDto.Email);
+        var user = await userService.GetUserAsync(x => x.Email == loginDto.Email);
 
         if (user == null)
             throw new NullReferenceException("User does not exist");
 
         if (!await userManager.CheckPasswordAsync(user, loginDto.Password))
-            throw new Exception("Invalid password");
+            throw new AuthenticationException("Invalid password");
 
         return await GetLoginResponseAsync(user);
     }
@@ -40,7 +44,7 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
         var appUser = await userManager.FindByEmailAsync(registerDto.LoginDto.Email);
 
         if (appUser != null)
-            throw new Exception("User is already exists");
+            throw new InvalidOperationException("User is already exists");
 
         var newUser = mapper.Map<ApplicationUser>(registerDto.LoginDto);
         newUser.UserName = await GenerateUserNameAsync(registerDto.LoginDto.Email);
@@ -64,19 +68,41 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
 
         var email = info.Principal.FindFirstValue(ClaimTypes.Email);
         if (string.IsNullOrEmpty(email))
-            throw new Exception("Could not retrieve the email from external provider");
+            throw new AuthenticationException("Could not retrieve the email from external provider");
 
         var user = await CheckExternalLoginUserAsync(email);
         var addLoginResult = await userManager.AddLoginAsync(user, info);
 
         if (!addLoginResult.Succeeded)
-            throw new Exception(userService.AggregateErrors(addLoginResult.Errors));
+            throw new AuthenticationException(userService.AggregateErrors(addLoginResult.Errors));
 
         var country = await GetUserCountry();
         await userProfileService.CreateUserProfileAsync(user.Id, country, info);
         await signInManager.SignInAsync(user, false);
 
-        return await GetLoginResponseAsync(user!);
+        return await GetLoginResponseAsync(user);
+    }
+
+    public async Task<LoginResponseDto> LoginWithPhantomAsync(PhantomLoginDto phantomLoginDto)
+    {
+        AuthExtensions.VerifySignature(phantomLoginDto);
+        var email = AuthExtensions.GenerateEmail(phantomLoginDto.PublicKey[..6], "phantom");
+        var checkUser = await userService.GetUserAsync(x => x.Email == email);
+        
+        if (checkUser != null)
+            return await GetLoginResponseAsync(checkUser);
+        
+        var user = await CheckExternalLoginUserAsync(email);
+        var loginInfo = new UserLoginInfo("Phantom", phantomLoginDto.PublicKey, "PhantomWallet");
+        var loginResult = await userManager.AddLoginAsync(user, loginInfo);
+        
+        if (!loginResult.Succeeded)
+            throw new AuthenticationException(userService.AggregateErrors(loginResult.Errors));
+        
+        var country = await GetUserCountry();
+        await userProfileService.CreateUserProfileAsync(user.Id, country, new UserProfileRequestDto());
+        
+        return await GetLoginResponseAsync(user);
     }
 
     public string CheckAuthProvider(string provider)
@@ -85,7 +111,7 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
             .FirstOrDefault(p => p.Equals(provider, StringComparison.OrdinalIgnoreCase));
 
         if (matchedProvider == null)
-            throw new Exception("Auth provider is not supported");
+            throw new KeyNotFoundException("Auth provider is not supported");
 
         return matchedProvider;
     }
@@ -119,7 +145,7 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
 
     private async Task<ApplicationUser> CheckExternalLoginUserAsync(string email)
     {
-        var user = await userManager.FindByEmailAsync(email);
+        var user = await userService.GetUserAsync(x => x.Email == email);
         if (user != null)
             return user;
 
@@ -130,14 +156,16 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
         };
 
         await userService.CreateUserAsync(user);
-        return user;
+        user = await userService.GetUserAsync(x => x.Email == email);
+        
+        return user!;
     }
 
     private async Task<string> GenerateUserNameAsync(string email)
     {
         var baseUserName = email.Split('@')[0];
         var userName = baseUserName;
-        int suffix = 1;
+        var suffix = 1;
 
         while (await userManager.FindByNameAsync(userName) != null)
         {
@@ -154,7 +182,8 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
         if (user != null)
             await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false);
 
-        return user;
+        return await userService.GetUserAsync(x => x.Email == info.Principal
+            .FindFirstValue(ClaimTypes.Email));
     }
 
     private async Task<Country> GetUserCountry()
@@ -165,8 +194,6 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
 
     private async Task<LoginResponseDto> GetLoginResponseAsync(ApplicationUser user)
     {
-        var appUser = await userService.GetUserAsync(x => x.Id == user.Id);
-
         return new LoginResponseDto
         {
             Jwt = await GenerateTokenAsync(user),

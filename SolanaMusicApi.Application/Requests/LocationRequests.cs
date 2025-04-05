@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using SolanaMusicApi.Domain.DTO.General.CountryDto;
+using SolanaMusicApi.Domain.DTO.Country;
 
 namespace SolanaMusicApi.Application.Requests;
 
