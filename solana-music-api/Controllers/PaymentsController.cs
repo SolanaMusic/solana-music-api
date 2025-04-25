@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Domain.DTO.Payment;
 using SolanaMusicApi.Domain.DTO.Transaction;
 using SolanaMusicApi.Application.Requests;
+using SolanaMusicApi.Domain.DTO.Payment.CryptoWallet;
 
 namespace solana_music_api.Controllers;
 
@@ -14,6 +15,13 @@ public class PaymentsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> CreatePaymentSession(SubscriptionPaymentRequestDto subscriptionPaymentRequest)
     {
         var response = await mediator.Send(new CreateStripePaymentSessionRequest(subscriptionPaymentRequest));
+        return Ok(response);
+    }
+
+    [HttpPost("crypto")]
+    public async Task<IActionResult> CreatePaymentSession(CryptoSubscriptionPaymentRequestDto cryptoSubscriptionPaymentRequestDto)
+    {
+        var response = await mediator.Send(new CryptoPaymentRequest(cryptoSubscriptionPaymentRequestDto));
         return Ok(response);
     }
 

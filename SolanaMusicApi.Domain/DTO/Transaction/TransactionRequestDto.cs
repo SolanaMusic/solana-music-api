@@ -7,6 +7,8 @@ public class TransactionRequestDto
     public long UserId { get; set; }
     public long CurrencyId { get; set; }
     public decimal Amount { get; set; }
+    public string? PaymentIntent { get; set; }
     public TransactionType TransactionType { get; set; }
     public PaymentMethod PaymentMethod { get; set; }
+    public TransactionStatus? Status { get; set; } = TransactionStatus.Pending;
 }

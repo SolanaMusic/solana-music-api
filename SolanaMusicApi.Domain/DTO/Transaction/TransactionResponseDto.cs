@@ -1,4 +1,5 @@
 ﻿using SolanaMusicApi.Domain.DTO.Currency;
+using SolanaMusicApi.Domain.DTO.User;
 using SolanaMusicApi.Domain.Entities;
 using SolanaMusicApi.Domain.Enums.Transaction;
 
@@ -12,5 +13,6 @@ public class TransactionResponseDto : BaseEntity
     public TransactionType TransactionType { get; set; }
     public PaymentMethod PaymentMethod { get; set; }
 
+    public UserResponseDto User { get; set; } = null!;
     public CurrencyResponseDto Currency { get; set; } = null!;
 }

@@ -95,18 +95,18 @@ public class SubscriptionService(IBaseRepository<Subscription> baseRepository, I
     public bool IsSubscriptionActive(Subscription subscription, long userId) => 
         subscription.UserSubscriptions.Any(x => x.UserId == userId && x.IsActive);
     
-    public async Task ProcessSubscriptionAsync(Transaction transaction, TransactionStatus status, long subscriptionPlanId)
+    public async Task ProcessSubscriptionAsync(Transaction transaction, long subscriptionPlanId)
     {
         var subscriptionCheck = await GetUserSubscriptions(transaction.UserId)
             .FirstOrDefaultAsync(x => x.SubscriptionPlanId == subscriptionPlanId);
 
-        if (status == TransactionStatus.Completed && subscriptionCheck == null)
+        if (transaction.Status == TransactionStatus.Completed && subscriptionCheck == null)
         {
             var subscription = new Subscription { OwnerId = transaction.UserId, SubscriptionPlanId = subscriptionPlanId };
             await CreateSubscriptionAsync(subscription);
         }
 
-        if (status == TransactionStatus.Completed && subscriptionCheck != null)
+        if (transaction.Status == TransactionStatus.Completed && subscriptionCheck != null)
             await ResubscribeAsync(subscriptionCheck.Id);
     }
 

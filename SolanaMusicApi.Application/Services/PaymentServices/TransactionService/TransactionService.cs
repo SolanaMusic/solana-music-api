@@ -20,16 +20,17 @@ public class TransactionService(IBaseRepository<Transaction> baseRepository, ISu
             .FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("Transaction not found");
     }
 
-    public Transaction CreateTransactionAsync(TransactionRequestDto transactionDto)
+    public Transaction CreateTransaction(TransactionRequestDto transactionDto)
     {
         return new Transaction
         {
             UserId = transactionDto.UserId,
             CurrencyId = transactionDto.CurrencyId,
             Amount = transactionDto.Amount,
-            Status = TransactionStatus.Pending,
             TransactionType = transactionDto.TransactionType,
-            PaymentMethod = transactionDto.PaymentMethod
+            PaymentMethod = transactionDto.PaymentMethod,
+            Status = transactionDto.Status ?? TransactionStatus.Pending,
+            PaymentIntent = transactionDto.PaymentIntent ?? null
         };
     }
     
@@ -49,7 +50,7 @@ public class TransactionService(IBaseRepository<Transaction> baseRepository, ISu
                 transaction.PaymentIntent = paymentIntentId;
             
             if (subscriptionPlanId.HasValue)
-                await subscriptionService.ProcessSubscriptionAsync(transaction, status, subscriptionPlanId.Value);
+                await subscriptionService.ProcessSubscriptionAsync(transaction, subscriptionPlanId.Value);
 
             if (transaction.Status != originalStatus || transaction.PaymentIntent != originalPaymentIntent)
                 await UpdateAsync(transaction);
@@ -79,8 +80,14 @@ public class TransactionService(IBaseRepository<Transaction> baseRepository, ISu
         return transaction.UpdatedDate >= DateTime.UtcNow.AddMinutes(-20);
     }
 
-    private IQueryable<Transaction> GetTransactionsQuery() => 
-        GetAll().Include(x => x.Currency);
+    private IQueryable<Transaction> GetTransactionsQuery()
+    {
+        return GetAll()
+            .Include(x => x.Currency)
+            .Include(x => x.User)
+                .ThenInclude(x => x.Profile)
+                    .ThenInclude(x => x.Country);
+    }
 
     private async Task<Transaction> TryGetTransactionAsync(long id, TransactionStatus status, string? paymentIntentId)
     {

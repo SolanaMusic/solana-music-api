@@ -16,5 +16,5 @@ public interface ISubscriptionService : IBaseService<Subscription>
     Task SelectSubscriptionAsync(long id, long userId);
     Task ResubscribeAsync(long id);
     bool IsSubscriptionActive(Subscription subscription, long userId);
-    Task ProcessSubscriptionAsync(Transaction transaction, TransactionStatus status, long subscriptionPlanId);
+    Task ProcessSubscriptionAsync(Transaction transaction, long subscriptionPlanId);
 }
