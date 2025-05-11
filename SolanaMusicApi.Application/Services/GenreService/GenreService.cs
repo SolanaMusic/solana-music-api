@@ -4,7 +4,4 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
 namespace SolanaMusicApi.Application.Services.GenreService;
 
-public class GenreService : BaseService<Genre>, IGenreService
-{
-    public GenreService(IBaseRepository<Genre> baseRepository) : base(baseRepository) { }
-}
+public class GenreService(IBaseRepository<Genre> baseRepository) : BaseService<Genre>(baseRepository), IGenreService;

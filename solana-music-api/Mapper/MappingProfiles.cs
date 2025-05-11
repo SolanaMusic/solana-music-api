@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using SolanaMusicApi.Domain.Constants;
 using SolanaMusicApi.Domain.DTO.Album;
 using SolanaMusicApi.Domain.DTO.Artist;
 using SolanaMusicApi.Domain.DTO.ArtistTrack;
@@ -7,6 +8,9 @@ using SolanaMusicApi.Domain.DTO.Auth.Default;
 using SolanaMusicApi.Domain.DTO.Country;
 using SolanaMusicApi.Domain.DTO.Currency;
 using SolanaMusicApi.Domain.DTO.Genre;
+using SolanaMusicApi.Domain.DTO.Nft;
+using SolanaMusicApi.Domain.DTO.Nft.Nft;
+using SolanaMusicApi.Domain.DTO.Nft.NftCollection;
 using SolanaMusicApi.Domain.DTO.Playlist;
 using SolanaMusicApi.Domain.DTO.Subscription;
 using SolanaMusicApi.Domain.DTO.SubscriptionPlan;
@@ -17,6 +21,7 @@ using SolanaMusicApi.Domain.DTO.User;
 using SolanaMusicApi.Domain.DTO.User.Profile;
 using SolanaMusicApi.Domain.Entities.General;
 using SolanaMusicApi.Domain.Entities.Music;
+using SolanaMusicApi.Domain.Entities.Nft;
 using SolanaMusicApi.Domain.Entities.Performer;
 using SolanaMusicApi.Domain.Entities.Playlist;
 using SolanaMusicApi.Domain.Entities.Subscription;
@@ -106,5 +111,46 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.IsActive, opt => opt.Ignore());
 
         CreateMap<Transaction, TransactionResponseDto>();
+
+        CreateMap<NftRequestDto, Nft>();
+        CreateMap<NftCollectionRequestDto, NftCollection>();
+        
+        CreateMap<Nft, NftResponseDto>()
+            .ForMember(dest => dest.Available, opt => opt.MapFrom(src => src.Owner == Constants.SystemAddress));
+        CreateMap<Nft, GetNftResponseDto>()
+            .ForMember(dest => dest.Available, opt => opt.MapFrom(src => src.Owner == Constants.SystemAddress));
+        
+        CreateMap<NftCollection, NftCollectionResponseDto>()
+            .ForMember(dest => dest.Minted, opt => opt.MapFrom(src => src.Nfts.Count(x => x.Owner != Constants.SystemAddress)))
+            .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Nfts.Any() ? src.Nfts.Min(n => n.Price) : 0))
+            .ForMember(dest => dest.Currency, opt => opt.MapFrom(src => src.Nfts.Any() ? src.Nfts.First().Currency : null))
+            .ForMember(dest => dest.Creators, opt => opt.MapFrom(src => GetCreators(src)));;
+    }
+    
+    private static List<ArtistResponseDto> GetCreators(NftCollection src)
+    {
+        List<ArtistResponseDto> artists = [];
+        
+        if (src.Album != null)
+        {
+            artists.AddRange(src.Album.ArtistAlbums.Select(x => x.Artist)
+                .Select(artist => new ArtistResponseDto { Id = artist.Id, Name = artist.Name }));
+
+            return artists;
+        }
+       
+        if (src.Track != null)
+        {
+            artists.AddRange(src.Track.ArtistTracks.Select(x => x.Artist)
+                .Select(artist => new ArtistResponseDto { Id = artist.Id, Name = artist.Name }));
+
+            return artists;
+        }
+
+        if (src.Artist == null) 
+            return artists;
+        
+        artists.Add(new ArtistResponseDto { Id = src.Artist.Id, Name = src.Artist.Name });
+        return artists;
     }
 }

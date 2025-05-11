@@ -20,7 +20,7 @@ public class TransactionService(IBaseRepository<Transaction> baseRepository, ISu
             .FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("Transaction not found");
     }
 
-    public Transaction CreateTransaction(TransactionRequestDto transactionDto)
+    public Transaction MapTransaction(TransactionRequestDto transactionDto)
     {
         return new Transaction
         {

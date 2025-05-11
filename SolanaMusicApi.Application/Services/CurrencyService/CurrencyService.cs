@@ -4,7 +4,4 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
 namespace SolanaMusicApi.Application.Services.CurrencyService;
 
-public class CurrencyService : BaseService<Currency>, ICurrencyService
-{
-    public CurrencyService(IBaseRepository<Currency> baseRepository) : base(baseRepository) { }
-}
+public class CurrencyService(IBaseRepository<Currency> baseRepository) : BaseService<Currency>(baseRepository), ICurrencyService;

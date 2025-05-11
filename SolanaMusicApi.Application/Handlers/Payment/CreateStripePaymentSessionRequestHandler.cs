@@ -18,7 +18,7 @@ public class CreateStripePaymentSessionRequestHandler(IPaymentService paymentSer
         try
         {
             var transactionDto = CreateTransactionRequest(request.SubscriptionPaymentRequest);
-            var transaction = transactionService.CreateTransaction(transactionDto);
+            var transaction = transactionService.MapTransaction(transactionDto);
             
             var checkoutSession = await paymentService.GetCheckoutSessionAsync(
                 request.SubscriptionPaymentRequest.StripeSubscriptionPaymentDto!, transaction, transactionDto);

@@ -4,7 +4,5 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
 namespace SolanaMusicApi.Application.Services.PlaylistServices.PlaylistTrackService;
 
-public class PlaylistTrackService : BaseService<PlaylistTrack>, IPlaylistTrackService
-{
-    public PlaylistTrackService(IBaseRepository<PlaylistTrack> baseRepository) : base(baseRepository) { }
-}
+public class PlaylistTrackService(IBaseRepository<PlaylistTrack> baseRepository)
+    : BaseService<PlaylistTrack>(baseRepository), IPlaylistTrackService;

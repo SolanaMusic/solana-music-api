@@ -14,6 +14,8 @@ using SolanaMusicApi.Application.Services.CurrencyService;
 using SolanaMusicApi.Application.Services.FileService;
 using SolanaMusicApi.Application.Services.GenreService;
 using SolanaMusicApi.Application.Services.LocationService;
+using SolanaMusicApi.Application.Services.NftServices.NftCollectionService;
+using SolanaMusicApi.Application.Services.NftServices.NftService;
 using SolanaMusicApi.Application.Services.PaymentServices.PaymentService;
 using SolanaMusicApi.Application.Services.PaymentServices.TransactionService;
 using SolanaMusicApi.Application.Services.PlaylistServices.PlaylistService;
@@ -38,6 +40,8 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 using SolanaMusicApi.Infrastructure.Repositories.CountryRepository;
 using SolanaMusicApi.Infrastructure.Repositories.CurrencyRepository;
 using SolanaMusicApi.Infrastructure.Repositories.GenreRepository;
+using SolanaMusicApi.Infrastructure.Repositories.NftRepositories.NftCollectionRepository;
+using SolanaMusicApi.Infrastructure.Repositories.NftRepositories.NftRepository;
 using SolanaMusicApi.Infrastructure.Repositories.PlaylistRepositories.PlaylistRepository;
 using SolanaMusicApi.Infrastructure.Repositories.PlaylistRepositories.PlaylistTrackRepository;
 using SolanaMusicApi.Infrastructure.Repositories.SubscriptionRepositories.SubscriptionPlanCurrencyRepository;
@@ -76,6 +80,9 @@ public static class Configurator
         services.AddScoped<IUserSubscriptionRepository, UserSubscriptionRepository>();
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
         services.AddScoped<ITransactionRepository, TransactionRepository>();
+
+        services.AddScoped<INftCollectionRepository, NftCollectionRepository>();
+        services.AddScoped<INftRepository, NftRepository>();
     }
 
     public static void ConfigureServices(this IServiceCollection services)
@@ -110,6 +117,9 @@ public static class Configurator
 
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IPaymentService, PaymentService>();
+
+        services.AddScoped<INftCollectionService, NftCollectionService>();
+        services.AddScoped<INftService, NftService>();
     }
 
     public static void ConfigureGeneral(this WebApplicationBuilder builder)

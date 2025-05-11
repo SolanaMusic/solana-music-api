@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SolanaMusicApi.Domain.Entities.General;
 using SolanaMusicApi.Domain.Entities.Music;
+using SolanaMusicApi.Domain.Entities.Nft;
 using SolanaMusicApi.Domain.Entities.Performer;
 using SolanaMusicApi.Domain.Entities.Playlist;
 using SolanaMusicApi.Domain.Entities.Subscription;
@@ -10,6 +11,7 @@ using SolanaMusicApi.Domain.Entities.Transaction;
 using SolanaMusicApi.Domain.Entities.User;
 using SolanaMusicApi.Infrastructure.Configs.General;
 using SolanaMusicApi.Infrastructure.Configs.Music;
+using SolanaMusicApi.Infrastructure.Configs.Nft;
 using SolanaMusicApi.Infrastructure.Configs.Performer;
 using SolanaMusicApi.Infrastructure.Configs.Playlist;
 using SolanaMusicApi.Infrastructure.Configs.Subscrioption;
@@ -42,6 +44,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<Playlist> Playlists { get; set; }
     public DbSet<PlaylistTrack> PlaylistTracks { get; set; }
+    
+    public DbSet<NftCollection> NftCollections { get; set; }
+    public DbSet<Nft> Nfts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,5 +73,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         modelBuilder.ApplyConfiguration(new PlaylistConfiguration());
         modelBuilder.ApplyConfiguration(new PlaylistTrackConfiguration());
+
+        modelBuilder.ApplyConfiguration(new NftCollectionConfiguration());
+        modelBuilder.ApplyConfiguration(new NftConfiguration());
     }
 }

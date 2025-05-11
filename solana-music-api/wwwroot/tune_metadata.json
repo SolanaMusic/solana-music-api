@@ -1,0 +1,23 @@
+{
+  "name": "Tune",
+  "symbol": "TUNE",
+  "description": "Tune is for everyone who loves music and innovations",
+  "uri": "https://white-fantastic-lion-764.mypinata.cloud/ipfs/bafkreifpjlkht3otxz5liy7zsfi5ft5rdy4h3kfjyud7vybvjc36kqix6y",
+  "image": "https://white-fantastic-lion-764.mypinata.cloud/ipfs/bafkreifpjlkht3otxz5liy7zsfi5ft5rdy4h3kfjyud7vybvjc36kqix6y",
+  "external_url": "https://x.com/tune_xyz",
+  "properties": {
+    "files": [
+      {
+        "uri": "https://white-fantastic-lion-764.mypinata.cloud/ipfs/bafkreifpjlkht3otxz5liy7zsfi5ft5rdy4h3kfjyud7vybvjc36kqix6y",
+        "type": "image/png"
+      }
+    ],
+    "category": "image",
+    "creators": [
+      {
+        "address": "7eJ1xj1EKK3nZPP4AkUHeMikD2L2Q7HMMZPPb5uhQ1zq",
+        "share": 100
+      }
+    ]
+  }
+}

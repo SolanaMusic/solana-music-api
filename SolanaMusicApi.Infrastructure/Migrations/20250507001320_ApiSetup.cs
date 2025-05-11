@@ -92,8 +92,8 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Symbol = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Symbol = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -115,6 +115,26 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Genres", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NftCollections",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Supply = table.Column<int>(type: "int", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AssociationId = table.Column<long>(type: "bigint", nullable: false),
+                    AssociationType = table.Column<int>(type: "int", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NftCollections", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -362,7 +382,7 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     PaymentIntent = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     CurrencyId = table.Column<long>(type: "bigint", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,6)", precision: 18, scale: 6, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     TransactionType = table.Column<int>(type: "int", nullable: false),
                     PaymentMethod = table.Column<int>(type: "int", nullable: false),
@@ -384,6 +404,34 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                         principalTable: "Currencies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Nfts",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CollectionId = table.Column<long>(type: "bigint", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Owner = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,6)", nullable: false),
+                    CurrencyId = table.Column<long>(type: "bigint", nullable: false),
+                    Rarity = table.Column<int>(type: "int", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Nfts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Nfts_NftCollections_CollectionId",
+                        column: x => x.CollectionId,
+                        principalTable: "NftCollections",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -697,6 +745,16 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Currencies_Code",
+                table: "Currencies",
+                column: "Code");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Nfts_CollectionId",
+                table: "Nfts",
+                column: "CollectionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Playlists_OwnerId",
                 table: "Playlists",
                 column: "OwnerId");
@@ -816,6 +874,9 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Nfts");
+
+            migrationBuilder.DropTable(
                 name: "PlaylistTracks");
 
             migrationBuilder.DropTable(
@@ -838,6 +899,9 @@ namespace SolanaMusicApi.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "NftCollections");
 
             migrationBuilder.DropTable(
                 name: "Playlists");

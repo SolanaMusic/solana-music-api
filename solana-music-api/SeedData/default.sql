@@ -246,7 +246,7 @@ END
 IF NOT EXISTS (SELECT 1 FROM dbo.Currencies WHERE Id = 3)
 BEGIN
     INSERT INTO dbo.Currencies ([Id], [Code], [Symbol], [CreatedDate], [UpdatedDate])
-    VALUES (3, 'SLMC', 'SLMC', GETDATE(), GETDATE());
+    VALUES (3, 'TUNE', 'TUNE', GETDATE(), GETDATE());
 END
 SET IDENTITY_INSERT dbo.Currencies OFF;
 
@@ -257,18 +257,27 @@ IF NOT EXISTS (SELECT 1 FROM dbo.SubscriptionPlanCurrencies WHERE Id = 1)
 BEGIN
     INSERT INTO dbo.SubscriptionPlanCurrencies ([Id], [SubscriptionPlanId], [CurrencyId], [Price], [CreatedDate], [UpdatedDate])
     VALUES (1, 1, 1, 4.99, GETDATE(), GETDATE());
+
+    INSERT INTO dbo.SubscriptionPlanCurrencies ([Id], [SubscriptionPlanId], [CurrencyId], [Price], [CreatedDate], [UpdatedDate])
+    VALUES (2, 1, 3, 500, GETDATE(), GETDATE());
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.SubscriptionPlanCurrencies WHERE Id = 2)
 BEGIN
     INSERT INTO dbo.SubscriptionPlanCurrencies ([Id], [SubscriptionPlanId], [CurrencyId], [Price], [CreatedDate], [UpdatedDate])
-    VALUES (2, 1, 3, 10.99, GETDATE(), GETDATE());
+    VALUES (3, 2, 1, 9.99, GETDATE(), GETDATE());
+
+    INSERT INTO dbo.SubscriptionPlanCurrencies ([Id], [SubscriptionPlanId], [CurrencyId], [Price], [CreatedDate], [UpdatedDate])
+    VALUES (4, 2, 3, 1000, GETDATE(), GETDATE());
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.SubscriptionPlanCurrencies WHERE Id = 3)
 BEGIN
     INSERT INTO dbo.SubscriptionPlanCurrencies ([Id], [SubscriptionPlanId], [CurrencyId], [Price], [CreatedDate], [UpdatedDate])
-    VALUES (3, 3, 3, 1000, GETDATE(), GETDATE());
+    VALUES (5, 3, 1, 14.99, GETDATE(), GETDATE());
+
+    INSERT INTO dbo.SubscriptionPlanCurrencies ([Id], [SubscriptionPlanId], [CurrencyId], [Price], [CreatedDate], [UpdatedDate])
+    VALUES (6, 3, 3, 1500, GETDATE(), GETDATE());
 END
 SET IDENTITY_INSERT dbo.SubscriptionPlanCurrencies OFF;
 
@@ -316,6 +325,56 @@ IF EXISTS (SELECT 1 FROM dbo.AspNetUsers WHERE Id = 1) AND NOT EXISTS (SELECT 1 
 BEGIN
     SET IDENTITY_INSERT dbo.Transactions ON;
     INSERT INTO dbo.Transactions ([Id], [UserId], [CurrencyId], [Amount], [Status], [TransactionType], [PaymentMethod], [CreatedDate], [UpdatedDate])
-    VALUES (1, 1, 1, 100, 2, 1, 1, GETDATE(), GETDATE());
+    VALUES (1, 1, 1, 14.99, 2, 1, 1, GETDATE(), GETDATE());
     SET IDENTITY_INSERT dbo.Transactions OFF;
 END
+
+
+-- NftCollection
+SET IDENTITY_INSERT dbo.NftCollections ON;
+IF NOT EXISTS (SELECT 1 FROM dbo.NftCollections WHERE Id = 1)
+BEGIN
+INSERT INTO dbo.NftCollections ([Id], [Name], [Supply], [Address], [AssociationId], [AssociationType], [ImageUrl], [CreatedDate], [UpdatedDate])
+VALUES (1, 'Dev Collection', 5, '2k7pY8DyNxcDJTatztZPMRTp4G8jStnj8eRa8Ri6VtQR', 1, 0,
+        'https://gateway.irys.xyz/9Y59MVJMgvLUcmxAiSv9xWaREGMTpntQuobhgPDoUtA1', GETDATE(), GETDATE());
+END
+SET IDENTITY_INSERT dbo.NftCollections OFF;
+
+
+-- Nfts
+SET IDENTITY_INSERT dbo.Nfts ON;
+IF NOT EXISTS (SELECT 1 FROM dbo.Nfts WHERE Id = 1)
+BEGIN
+INSERT INTO dbo.Nfts ([Id], [Name], [CollectionId], [Address], [Owner], [Price], [CurrencyId], [Rarity], [ImageUrl], [CreatedDate], [UpdatedDate])
+VALUES (1, 'Dev NFT #0', 1, '3BBqZLWqGutpyUn1tsEuJD7qjm3NbNp6vgMyhoDCLEyX', '7eJ1xj1EKK3nZPP4AkUHeMikD2L2Q7HMMZPPb5uhQ1zq', 2, 2, 4,
+           'https://gateway.irys.xyz/27bJ1JmEoBQL2dbHSyu4PFRkfxvmzh9zunmLKfxURFn8', GETDATE(), GETDATE());
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Nfts WHERE Id = 2)
+BEGIN
+INSERT INTO dbo.Nfts ([Id], [Name], [CollectionId], [Address], [Owner], [Price], [CurrencyId], [Rarity], [ImageUrl], [CreatedDate], [UpdatedDate])
+VALUES (2, 'Dev NFT #1', 1, '6LWxG6oCo8oF6jHJmQfdjRAD6zswfJrUtyoRB5fe19oV', '7eJ1xj1EKK3nZPP4AkUHeMikD2L2Q7HMMZPPb5uhQ1zq', 2, 2, 4, 
+        'https://gateway.irys.xyz/Hu2zUP9nyDpVn9yzWnPH8TqqVaLeFago13VCk6aJewPz', GETDATE(), GETDATE());
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Nfts WHERE Id = 3)
+BEGIN
+INSERT INTO dbo.Nfts ([Id], [Name], [CollectionId], [Address], [Owner], [Price], [CurrencyId], [Rarity], [ImageUrl], [CreatedDate], [UpdatedDate])
+VALUES (3, 'Dev NFT #2', 1, '5VaBqrDmSxqPrfUixZcn1cmL9K7dN5N8o5c5vJc4eNQn', '7eJ1xj1EKK3nZPP4AkUHeMikD2L2Q7HMMZPPb5uhQ1zq', 2, 2, 4, 
+        'https://gateway.irys.xyz/EuiQEr82w7bThrqwp6S4agykJW1qzt1QrEWJLr2MU9mg', GETDATE(), GETDATE());
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Nfts WHERE Id = 4)
+BEGIN
+INSERT INTO dbo.Nfts ([Id], [Name], [CollectionId], [Address], [Owner], [Price], [CurrencyId], [Rarity], [ImageUrl], [CreatedDate], [UpdatedDate])
+VALUES (4, 'Dev NFT #3', 1, 'AnzZZDcoxWn9wZitJTyYn4a9rhUUKDEtbVrdandSzynB', '7eJ1xj1EKK3nZPP4AkUHeMikD2L2Q7HMMZPPb5uhQ1zq', 2, 2, 4, 
+        'https://gateway.irys.xyz/22AAY3pnQWHZZSatw4fdjHpRu2n5vTjubxyaLTs2p4tR', GETDATE(), GETDATE());
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Nfts WHERE Id = 5)
+BEGIN
+INSERT INTO dbo.Nfts ([Id], [Name], [CollectionId], [Address], [Owner], [Price], [CurrencyId], [Rarity], [ImageUrl], [CreatedDate], [UpdatedDate])
+VALUES (5, 'Dev NFT #4', 1, 'CFBdVoP1KiVP3TrkxrkGQRozkJxovwGWoupDtPoziLPP', '7eJ1xj1EKK3nZPP4AkUHeMikD2L2Q7HMMZPPb5uhQ1zq', 2, 2, 4, 
+        'https://gateway.irys.xyz/3YB21AWWE6b6YDhksYVVMtY8mrqH48jWb6HRmKckYHq5', GETDATE(), GETDATE());
+END
+SET IDENTITY_INSERT dbo.Nfts OFF;

@@ -4,7 +4,5 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
 namespace SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionPlanCurrencyService;
 
-public class SubscriptionPlanCurrencyService : BaseService<SubscriptionPlanCurrency>, ISubscriptionPlanCurrencyService
-{
-    public SubscriptionPlanCurrencyService(IBaseRepository<SubscriptionPlanCurrency> baseRepository) : base(baseRepository) { }
-}
+public class SubscriptionPlanCurrencyService(IBaseRepository<SubscriptionPlanCurrency> baseRepository)
+    : BaseService<SubscriptionPlanCurrency>(baseRepository), ISubscriptionPlanCurrencyService;

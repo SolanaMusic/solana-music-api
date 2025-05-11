@@ -28,7 +28,7 @@ public class FileService(IFilePathFactory filePathFactory) : IFileService
 
     public async Task<byte[]> ConvertImageAsync(IFormFile file, ImageFormats format)
     {
-        using var stream = file.OpenReadStream();
+        await using var stream = file.OpenReadStream();
         using var image = await Image.LoadAsync(stream);
         image.Mutate(x => x.AutoOrient());
 
@@ -55,14 +55,14 @@ public class FileService(IFilePathFactory filePathFactory) : IFileService
     public TimeSpan GetAudioDuration(IFormFile file)
     {
         using var stream = file.OpenReadStream();
-        using var reader = Path.GetExtension(file.FileName).ToLower() == ".mp3"
+        using var reader = Path.GetExtension(file.FileName).Equals(".mp3", StringComparison.CurrentCultureIgnoreCase)
             ? new Mp3FileReader(stream)
             : new WaveFileReader(stream) as WaveStream;
 
         return TimeSpan.FromSeconds(Math.Round(reader.TotalTime.TotalSeconds));
     }
 
-    private string ValidateFileExtension(IFormFile file, FileTypes type)
+    private static string ValidateFileExtension(IFormFile file, FileTypes type)
     {
         var extension = Path.GetExtension(file.FileName).ToLower();
 
@@ -115,10 +115,9 @@ public class FileService(IFilePathFactory filePathFactory) : IFileService
 
     private string GetFinalPath(string fullPath)
     {
-        if (_basePath.Contains("wwwroot", StringComparison.OrdinalIgnoreCase))
-            return Path.GetRelativePath(_basePath, fullPath);
-
-        return fullPath;
+        return _basePath.Contains("wwwroot", StringComparison.OrdinalIgnoreCase) 
+            ? Path.GetRelativePath(_basePath, fullPath) 
+            : fullPath;
     }
 
     private static bool IsImage(string extension) => ExtensionConstants.ImageTypes.Contains(extension);

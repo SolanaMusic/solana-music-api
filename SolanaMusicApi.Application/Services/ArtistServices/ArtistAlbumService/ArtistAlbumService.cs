@@ -4,7 +4,4 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
 namespace SolanaMusicApi.Application.Services.ArtistServices.ArtistAlbumService;
 
-public class ArtistAlbumService : BaseService<ArtistAlbum>, IArtistAlbumService
-{
-    public ArtistAlbumService(IBaseRepository<ArtistAlbum> baseRepository) : base(baseRepository) { }
-}
+public class ArtistAlbumService(IBaseRepository<ArtistAlbum> baseRepository) : BaseService<ArtistAlbum>(baseRepository), IArtistAlbumService;

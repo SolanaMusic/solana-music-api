@@ -19,7 +19,7 @@ public class CryptoPaymentRequestHandler(ITransactionService transactionService,
         try
         {
             var transactionDto = MapTransaction(request.PaymentRequestDto);
-            var transaction = transactionService.CreateTransaction(transactionDto);
+            var transaction = transactionService.MapTransaction(transactionDto);
             var added = await transactionService.AddAsync(transaction);
             await subscriptionService.ProcessSubscriptionAsync(transaction, request.PaymentRequestDto.SubscriptionPlanId);
 

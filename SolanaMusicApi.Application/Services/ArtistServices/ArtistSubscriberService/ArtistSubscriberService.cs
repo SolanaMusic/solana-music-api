@@ -4,7 +4,5 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
 namespace SolanaMusicApi.Application.Services.ArtistServices.ArtistSubscriberService;
 
-public class ArtistSubscriberService : BaseService<ArtistSubscriber>, IArtistSubscriberService
-{
-    public ArtistSubscriberService(IBaseRepository<ArtistSubscriber> baseRepository) : base(baseRepository) { }
-}
+public class ArtistSubscriberService(IBaseRepository<ArtistSubscriber> baseRepository)
+    : BaseService<ArtistSubscriber>(baseRepository), IArtistSubscriberService;

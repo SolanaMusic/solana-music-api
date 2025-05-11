@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using SolanaMusicApi.Infrastructure;
 
 #nullable disable
 
@@ -326,6 +327,99 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("TrackGenres");
+                });
+
+            modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Nft.Nft", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnOrder(0);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("CollectionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("CurrencyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Owner")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18, 6)");
+
+                    b.Property<int>("Rarity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CollectionId");
+
+                    b.ToTable("Nfts");
+                });
+
+            modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Nft.NftCollection", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnOrder(0);
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("AssociationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("AssociationType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Supply")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NftCollections");
                 });
 
             modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Performer.Artist", b =>
@@ -691,19 +785,23 @@ namespace SolanaMusicApi.Infrastructure.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Symbol")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code");
 
                     b.ToTable("Currencies");
                 });
@@ -718,8 +816,8 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<decimal>("Amount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -943,6 +1041,17 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                     b.Navigation("Genre");
 
                     b.Navigation("Track");
+                });
+
+            modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Nft.Nft", b =>
+                {
+                    b.HasOne("SolanaMusicApi.Domain.Entities.Nft.NftCollection", "Collection")
+                        .WithMany("Nfts")
+                        .HasForeignKey("CollectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Collection");
                 });
 
             modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Performer.Artist", b =>
@@ -1169,6 +1278,11 @@ namespace SolanaMusicApi.Infrastructure.Migrations
                     b.Navigation("PlaylistTracks");
 
                     b.Navigation("TrackGenres");
+                });
+
+            modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Nft.NftCollection", b =>
+                {
+                    b.Navigation("Nfts");
                 });
 
             modelBuilder.Entity("SolanaMusicApi.Domain.Entities.Performer.Artist", b =>

@@ -9,7 +9,7 @@ public interface ITransactionService : IBaseService<Transaction>
 {
     IQueryable<Transaction> GetUserTransactions(long userId);
     Task<Transaction> GetTransactionAsync(long id);
-    Transaction CreateTransaction(TransactionRequestDto transactionDto);
+    Transaction MapTransaction(TransactionRequestDto transactionDto);
     Task UpdateTransactionAsync(long id, TransactionStatus status, string? paymentIntentId, long? subscriptionPlanId);
     Task<bool> CheckRefundAbilityAsync(long userId, long transactionId);
 }
