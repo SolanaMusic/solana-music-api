@@ -1,4 +1,5 @@
-﻿using SolanaMusicApi.Domain.DTO.ArtistTrack;
+﻿using SolanaMusicApi.Domain.DTO.Album;
+using SolanaMusicApi.Domain.DTO.ArtistTrack;
 using SolanaMusicApi.Domain.DTO.Genre;
 
 namespace SolanaMusicApi.Domain.DTO.Track;
@@ -12,6 +13,7 @@ public class TrackResponseDto : BaseResponseDto
     public long PlaysCount { get; set; }
     public DateTime ReleaseDate { get; set; }
 
+    public GetTrackAlbumResponseDto? Album { get; set; }
     public ICollection<GenreResponseDto> Genres { get; set; } = null!;
     public ICollection<ArtistTrackResponseDto> Artists { get; set; } = [];
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.NftServices.NftCollectionService;
 using SolanaMusicApi.Domain.DTO.Nft.NftCollection;
@@ -11,7 +12,10 @@ public class GetNftCollectionsRequestHandler(INftCollectionService nftCollection
 {
     public async Task<List<NftCollectionResponseDto>> Handle(GetNftCollectionsRequest request, CancellationToken cancellationToken)
     {
-        var response = await nftCollectionService.GetNftCollectionsAsync(request.Type);
+        var response = await nftCollectionService
+            .GetNftCollections(request.Type)
+            .ToListAsync(cancellationToken);
+        
         return mapper.Map<List<NftCollectionResponseDto>>(response);
     }
 }

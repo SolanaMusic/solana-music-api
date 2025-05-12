@@ -4,6 +4,8 @@ using SolanaMusicApi.Domain.DTO.Album;
 namespace SolanaMusicApi.Application.Requests;
 
 public record GetAlbumsRequest : IRequest<List<AlbumResponseDto>>;
+public record GetAlbumsByArtistRequest(long ArtistId, string? Title) : IRequest<List<AlbumResponseDto>>;
+public record GetAlbumsByArtistsRequest(List<long> ArtistIds, string? Title) : IRequest<List<AlbumResponseDto>>;
 public record GetAlbumRequest(long Id) : IRequest<AlbumResponseDto>;
 public record CreateAlbumRequest(AlbumRequestDto AlbumRequestDto) : IRequest<AlbumResponseDto>;
 public record UpdateAlbumRequest(long Id, AlbumRequestDto AlbumRequestDto) : IRequest<AlbumResponseDto>;

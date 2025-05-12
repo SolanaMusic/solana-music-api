@@ -12,22 +12,9 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
 namespace SolanaMusicApi.Application.Services.AlbumService;
 
-public class AlbumService : BaseService<Album>, IAlbumService
+public class AlbumService(IBaseRepository<Album> baseRepository, IMapper mapper, IFileService fileService,
+    ITracksService tracksService, IArtistAlbumService artistAlbumService) : BaseService<Album>(baseRepository), IAlbumService
 {
-    private readonly IMapper _mapper;
-    private readonly IFileService _fileService;
-    private readonly ITracksService _tracksService;
-    private readonly IArtistAlbumService _artistAlbumService;
-
-    public AlbumService(IBaseRepository<Album> baseRepository, IMapper mapper, IFileService fileService, ITracksService tracksService,
-        IArtistAlbumService artistAlbumService) : base(baseRepository) 
-    {
-        _mapper = mapper;
-        _fileService = fileService;
-        _tracksService = tracksService;
-        _artistAlbumService = artistAlbumService;
-    }
-
     public IQueryable<Album> GetAlbums()
     {
         return GetAll()
@@ -48,28 +35,28 @@ public class AlbumService : BaseService<Album>, IAlbumService
         var response = await GetAlbums()
             .FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("Album not found");
 
-        return _mapper.Map<AlbumResponseDto>(response);
+        return mapper.Map<AlbumResponseDto>(response);
     }
 
     public async Task<AlbumResponseDto> CreateAlbumAsync(AlbumRequestDto albumRequestDto)
     {
         await BeginTransactionAsync();
-        var coverPath = await _fileService.SaveFileAsync(albumRequestDto.Cover, FileTypes.AlbumCover);
+        var coverPath = await fileService.SaveFileAsync(albumRequestDto.Cover, FileTypes.AlbumCover);
 
         try
         {
-            var album = _mapper.Map<Album>(albumRequestDto);
+            var album = mapper.Map<Album>(albumRequestDto);
             album.ImageUrl = coverPath;
 
             var added = await AddAsync(album);
-            await _artistAlbumService.AddRangeAsync(GetArtistAlbums(albumRequestDto, added));
+            await artistAlbumService.AddRangeAsync(GetArtistAlbums(albumRequestDto, added));
 
             if (albumRequestDto.TrackIds != null && albumRequestDto.TrackIds.Any())
                 await SetLinkedDataAsync(albumRequestDto, album);
 
             await CommitTransactionAsync(GetRollBackActions(coverPath));
             var response = await GetAlbumAsync(added.Id);
-            return _mapper.Map<AlbumResponseDto>(response);
+            return mapper.Map<AlbumResponseDto>(response);
         }
         catch (Exception ex)
         {
@@ -81,7 +68,7 @@ public class AlbumService : BaseService<Album>, IAlbumService
     public async Task<AlbumResponseDto> UpdateAlbumAsync(long id, AlbumRequestDto albumRequestDto)
     {
         await BeginTransactionAsync();
-        var coverPath = await _fileService.SaveFileAsync(albumRequestDto.Cover, FileTypes.AlbumCover);
+        var coverPath = await fileService.SaveFileAsync(albumRequestDto.Cover, FileTypes.AlbumCover);
 
         try
         {
@@ -95,15 +82,15 @@ public class AlbumService : BaseService<Album>, IAlbumService
                 throw new Exception("Album not found");
 
             var coverSnapshot = album.ImageUrl;
-            MapProperies(album, albumRequestDto, coverPath);
-            var updated = await UpdateAsync(id, album);
+            MapProperties(album, albumRequestDto, coverPath);
+            await UpdateAsync(id, album);
 
             await UpdateLinkedDataAsync(albumRequestDto, album);
             await CommitTransactionAsync(GetRollBackActions(coverPath));
             await ProcessRollBackActions(GetRollBackActions(coverSnapshot));
 
             var response = await GetAlbumAsync(id);
-            return _mapper.Map<AlbumResponseDto>(response);
+            return mapper.Map<AlbumResponseDto>(response);
         }
         catch (Exception ex)
         {
@@ -115,26 +102,25 @@ public class AlbumService : BaseService<Album>, IAlbumService
     public async Task<AlbumResponseDto> DeleteAlbumAsync(long id)
     {
         var response = await DeleteAsync(id);
-        _fileService.DeleteFile(response.ImageUrl ?? string.Empty);
-
-        return _mapper.Map<AlbumResponseDto>(response);
+        fileService.DeleteFile(response.ImageUrl);
+        return mapper.Map<AlbumResponseDto>(response);
     }
 
     public async Task AddToAlbumAsync(AddToAlbumDto addToAlbumDto)
     {
-        var track = await _tracksService.GetByIdAsync(addToAlbumDto.TrackId);
+        var track = await tracksService.GetByIdAsync(addToAlbumDto.TrackId);
         track.AlbumId = addToAlbumDto.AlbumId;
-        await _tracksService.UpdateAsync(track);
+        await tracksService.UpdateAsync(track);
     }
 
     public async Task RemoveFromAlbumAsync(long trackId)
     {
-        var track = await _tracksService.GetByIdAsync(trackId);
+        var track = await tracksService.GetByIdAsync(trackId);
         track.AlbumId = null;
-        await _tracksService.UpdateAsync(track);
+        await tracksService.UpdateAsync(track);
     }
 
-    private IEnumerable<ArtistAlbum> GetArtistAlbums(AlbumRequestDto albumRequestDto, Album album)
+    private static IEnumerable<ArtistAlbum> GetArtistAlbums(AlbumRequestDto albumRequestDto, Album album)
     {
         return albumRequestDto.ArtistIds.Select(artistId => new ArtistAlbum
         {
@@ -147,21 +133,21 @@ public class AlbumService : BaseService<Album>, IAlbumService
     {
         if (albumRequestDto.TrackIds == null || !albumRequestDto.TrackIds.Any())
         {
-            var tracks = await _tracksService.GetAll()
+            var tracks = await tracksService.GetAll()
                 .Where(x => album.Tracks.Select(t => t.Id).Contains(x.Id))
                 .ToListAsync();
 
             tracks.ForEach(x => x.AlbumId = null);
-            await _tracksService.UpdateRangeAsync(tracks);
+            await tracksService.UpdateRangeAsync(tracks);
         }
         else
         {
-            var tracks = await _tracksService.GetAll()
+            var tracks = await tracksService.GetAll()
                 .Where(x => albumRequestDto.TrackIds.Contains(x.Id))
                 .ToListAsync();
 
             tracks.ForEach(x => x.AlbumId = album.Id);
-            await _tracksService.UpdateRangeAsync(tracks);
+            await tracksService.UpdateRangeAsync(tracks);
         }
     }
 
@@ -169,25 +155,25 @@ public class AlbumService : BaseService<Album>, IAlbumService
     {
         await SetLinkedDataAsync(albumRequestDto, album);
 
-        var existingArtistIds = album.ArtistAlbums.Select(x => x.ArtistId);
-        var artistsToAdd = albumRequestDto.ArtistIds.Except(existingArtistIds);
-        var artistsToRemove = existingArtistIds.Except(albumRequestDto.ArtistIds);
+        var existingArtistIds = album.ArtistAlbums.Select(x => x.ArtistId).ToList();
+        var artistsToAdd = albumRequestDto.ArtistIds.Except(existingArtistIds).ToList();
+        var artistsToRemove = existingArtistIds.Except(albumRequestDto.ArtistIds).ToList();
 
-        if (artistsToRemove.Any())
+        if (artistsToRemove.Count != 0)
         {
             var artists = album.ArtistAlbums.Where(x => artistsToRemove.Contains(x.ArtistId)).ToList();
-            await _artistAlbumService.DeleteRangeAsync(artists);
+            await artistAlbumService.DeleteRangeAsync(artists);
         }
 
-        if (artistsToAdd.Any())
+        if (artistsToAdd.Count != 0)
         {
             var artists = artistsToAdd.Select(x => new ArtistAlbum { ArtistId = x, AlbumId = album.Id });
-            await _artistAlbumService.AddRangeAsync(artists);
+            await artistAlbumService.AddRangeAsync(artists);
         }
 
     }
 
-    private void MapProperies(Album album, AlbumRequestDto albumRequestDto, string coverPath)
+    private static void MapProperties(Album album, AlbumRequestDto albumRequestDto, string coverPath)
     {
         album.Title = albumRequestDto.Title;
         album.ReleaseDate = albumRequestDto.ReleaseDate;
@@ -195,5 +181,5 @@ public class AlbumService : BaseService<Album>, IAlbumService
         album.Description = albumRequestDto.Description;
     }
 
-    private Func<Task>[] GetRollBackActions(string coverPath) => [() => Task.Run(() => _fileService.DeleteFile(coverPath))];
+    private Func<Task>[] GetRollBackActions(string coverPath) => [() => Task.Run(() => fileService.DeleteFile(coverPath))];
 }

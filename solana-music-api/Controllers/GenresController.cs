@@ -22,6 +22,13 @@ public class GenresController(IMediator mediator) : ControllerBase
         var response = await mediator.Send(new GetGenreRequest(id));
         return Ok(response);
     }
+    
+    [HttpGet("by-name")]
+    public async Task<IActionResult> GetByName(string? name)
+    {
+        var response = await mediator.Send(new GetGenresByNameRequest(name));
+        return Ok(response);
+    }
 
     [HttpPost]
     public async Task<IActionResult> AddGenre(GenreRequestDto genreRequestDto)

@@ -8,7 +8,6 @@ using SolanaMusicApi.Domain.DTO.Auth.Default;
 using SolanaMusicApi.Domain.DTO.Country;
 using SolanaMusicApi.Domain.DTO.Currency;
 using SolanaMusicApi.Domain.DTO.Genre;
-using SolanaMusicApi.Domain.DTO.Nft;
 using SolanaMusicApi.Domain.DTO.Nft.Nft;
 using SolanaMusicApi.Domain.DTO.Nft.NftCollection;
 using SolanaMusicApi.Domain.DTO.Playlist;
@@ -67,6 +66,14 @@ public class MappingProfiles : Profile
             ))
             .ForMember(dest => dest.PlaysCount, opt => opt.MapFrom(src => src.Tracks.Sum(t => t.PlaysCount)));
         CreateMap<Album, GetArtistAlbumResponseDto>()
+            .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.Tracks
+                .SelectMany(at => at.TrackGenres)
+                .Select(tg => tg.Genre)
+                .DistinctBy(g => g.Id)
+            ))
+            .ForMember(dest => dest.PlaysCount, opt => opt.MapFrom(src => src.Tracks.Sum(t => t.PlaysCount)));
+        CreateMap<Album, GetTrackAlbumResponseDto>()
+            .ForMember(dest => dest.Artists, opt => opt.MapFrom(src => src.ArtistAlbums.Select(x => x.Artist)))
             .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.Tracks
                 .SelectMany(at => at.TrackGenres)
                 .Select(tg => tg.Genre)

@@ -15,6 +15,22 @@ public class AlbumsController(IMediator mediator) : ControllerBase
         var response = await mediator.Send(new GetAlbumsRequest());
         return Ok(response);
     }
+    
+    [HttpGet("by-artist/{artistId}")]
+    public async Task<IActionResult> GetByArtists(long artistId, string? title)
+    {
+        var response = await mediator.Send(new GetAlbumsByArtistRequest(artistId, title));
+        return Ok(response);
+    }
+    
+    [HttpPost("by-artists")]
+    public async Task<IActionResult> GetByArtists(AlbumsByArtistsRequestDto albumsByArtistRequest)
+    {
+        var response = await mediator
+            .Send(new GetAlbumsByArtistsRequest(albumsByArtistRequest.ArtistIds, albumsByArtistRequest.Title));
+        
+        return Ok(response);
+    }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(long id)

@@ -18,9 +18,16 @@ public class ArtistsController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetAll(long id, long userId)
+    public async Task<IActionResult> GetById(long id, long userId)
     {
         var response = await mediator.Send(new GetArtistRequest(id, userId));
+        return Ok(response);
+    }
+    
+    [HttpGet("by-name")]
+    public async Task<IActionResult> GetByName(string? name)
+    {
+        var response = await mediator.Send(new GetArtistsByNameRequest(name));
         return Ok(response);
     }
 

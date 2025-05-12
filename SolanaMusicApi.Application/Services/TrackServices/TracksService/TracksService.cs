@@ -14,59 +14,17 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
 namespace SolanaMusicApi.Application.Services.TrackServices.TracksService;
 
-public class TracksService : BaseService<Track>, ITracksService
+public class TracksService(IBaseRepository<Track> baseRepository, ITrackGenreService trackGenreService, IFileService fileService,
+    IGenreService genreService, IArtistService artistService, IArtistTrackService artistTrackService, IMapper mapper)
+    : BaseService<Track>(baseRepository), ITracksService
 {
-    private IMapper _mapper;
-    private readonly IFileService _fileService;
-    private readonly IGenreService _genreService;
-    private readonly ITrackGenreService _trackGenreService;
-    private readonly IArtistService _artistService;
-    private readonly IArtistTrackService _artistTrackService;
-
-    public TracksService(IBaseRepository<Track> baseRepository, ITrackGenreService trackGenreService, IFileService fileService,
-        IGenreService genreService, IArtistService artistService, IArtistTrackService artistTrackService, IMapper mapper) : base(baseRepository)
-    {
-        _mapper = mapper;
-        _fileService = fileService;
-        _genreService = genreService;
-        _trackGenreService = trackGenreService;
-        _artistService = artistService;
-        _artistTrackService = artistTrackService;
-    }
-
-    public void MapProperties(Track track)
-    {
-        if (string.IsNullOrEmpty(track.ImageUrl) && track.Album?.ImageUrl != null)
-            track.ImageUrl = track.Album.ImageUrl;
-
-        var artists = track.Album?.ArtistAlbums.Select(x => x.Artist);
-        if (!track.ArtistTracks.Any() && artists != null && artists.Any())
-        {
-            var artistTracksList = track.ArtistTracks as List<ArtistTrack>;
-
-            if (artistTracksList != null)
-                artistTracksList.AddRange(artists.Select(artist => new ArtistTrack { Track = track, Artist = artist }));
-        }
-    }
-
-    public async Task<List<TrackResponseDto>> GetTracksAsync()
-    {
-        var tracks = await GetTracksQueryAsync();
-        var response = await tracks.ToListAsync();
-
-        foreach (var track in response)
-            MapProperties(track);
-
-        return _mapper.Map<List<TrackResponseDto>>(response);
-    }
-
     public async Task<TrackResponseDto> GetTrackAsync(long id)
     {
         var trackQuery = await GetTracksQueryAsync();
         var track = await trackQuery.FirstOrDefaultAsync(t => t.Id == id) ?? throw new KeyNotFoundException("Track not found");
         MapProperties(track);
 
-        return _mapper.Map<TrackResponseDto>(track);
+        return mapper.Map<TrackResponseDto>(track);
     }
 
     public async Task<FileStream> GetTrackFileStreamAsync(long id)
@@ -93,7 +51,7 @@ public class TracksService : BaseService<Track>, ITracksService
             await CommitTransactionAsync(GetRollBackActions(coverPath, trackPath));
 
             var response = await GetTrackAsync(added.Id);
-            return _mapper.Map<TrackResponseDto>(response);
+            return mapper.Map<TrackResponseDto>(response);
         }
         catch (Exception ex)
         {
@@ -120,12 +78,12 @@ public class TracksService : BaseService<Track>, ITracksService
             var (imageSnapshot, fileSnapshot) = (track.ImageUrl, track.FileUrl);
             await MapTrackAsync(track, trackRequestDto, trackPath, coverPath);
 
-            var updated = await UpdateAsync(track);
+            await UpdateAsync(track);
             await CommitTransactionAsync(GetRollBackActions(coverPath, trackPath));
             await ProcessRollBackActions(GetRollBackActions(imageSnapshot, fileSnapshot));
 
             var response = await GetTrackAsync(id);
-            return _mapper.Map<TrackResponseDto>(response);
+            return mapper.Map<TrackResponseDto>(response);
         }
         catch (Exception ex)
         {
@@ -139,10 +97,10 @@ public class TracksService : BaseService<Track>, ITracksService
         var response = await DeleteAsync(id);
         await Task.WhenAll(GetRollBackActions(response.ImageUrl ?? string.Empty, response.FileUrl).Select(action => action()));
 
-        return _mapper.Map<TrackResponseDto>(response);
+        return mapper.Map<TrackResponseDto>(response);
     }
 
-    private async Task<IQueryable<Track>> GetTracksQueryAsync()
+    public async Task<IQueryable<Track>> GetTracksQueryAsync()
     {
         var trackQuery = GetAll()
             .Include(t => t.ArtistTracks)
@@ -165,13 +123,29 @@ public class TracksService : BaseService<Track>, ITracksService
 
         return trackQuery;
     }
+    
+    public void MapProperties(Track track)
+    {
+        if (string.IsNullOrEmpty(track.ImageUrl) && track.Album?.ImageUrl != null)
+            track.ImageUrl = track.Album.ImageUrl;
+
+        var artists = track.Album?.ArtistAlbums
+            .Select(x => x.Artist)
+            .ToList();
+        
+        if (track.ArtistTracks.Count != 0 || artists == null || artists.Count == 0) 
+            return;
+
+        if (track.ArtistTracks is List<ArtistTrack> artistTracksList)
+            artistTracksList.AddRange(artists.Select(artist => new ArtistTrack { Track = track, Artist = artist }));
+    }
 
     private Track MapTrack(TrackRequestDto trackRequestDto, string trackFile, string? coverFile)
     {
-        var track = _mapper.Map<Track>(trackRequestDto);
+        var track = mapper.Map<Track>(trackRequestDto);
         track.FileUrl = trackFile;
         track.ImageUrl = coverFile;
-        track.Duration = _fileService.GetAudioDuration(trackRequestDto.TrackFile);
+        track.Duration = fileService.GetAudioDuration(trackRequestDto.TrackFile);
 
         return track;
     }
@@ -182,39 +156,50 @@ public class TracksService : BaseService<Track>, ITracksService
         track.AlbumId = trackRequestDto.AlbumId;
         track.FileUrl = trackFile;
         track.ImageUrl = coverFile;
-        track.Duration = _fileService.GetAudioDuration(trackRequestDto.TrackFile);
+        track.Duration = fileService.GetAudioDuration(trackRequestDto.TrackFile);
 
         await UpdateLinkedDataAsync(track, trackRequestDto);
     }
 
     private async Task<Track> UpdateLinkedDataAsync(Track track, TrackRequestDto trackRequestDto)
     {
-        var existingGenres = track.TrackGenres.Select(x => x.GenreId);
-        var genresToAdd = trackRequestDto.GenreIds.Except(existingGenres).ToList();
-        var genresToRemove = existingGenres.Except(trackRequestDto.GenreIds).ToList();
+        var existingGenres = track.TrackGenres
+            .Select(x => x.GenreId)
+            .ToList();
+        
+        var genresToAdd = trackRequestDto.GenreIds
+            .Except(existingGenres)
+            .ToList();
+        
+        var genresToRemove = existingGenres
+            .Except(trackRequestDto.GenreIds)
+            .ToList();
 
-        var existingArtists = track.ArtistTracks.Select(x => x.ArtistId);
+        var existingArtists = track.ArtistTracks
+            .Select(x => x.ArtistId)
+            .ToList();
+        
         var artistsToAdd = trackRequestDto.ArtistIds.Except(existingArtists).ToList();
         var artistsToRemove = existingArtists.Except(trackRequestDto.ArtistIds).ToList();
 
-        if (genresToRemove.Any())
+        if (genresToRemove.Count != 0)
         {
             var genresToDelete = track.TrackGenres.Where(x => genresToRemove.Contains(x.GenreId)).ToList();
-            await _trackGenreService.DeleteRangeAsync(genresToDelete);
+            await trackGenreService.DeleteRangeAsync(genresToDelete);
         }
 
-        if (artistsToRemove.Any())
+        if (artistsToRemove.Count != 0)
         {
             var artistsToDelete = track.ArtistTracks.Where(x => artistsToRemove.Contains(x.ArtistId)).ToList();
-            await _artistTrackService.DeleteRangeAsync(artistsToDelete);
+            await artistTrackService.DeleteRangeAsync(artistsToDelete);
         }
 
-        if (genresToAdd.Any() || artistsToAdd.Any())
-        {
-            trackRequestDto.GenreIds = genresToAdd;
-            trackRequestDto.ArtistIds = artistsToAdd;
-            await InsertLinkedDataAsync(track, trackRequestDto);
-        }
+        if (genresToAdd.Count == 0 && artistsToAdd.Count == 0) 
+            return track;
+        
+        trackRequestDto.GenreIds = genresToAdd;
+        trackRequestDto.ArtistIds = artistsToAdd;
+        await InsertLinkedDataAsync(track, trackRequestDto);
 
         return track;
     }
@@ -222,19 +207,19 @@ public class TracksService : BaseService<Track>, ITracksService
     private async Task InsertLinkedDataAsync(Track track, TrackRequestDto trackRequestDto)
     {
         var (genres, artists) = GetLinkedData(track, trackRequestDto);
-        await _trackGenreService.AddRangeAsync(genres);
-        await _artistTrackService.AddRangeAsync(artists);
+        await trackGenreService.AddRangeAsync(genres);
+        await artistTrackService.AddRangeAsync(artists);
     }
 
     private (IQueryable<TrackGenre>, IQueryable<ArtistTrack>) GetLinkedData(Track track, TrackRequestDto trackRequestDto)
     {
-        var genres = _genreService
+        var genres = genreService
             .GetAll()
             .Where(x => trackRequestDto.GenreIds.Contains(x.Id));
 
-        var artists = _artistService
+        var artists = artistService
             .GetAll()
-            .Where(x => trackRequestDto.ArtistIds!.Contains(x.Id));
+            .Where(x => trackRequestDto.ArtistIds.Contains(x.Id));
 
         var trackGenres = genres.Select(genre => new TrackGenre { TrackId = track.Id, GenreId = genre.Id });
         var artistTracks = artists.Select(artist => new ArtistTrack { ArtistId = artist.Id, TrackId = track.Id });
@@ -245,10 +230,10 @@ public class TracksService : BaseService<Track>, ITracksService
     private async Task<(string?, string)> SaveTrackFilesAsync(TrackRequestDto trackRequestDto)
     {
         var coverPath = trackRequestDto.Image != null
-            ? await _fileService.SaveFileAsync(trackRequestDto.Image, FileTypes.TrackCover)
+            ? await fileService.SaveFileAsync(trackRequestDto.Image, FileTypes.TrackCover)
             : null;
 
-        var trackPath = await _fileService.SaveFileAsync(trackRequestDto.TrackFile, FileTypes.Track);
+        var trackPath = await fileService.SaveFileAsync(trackRequestDto.TrackFile, FileTypes.Track);
 
         return (coverPath, trackPath);
     }
@@ -259,9 +244,9 @@ public class TracksService : BaseService<Track>, ITracksService
         [
             string.IsNullOrEmpty(coverPath)
                 ? () => Task.CompletedTask
-                : () => Task.Run(() => _fileService.DeleteFile(coverPath)),
+                : () => Task.Run(() => fileService.DeleteFile(coverPath)),
 
-            () => Task.Run(() => _fileService.DeleteFile(trackPath))
+            () => Task.Run(() => fileService.DeleteFile(trackPath))
         ];
     }
 }

@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.ComponentModel.DataAnnotations;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Track;
@@ -13,6 +14,13 @@ public class TracksController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var response = await mediator.Send(new GetTracksRequest());
+        return Ok(response);
+    }
+    
+    [HttpGet("by-artist/{artistId}")]
+    public async Task<IActionResult> GetByArtist([Required]long artistId, string? name)
+    {
+        var response = await mediator.Send(new GetTracksByArtistRequest(artistId, name));
         return Ok(response);
     }
 

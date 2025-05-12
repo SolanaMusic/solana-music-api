@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using SolanaMusicApi.Application.Services.ArtistServices.ArtistSubscriberService;
 using SolanaMusicApi.Application.Services.BaseService;
 using SolanaMusicApi.Application.Services.FileService;
-using SolanaMusicApi.Domain.DTO.Album;
 using SolanaMusicApi.Domain.DTO.Artist;
 using SolanaMusicApi.Domain.Entities.Performer;
 using SolanaMusicApi.Domain.Enums.File;
@@ -11,21 +10,13 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 
 namespace SolanaMusicApi.Application.Services.ArtistServices.ArtistService;
 
-public class ArtistService : BaseService<Artist>, IArtistService
+public class ArtistService(IBaseRepository<Artist> baseRepository, IFileService fileService,
+    IArtistSubscriberService artistSubscriberService) : BaseService<Artist>(baseRepository), IArtistService
 {
-    private readonly IFileService _fileService;
-    private readonly IArtistSubscriberService _artistSubscriberService;
-
-    public ArtistService(IBaseRepository<Artist> baseRepository, IFileService fileService, 
-        IArtistSubscriberService artistSubscriberService) : base(baseRepository) 
-    {
-        _fileService = fileService;
-        _artistSubscriberService = artistSubscriberService;
-    }
-
     public IQueryable<Artist> GetArtists()
     {
         return GetAll()
+            .AsSplitQuery()
             .Include(x => x.Country)
             .Include(x => x.User)
                 .ThenInclude(x => x != null ? x.Profile : null)
@@ -55,7 +46,7 @@ public class ArtistService : BaseService<Artist>, IArtistService
     {
         await BeginTransactionAsync();
         var coverPath = file != null
-            ? await _fileService.SaveFileAsync(file, FileTypes.ArtistImage)
+            ? await fileService.SaveFileAsync(file, FileTypes.ArtistImage)
             : null;
 
         try
@@ -78,7 +69,7 @@ public class ArtistService : BaseService<Artist>, IArtistService
     {
         await BeginTransactionAsync();
         var coverPath = artistRequestDto.ImageFile != null
-            ? await _fileService.SaveFileAsync(artistRequestDto.ImageFile, FileTypes.ArtistImage)
+            ? await fileService.SaveFileAsync(artistRequestDto.ImageFile, FileTypes.ArtistImage)
             : null;
 
         try
@@ -107,25 +98,24 @@ public class ArtistService : BaseService<Artist>, IArtistService
         var response = await DeleteAsync(id);
 
         if (!string.IsNullOrEmpty(response.ImageUrl))
-            _fileService.DeleteFile(response.ImageUrl);
+            fileService.DeleteFile(response.ImageUrl);
 
         return response;
     }
 
-    public bool CheckArtistSubscription(Artist artist, long userId) => artist.ArtistSubscribers.Any(x => x.SubscriberId == userId);
+    public bool CheckArtistSubscription(Artist artist, long userId) => 
+        artist.ArtistSubscribers.Any(x => x.SubscriberId == userId);
 
     public async Task SubscribeToArtist(long id, long userId)
     {
         var record = new ArtistSubscriber { ArtistId = id, SubscriberId = userId };
-        await _artistSubscriberService.AddAsync(record);
+        await artistSubscriberService.AddAsync(record);
     }
 
-    public async Task UnsubscribeFromArtist(long id, long userId)
-    {
-        await _artistSubscriberService.DeleteAsync(x => x.ArtistId == id && x.SubscriberId == userId);
-    }
+    public async Task UnsubscribeFromArtist(long id, long userId) => 
+        await artistSubscriberService.DeleteAsync(x => x.ArtistId == id && x.SubscriberId == userId);
 
-    private void MapProperties(Artist artist, ArtistRequestDto artistRequestDto, string? coverPath)
+    private static void MapProperties(Artist artist, ArtistRequestDto artistRequestDto, string? coverPath)
     {
         artist.Name = artistRequestDto.Name;
         artist.UserId = artistRequestDto.UserId;
@@ -138,7 +128,7 @@ public class ArtistService : BaseService<Artist>, IArtistService
     private Func<Task>[] GetRollBackActions(string? coverPath)
     {
         if (!string.IsNullOrEmpty(coverPath))
-            return [() => Task.Run(() => _fileService.DeleteFile(coverPath))];
+            return [() => Task.Run(() => fileService.DeleteFile(coverPath))];
 
         return [];
     }

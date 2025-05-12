@@ -19,14 +19,21 @@ public class NftController(IMediator mediator)
         return Ok(response);
     }
 
-    [HttpGet("collection")]
-    public async Task<IActionResult> GetNftCollections([Required] string type)
+    [HttpGet("collections")]
+    public async Task<IActionResult> GetNftCollections(string? type)
     {
         var response = await mediator.Send(new GetNftCollectionsRequest(type));
         return Ok(response);
     }
+    
+    [HttpGet("artist-collections")]
+    public async Task<IActionResult> GetArtistNftCollections([Required] long artistId, string? type, string? name)
+    {
+        var response = await mediator.Send(new GetArtistNftCollectionsRequest(artistId, type, name));
+        return Ok(response);
+    }
 
-    [HttpGet("collection/{id}")]
+    [HttpGet("collections/{id}")]
     public async Task<IActionResult> GetNftCollection(long id)
     {
         var response = await mediator.Send(new GetNftCollectionRequest(id));
