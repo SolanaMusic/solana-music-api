@@ -2,6 +2,8 @@
 
 This is the API for a decentralized music streaming platform that combines the best of Web2 and Web3. Built with .NET Core and MS SQL Server, it supports traditional music streaming features alongside crypto-native capabilities.
 
+---
+
 ## 🚀 Features
 
 - User authentication (JWT-based + crypto wallet login)
@@ -10,6 +12,8 @@ This is the API for a decentralized music streaming platform that combines the b
 - Music streaming
 - NFT market
 - Admin panel
+
+---
 
 ## 🛠️ Technologies
 
