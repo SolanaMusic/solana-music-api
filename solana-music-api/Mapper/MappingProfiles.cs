@@ -18,6 +18,7 @@ using SolanaMusicApi.Domain.DTO.Track;
 using SolanaMusicApi.Domain.DTO.Transaction;
 using SolanaMusicApi.Domain.DTO.User;
 using SolanaMusicApi.Domain.DTO.User.Profile;
+using SolanaMusicApi.Domain.DTO.Whitelist;
 using SolanaMusicApi.Domain.Entities.General;
 using SolanaMusicApi.Domain.Entities.Music;
 using SolanaMusicApi.Domain.Entities.Nft;
@@ -40,6 +41,7 @@ public class MappingProfiles : Profile
         CreateMap<Country, CountryResponseDto>();
 
         CreateMap<UserProfile, UserProfileResponseDto>();
+        CreateMap<WhitelistRequestDto, Whitelist>();
         CreateMap<ApplicationUser, UserResponseDto>();
         CreateMap<LoginResponseDto, AuthResponseDto>();
 

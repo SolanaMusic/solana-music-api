@@ -28,6 +28,7 @@ using SolanaMusicApi.Application.Services.TrackServices.TrackGenreService;
 using SolanaMusicApi.Application.Services.TrackServices.TracksService;
 using SolanaMusicApi.Application.Services.UserServices.UserProfileService;
 using SolanaMusicApi.Application.Services.UserServices.UserService;
+using SolanaMusicApi.Application.Services.WhitelistService;
 using SolanaMusicApi.Domain.DTO.Country;
 using SolanaMusicApi.Domain.Entities.User;
 using SolanaMusicApi.Infrastructure;
@@ -52,6 +53,7 @@ using SolanaMusicApi.Infrastructure.Repositories.TrackRepositories.TrackGenreRep
 using SolanaMusicApi.Infrastructure.Repositories.TrackRepositories.TrackRepository;
 using SolanaMusicApi.Infrastructure.Repositories.TransactionRepository;
 using SolanaMusicApi.Infrastructure.Repositories.UserProfileRepository;
+using SolanaMusicApi.Infrastructure.Repositories.WhitelistRepository;
 
 namespace solana_music_api;
 
@@ -62,6 +64,7 @@ public static class Configurator
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<ICountryRepository, CountryRepository>();
         services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+        services.AddScoped<IWhitelistRepository, WhitelistRepository>();
 
         services.AddScoped<IGenreRepository, GenreRepository>();
         services.AddScoped<ITrackRepository, TrackRepository>();
@@ -97,6 +100,7 @@ public static class Configurator
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserProfileService, UserProfileService>();
+        services.AddScoped<IWhitelistService, WhitelistService>();
 
         services.AddScoped<IGenreService, GenreService>();
         services.AddScoped<ITracksService, TracksService>();

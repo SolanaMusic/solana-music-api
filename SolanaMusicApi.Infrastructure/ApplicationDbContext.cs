@@ -25,6 +25,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public DbSet<Country> Countries { get; set; }
     public DbSet<UserProfile> UserProfiles { get; set; }
+    public DbSet<Whitelist> Whitelist { get; set; }
     public DbSet<Currency> Currencies { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
 
