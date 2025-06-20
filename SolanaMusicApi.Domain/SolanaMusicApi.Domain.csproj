@@ -19,4 +19,11 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.35.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTO\Dashboard\Artists\" />
+    <Folder Include="DTO\Dashboard\Nfts\" />
+    <Folder Include="DTO\Dashboard\Songs\" />
+    <Folder Include="DTO\Dashboard\Users\" />
+  </ItemGroup>
+
 </Project>

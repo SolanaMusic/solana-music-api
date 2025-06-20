@@ -11,6 +11,7 @@ using SolanaMusicApi.Application.Services.AuthService;
 using SolanaMusicApi.Application.Services.BaseService;
 using SolanaMusicApi.Application.Services.CountryService;
 using SolanaMusicApi.Application.Services.CurrencyService;
+using SolanaMusicApi.Application.Services.DashboardService;
 using SolanaMusicApi.Application.Services.FileService;
 using SolanaMusicApi.Application.Services.GenreService;
 using SolanaMusicApi.Application.Services.LocationService;
@@ -96,6 +97,7 @@ public static class Configurator
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<ILocationService, LocationService>();
         services.AddScoped<ICountryService, CountryService>();
+        services.AddScoped<IDashboardService, DashboardService>();
 
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
