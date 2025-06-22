@@ -2,7 +2,7 @@
 
 public enum SubscriptionType
 {
-    None,
+    Basic,
     Individual,
     Family
 }

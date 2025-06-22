@@ -17,9 +17,9 @@ public class ArtistService(IBaseRepository<Artist> baseRepository, IFileService 
     {
         return GetAll()
             .AsSplitQuery()
-            .Include(x => x.Country)
             .Include(x => x.User)
                 .ThenInclude(x => x != null ? x.Profile : null)
+                    .ThenInclude(x => x.Country)
 
             .Include(x => x.ArtistSubscribers)
                 .ThenInclude(x => x.Subscriber)
@@ -78,7 +78,7 @@ public class ArtistService(IBaseRepository<Artist> baseRepository, IFileService 
             var coverSnapshot = artist.ImageUrl;
             MapProperties(artist, artistRequestDto, coverPath);
 
-            var response = await UpdateAsync(artist);
+            await UpdateAsync(artist);
             await CommitTransactionAsync(GetRollBackActions(coverPath));
 
             if (!string.IsNullOrEmpty(coverSnapshot))

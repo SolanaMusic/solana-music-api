@@ -9,19 +9,20 @@ using SolanaMusicApi.Domain.DTO.Currency;
 using SolanaMusicApi.Domain.DTO.Dashboard.Overview;
 using SolanaMusicApi.Domain.Entities;
 using SolanaMusicApi.Domain.Entities.Transaction;
+using SolanaMusicApi.Domain.Enums;
 using SolanaMusicApi.Domain.Enums.Transaction;
 
 namespace SolanaMusicApi.Application.Services.DashboardService;
 
-public class DashboardService(ITracksService tracksService, ISubscriptionService subscriptionService,
+public class DashboardService(ITracksService tracksService, ISubscriptionService subscriptionService, 
     ITransactionService transactionService, IUserProfileService userProfileService, IConfiguration configuration) 
     : IDashboardService
 {
     public async Task<DashboardOverviewResponseDto> GetOverviewAsync()
     {
-        var now = DateTime.UtcNow;
-        var completedTransactions = transactionService.GetAll()
-            .Where(x => x.Status == TransactionStatus.Completed && x.CreatedDate.Year == now.Year);
+        var completedTransactions = transactionService
+            .GetAll()
+            .Where(x => x.Status == TransactionStatus.Completed && x.CreatedDate.Year == DateTime.UtcNow.Year);
 
         var revenue = await GetRevenueAsync(completedTransactions
             .Where(x => x.TransactionType == TransactionType.NftMint || x.TransactionType == TransactionType.SubscriptionPurchase));
@@ -39,26 +40,59 @@ public class DashboardService(ITracksService tracksService, ISubscriptionService
     private async Task<SubscriptionStatsResponseDto> GetSubscriptionStatsResponseAsync()
     {
         var subscriptions = subscriptionService.GetAll();
-        return new SubscriptionStatsResponseDto
+        
+        var stats = new SubscriptionStatsResponseDto
         {
             StatsChange = await GetChangeStatsAsync(subscriptions),
             SubscriptionStats = await GetSubscriptionStatsAsync()
         };
+
+        stats.StatsChange.Count = stats.SubscriptionStats.Sum(x => x.Count);
+        return stats;
     }
 
-    private Task<List<SubscriptionStats>> GetSubscriptionStatsAsync() =>
-        subscriptionService.GetAll()
-            .GroupBy(s => s.SubscriptionPlan.Type)
-            .Select(g => new SubscriptionStats { SubscriptionType = g.Key, Count = g.Count() })
+    private async Task<List<SubscriptionStats>> GetSubscriptionStatsAsync()
+    {
+        var subscriptionData = subscriptionService
+            .GetAll()
+            .Select(s => new { s.OwnerId, s.SubscriptionPlan.Type });
+        
+        var grouped = await subscriptionData
+            .GroupBy(x => x.Type)
+            .Select(g => new SubscriptionStats
+            {
+                SubscriptionType = g.Key,
+                Count = g.Count()
+            })
             .ToListAsync();
+        
+        var usersWithSubscription = await subscriptionData
+            .Select(x => x.OwnerId)
+            .Distinct()
+            .CountAsync();
+        
+        var totalUsers = await userProfileService.GetAll().CountAsync();
+        var noneCount = totalUsers - usersWithSubscription;
 
+        if (noneCount > 0)
+        {
+            grouped.Add(new SubscriptionStats
+            {
+                SubscriptionType = SubscriptionType.Basic,
+                Count = noneCount
+            });
+        }
+
+        return grouped;
+    }
+    
     private async Task<StatsResponseDto> GetRevenueAsync(IQueryable<Transaction> transactions)
     {
-        var solPrice = await GetSolanaPriceAsync();
+        var solPrice = await GetSolPriceAsync();
 
         var monthly = await transactions
             .GroupBy(t => new { t.CreatedDate.Year, t.CreatedDate.Month })
-            .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)
+            .OrderBy(g => g.Key.Month)
             .Select(g => new MonthlyStatsResponseDto
             {
                 Date = new DateOnly(g.Key.Year, g.Key.Month, 1),
@@ -73,7 +107,7 @@ public class DashboardService(ITracksService tracksService, ISubscriptionService
         };
     }
 
-    private async Task<decimal> GetSolanaPriceAsync()
+    private async Task<decimal> GetSolPriceAsync()
     {
         var url = configuration.GetSection("SolanaTicker").Value;
         using var client = new HttpClient();
@@ -81,7 +115,7 @@ public class DashboardService(ITracksService tracksService, ISubscriptionService
         var ticker = JsonConvert.DeserializeObject<BinancePriceResponse>(response);
         
         if (ticker == null || ticker.Price == 0)
-            throw new Exception("Failed to get Solana price from Binance API");
+            throw new Exception("Failed to get $SOL price from Binance API");
         
         return ticker.Price;
     }
@@ -100,10 +134,8 @@ public class DashboardService(ITracksService tracksService, ISubscriptionService
 
     private static async Task<List<MonthlyStatsResponseDto>> GetMonthlyStatsAsync<T>(IQueryable<T> items) where T : BaseEntity
     {
-        var nowYear = DateTime.UtcNow.Year;
-        
         var groupedData = await items
-            .Where(x => x.CreatedDate.Year == nowYear)
+            .Where(x => x.CreatedDate.Year == DateTime.UtcNow.Year)
             .GroupBy(x => new { x.CreatedDate.Year, x.CreatedDate.Month })
             .Select(g => new
             {
@@ -111,8 +143,7 @@ public class DashboardService(ITracksService tracksService, ISubscriptionService
                 g.Key.Month,
                 Count = g.Count()
             })
-            .OrderBy(x => x.Year)
-            .ThenBy(x => x.Month)
+            .OrderBy(x => x.Month)
             .ToListAsync();
         
         return groupedData

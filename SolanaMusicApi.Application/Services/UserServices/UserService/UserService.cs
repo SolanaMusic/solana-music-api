@@ -8,15 +8,15 @@ namespace SolanaMusicApi.Application.Services.UserServices.UserService;
 
 public class UserService(UserManager<ApplicationUser> userManager) : IUserService
 {
-    public async Task<ApplicationUser?> GetUserAsync(Expression<Func<ApplicationUser, bool>> expression)
+    public IQueryable<ApplicationUser> GetUsers()
     {
-        var response = await userManager.Users
+        return userManager.Users
             .Include(u => u.Profile)
-                .ThenInclude(x => x.Country)
-            .FirstOrDefaultAsync(expression);
-
-        return response;
+            .ThenInclude(x => x.Country);
     }
+
+    public async Task<ApplicationUser?> GetUserAsync(Expression<Func<ApplicationUser, bool>> expression) => 
+        await GetUsers().FirstOrDefaultAsync(expression);
 
     public async Task CreateUserAsync(ApplicationUser user, string? password = null)
     {
@@ -30,7 +30,10 @@ public class UserService(UserManager<ApplicationUser> userManager) : IUserServic
         await UpdateUserRoleAsync(user, UserRoles.User);
     }
 
-    public async Task UpdateUserRoleAsync(ApplicationUser user, UserRoles newRole)
+    public string AggregateErrors(IEnumerable<IdentityError> errors) =>
+        string.Join(" ", errors.Select(e => e.Description));
+    
+    private async Task UpdateUserRoleAsync(ApplicationUser user, UserRoles newRole)
     {
         var existingRoles = await userManager.GetRolesAsync(user);
         if (existingRoles.Contains(newRole.ToString()))
@@ -42,7 +45,4 @@ public class UserService(UserManager<ApplicationUser> userManager) : IUserServic
         if (!roleResponse.Succeeded)
             throw new Exception(AggregateErrors(roleResponse.Errors));
     }
-
-    public string AggregateErrors(IEnumerable<IdentityError> errors) =>
-        string.Join(" ", errors.Select(e => e.Description));
 }
