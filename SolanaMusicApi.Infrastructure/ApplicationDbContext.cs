@@ -42,6 +42,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Track> Tracks { get; set; }
     public DbSet<TrackGenre> TrackGenres { get; set; }
     public DbSet<Genre> Genres { get; set; }
+    public DbSet<RecentlyPlayed> RecentlyPlayed { get; set; }
 
     public DbSet<Playlist> Playlists { get; set; }
     public DbSet<PlaylistTrack> PlaylistTracks { get; set; }

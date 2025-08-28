@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SolanaMusicApi.Domain.Entities.General;
 using SolanaMusicApi.Domain.Entities.Performer;
 using SolanaMusicApi.Domain.Entities.Subscription;
 using PlaylistEntity = SolanaMusicApi.Domain.Entities.Playlist.Playlist;
@@ -10,6 +11,7 @@ public class ApplicationUser : IdentityUser<long>
 {
     public UserProfile Profile { get; set; } = null!;
     public Artist? Artist { get; set; }
+    public ICollection<RecentlyPlayed> RecentlyPlayedTracks { get; set; } = [];
     public ICollection<UserSubscription> UserSubscriptions { get; set; } = [];
     public ICollection<ArtistSubscriber> ArtistSubscribes { get; set; } = [];
     public ICollection<PlaylistEntity> Playlists { get; set; } = [];

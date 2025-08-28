@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.Constants;
 using SolanaMusicApi.Domain.DTO.Album;
 using SolanaMusicApi.Domain.DTO.Artist;
@@ -15,6 +16,7 @@ using SolanaMusicApi.Domain.DTO.Subscription;
 using SolanaMusicApi.Domain.DTO.SubscriptionPlan;
 using SolanaMusicApi.Domain.DTO.SubscriptionPlanCurrency;
 using SolanaMusicApi.Domain.DTO.Track;
+using SolanaMusicApi.Domain.DTO.Track.RecentlyPlayed;
 using SolanaMusicApi.Domain.DTO.Transaction;
 using SolanaMusicApi.Domain.DTO.User;
 using SolanaMusicApi.Domain.DTO.User.Profile;
@@ -58,6 +60,10 @@ public class MappingProfiles : Profile
         CreateMap<Track, GetArtistTrackResponseDto>()
             .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.TrackGenres.Select(tg => tg.Genre)));
 
+        CreateMap<RecentlyPlayed, RecentlyPlayedResponseDto>();
+        CreateMap<RecentlyPlayedRequestDto, RecentlyPlayed>();
+        CreateMap<AddOrUpdateRecentlyPlayedRequest, RecentlyPlayed>();
+        
         CreateMap<AlbumRequestDto, Album>();
         CreateMap<Album, AlbumResponseDto>()
             .ForMember(dest => dest.Artists, opt => opt.MapFrom(src => src.ArtistAlbums.Select(x => x.Artist)))

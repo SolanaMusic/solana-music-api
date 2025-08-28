@@ -65,17 +65,16 @@ IF NOT EXISTS (SELECT 1 FROM dbo.Artists WHERE Id = 1)
 BEGIN
     SET IDENTITY_INSERT dbo.Artists ON;
     INSERT INTO dbo.Artists ([Id], [UserId], [Name], [CountryId], [Bio], [ImageUrl], [CreatedDate], [UpdatedDate])
-    VALUES (1, 2, 'John Doe', 1, 'An emerging artist in the rock music scene.', 'images\artists\artist-image1.png', GETDATE(), GETDATE());
+    VALUES (1, 2, 'John Doe', 1, 'An emerging artist in the rock music scene.', 'images\artists\artist-image1.jpg', GETDATE(), GETDATE());
     SET IDENTITY_INSERT dbo.Artists OFF;
 END
-
 
 -- Albums
 IF NOT EXISTS (SELECT 1 FROM dbo.Albums WHERE Id = 1)
 BEGIN
     SET IDENTITY_INSERT dbo.Albums ON;
     INSERT INTO dbo.Albums ([Id], [Title], [ReleaseDate], [ImageUrl], [Description], [CreatedDate], [UpdatedDate])
-    VALUES (1, 'Rock Classics', '2024-02-26', 'covers\albums\album-image1.jfif',
+    VALUES (1, 'Rock Classics', '2024-02-26', 'covers\albums\album-image1.jpg',
             'A collection of the best rock hits', GETDATE(), GETDATE());
     SET IDENTITY_INSERT dbo.Albums OFF;
 END

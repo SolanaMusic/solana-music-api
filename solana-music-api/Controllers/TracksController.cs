@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Track;
+using SolanaMusicApi.Domain.DTO.Track.RecentlyPlayed;
 
 namespace solana_music_api.Controllers;
 
@@ -38,11 +39,25 @@ public class TracksController(IMediator mediator) : ControllerBase
         return File(response, "audio/mpeg", true);
     }
 
+    [HttpGet("recently-played/{userId}")]
+    public async Task<IActionResult> GetRecentlyPlayedTracks(long userId)
+    {
+        var response = await mediator.Send(new GetRecentlyPlayedRequest(userId));
+        return Ok(response);
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateTrack([FromForm]TrackRequestDto trackRequestDto)
     {
         var response = await mediator.Send(new CreateTrackRequest(trackRequestDto));
         return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+    }
+    
+    [HttpPost("recently-played")]
+    public async Task<IActionResult> AddOrUpdateRecentlyPlayedTracks(RecentlyPlayedRequestDto recentlyPlayedRequestDto)
+    {
+        var response = await mediator.Send(new AddOrUpdateRecentlyPlayedRequest(recentlyPlayedRequestDto.UserId, recentlyPlayedRequestDto.TrackId));
+        return Ok(response);
     }
 
     [HttpPatch("{id}")]

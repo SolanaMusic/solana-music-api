@@ -1,4 +1,5 @@
-﻿using SolanaMusicApi.Domain.Entities.Performer;
+﻿using SolanaMusicApi.Domain.Entities.General;
+using SolanaMusicApi.Domain.Entities.Performer;
 using SolanaMusicApi.Domain.Entities.Playlist;
 
 namespace SolanaMusicApi.Domain.Entities.Music;
@@ -17,4 +18,5 @@ public class Track : BaseEntity
     public ICollection<TrackGenre> TrackGenres { get; set; } = [];
     public ICollection<ArtistTrack> ArtistTracks { get; set; } = [];
     public ICollection<PlaylistTrack> PlaylistTracks { get; set; } = [];
+    public ICollection<RecentlyPlayed> RecentlyPlayedTracks { get; set; } = [];
 }

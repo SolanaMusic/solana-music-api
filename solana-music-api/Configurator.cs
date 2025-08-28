@@ -25,6 +25,7 @@ using SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionPlanC
 using SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionPlanService;
 using SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionService;
 using SolanaMusicApi.Application.Services.SubscriptionServices.UserSubscriptionService;
+using SolanaMusicApi.Application.Services.TrackServices.RecentlyPlayedService;
 using SolanaMusicApi.Application.Services.TrackServices.TrackGenreService;
 using SolanaMusicApi.Application.Services.TrackServices.TracksService;
 using SolanaMusicApi.Application.Services.UserServices.UserProfileService;
@@ -53,6 +54,7 @@ using SolanaMusicApi.Infrastructure.Repositories.SubscriptionRepositories.UserSu
 using SolanaMusicApi.Infrastructure.Repositories.TrackRepositories.TrackGenreRepository;
 using SolanaMusicApi.Infrastructure.Repositories.TrackRepositories.TrackRepository;
 using SolanaMusicApi.Infrastructure.Repositories.TransactionRepository;
+using SolanaMusicApi.Infrastructure.Repositories.UserProfileRepositories.RecentlyPlayedRepository;
 using SolanaMusicApi.Infrastructure.Repositories.UserProfileRepository;
 using SolanaMusicApi.Infrastructure.Repositories.WhitelistRepository;
 
@@ -77,6 +79,7 @@ public static class Configurator
         services.AddScoped<IArtistSubscriberRepository, ArtistSubscriberRepository>();
         services.AddScoped<IPlaylistRepository, PlaylistRepository>();
         services.AddScoped<IPlaylistTrackRepository, PlaylistTrackRepository>();
+        services.AddScoped<IRecentlyPlayedRepository, RecentlyPlayedRepository>();
 
         services.AddScoped<ICurrencyRepository, CurrencyRepository>();
         services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
@@ -114,6 +117,7 @@ public static class Configurator
         services.AddScoped<IArtistSubscriberService, ArtistSubscriberService>();
         services.AddScoped<IPlaylistService, PlaylistService>();
         services.AddScoped<IPlaylistTrackService, PlaylistTrackService>();
+        services.AddScoped<IRecentlyPlayedService, RecentlyPlayedService>();
 
         services.AddScoped<ICurrencyService, CurrencyService>();
         services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
