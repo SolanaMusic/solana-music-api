@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Web;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests;
-using SolanaMusicApi.Domain.DTO.Auth;
 using SolanaMusicApi.Domain.DTO.Auth.Default;
 using SolanaMusicApi.Domain.DTO.Auth.OAuth;
 
@@ -10,7 +10,7 @@ namespace solana_music_api.Controllers;
 
 [Route("api/auth")]
 [ApiController]
-public class AuthController(IMediator mediator) : ControllerBase
+public class AuthController(IMediator mediator, IConfiguration configuration) : ControllerBase
 {
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
@@ -44,6 +44,16 @@ public class AuthController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> ExternalResponse()
     {
         var response = await mediator.Send(new ExternalResponseRequest());
-        return Ok(response);
+        
+        var baseUri = configuration.GetConnectionString("Web");
+        var query = HttpUtility.ParseQueryString(string.Empty);
+        query["token"] = response.Jwt;
+        query["id"] = response.User.Id.ToString();
+        query["username"] = response.User.UserName;
+        query["role"] = response.Role;
+        query["avatar"] = response.User.Profile.AvatarUrl;
+
+        var redirectUri = $"{baseUri}?{query}";
+        return Redirect(redirectUri);
     }
 }

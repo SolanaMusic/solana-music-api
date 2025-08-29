@@ -22,7 +22,7 @@ namespace SolanaMusicApi.Application.Services.AuthService;
 
 public class AuthService(IUserProfileService userProfileService, ICountryService countryService, UserManager<ApplicationUser> userManager, 
     ILocationService locationService, IUserService userService, SignInManager<ApplicationUser> signInManager, IMapper mapper, 
-    IOptions<JwtTokenSettings> tokenSettings, IOptions<AuthSettings> authSettings) : IAuthService
+     IOptions<JwtTokenSettings> tokenSettings, IOptions<AuthSettings> authSettings) : IAuthService
 {
     private readonly JwtTokenSettings _tokenSettings = tokenSettings.Value;
 
@@ -199,7 +199,14 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
         return new LoginResponseDto
         {
             Jwt = await GenerateTokenAsync(user),
+            Role = await GetUserRoleAsync(user),
             User = user,
         };
+    }
+    
+    private async Task<string> GetUserRoleAsync(ApplicationUser user)
+    {
+        var roles = await userManager.GetRolesAsync(user);
+        return roles.First();
     }
 }

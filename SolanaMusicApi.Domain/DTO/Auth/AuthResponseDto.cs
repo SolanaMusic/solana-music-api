@@ -5,5 +5,6 @@ namespace SolanaMusicApi.Domain.DTO.Auth;
 public class AuthResponseDto
 {
     public string Jwt { get; set; } = string.Empty;
+    public string Role { get; set; } = string.Empty;
     public UserResponseDto User { get; set; } = null!;
 }
