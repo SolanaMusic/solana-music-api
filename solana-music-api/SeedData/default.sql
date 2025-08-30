@@ -61,20 +61,26 @@ SET IDENTITY_INSERT dbo.Genres OFF;
 
 
 -- Artists
+SET IDENTITY_INSERT dbo.Artists ON;
 IF NOT EXISTS (SELECT 1 FROM dbo.Artists WHERE Id = 1)
 BEGIN
-    SET IDENTITY_INSERT dbo.Artists ON;
     INSERT INTO dbo.Artists ([Id], [UserId], [Name], [CountryId], [Bio], [ImageUrl], [CreatedDate], [UpdatedDate])
-    VALUES (1, 2, 'John Doe', 1, 'An emerging artist in the rock music scene.', 'images\artists\artist-image1.jpg', GETDATE(), GETDATE());
-    SET IDENTITY_INSERT dbo.Artists OFF;
+    VALUES (1, 2, 'Test artists 1', 1, 'An emerging artist in the rock music scene.', 'images\artists\cosmic-album-cover-with-purple-nebula.png', GETDATE(), GETDATE());
 END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Artists WHERE Id = 2)
+BEGIN
+INSERT INTO dbo.Artists ([Id], [UserId], [Name], [CountryId], [Bio], [ImageUrl], [CreatedDate], [UpdatedDate])
+VALUES (2, 3, 'Test artists 2', 1, 'Test test test test test', 'images\artists\artist-image1.jpg', GETDATE(), GETDATE());
+END
+SET IDENTITY_INSERT dbo.Artists OFF;
 
 -- Albums
 IF NOT EXISTS (SELECT 1 FROM dbo.Albums WHERE Id = 1)
 BEGIN
     SET IDENTITY_INSERT dbo.Albums ON;
     INSERT INTO dbo.Albums ([Id], [Title], [ReleaseDate], [ImageUrl], [Description], [CreatedDate], [UpdatedDate])
-    VALUES (1, 'Rock Classics', '2024-02-26', 'covers\albums\album-image1.jpg',
+    VALUES (1, 'Rock Classics', '2024-02-26', 'covers\albums\cosmic-album-cover.png',
             'A collection of the best rock hits', GETDATE(), GETDATE());
     SET IDENTITY_INSERT dbo.Albums OFF;
 END
@@ -86,7 +92,7 @@ IF NOT EXISTS (SELECT 1 FROM dbo.Tracks WHERE Id = 1)
 BEGIN
     INSERT INTO dbo.Tracks ([Id], [Title], [AlbumId], [ImageUrl], [Duration],
         [FileUrl], [PlaysCount], [ReleaseDate], [CreatedDate], [UpdatedDate])
-    VALUES (1, 'Test track', NULL, 'covers\tracks\track-image1.png',
+    VALUES (1, 'Test track', NULL, 'covers\tracks\neon-synthwave.png',
         '00:03:28', 'tracks\track1.mp3', 0, '2024-02-26', GETDATE(), GETDATE());
 END
 
@@ -217,13 +223,19 @@ END
 IF NOT EXISTS (SELECT 1 FROM dbo.UserProfiles WHERE Id = 3)
 BEGIN
     INSERT INTO dbo.UserProfiles ([Id], [UserId], [CountryId], [AvatarUrl], [TokensAmount], [CreatedDate], [UpdatedDate])
-    VALUES (3, 3, 1, 'images\users\user-image1.png', 300, GETDATE(), GETDATE());
+    VALUES (3, 3, 1, 'images\users\user-image1.png', 200, GETDATE(), GETDATE());
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.UserProfiles WHERE Id = 4)
 BEGIN
     INSERT INTO dbo.UserProfiles ([Id], [UserId], [CountryId], [AvatarUrl], [TokensAmount], [CreatedDate], [UpdatedDate])
-    VALUES (4, 4, 1, 'images\users\user-image1.png', 400, GETDATE(), GETDATE());
+    VALUES (4, 4, 1, 'images\users\user-image1.png', 300, GETDATE(), GETDATE());
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.UserProfiles WHERE Id = 5)
+BEGIN
+    INSERT INTO dbo.UserProfiles ([Id], [UserId], [CountryId], [AvatarUrl], [TokensAmount], [CreatedDate], [UpdatedDate])
+    VALUES (5, 5, 1, 'images\users\user-image1.png', 400, GETDATE(), GETDATE());
 END
 SET IDENTITY_INSERT dbo.UserProfiles OFF;
 

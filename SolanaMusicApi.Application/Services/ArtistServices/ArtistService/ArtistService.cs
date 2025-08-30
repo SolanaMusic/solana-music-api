@@ -32,8 +32,7 @@ public class ArtistService(IBaseRepository<Artist> baseRepository, IFileService 
 
             .Include(x => x.ArtistTracks)
                 .ThenInclude(x => x.Track)
-                    .ThenInclude(x => x.TrackGenres)
-                        .ThenInclude(x => x.Genre);
+                    .ThenInclude(x => x.Album);
     }
 
     public async Task<Artist> GetArtistAsync(long id)
@@ -106,13 +105,13 @@ public class ArtistService(IBaseRepository<Artist> baseRepository, IFileService 
     public bool CheckArtistSubscription(Artist artist, long userId) => 
         artist.ArtistSubscribers.Any(x => x.SubscriberId == userId);
 
-    public async Task SubscribeToArtist(long id, long userId)
+    public async Task SubscribeToArtistAsync(long id, long userId)
     {
         var record = new ArtistSubscriber { ArtistId = id, SubscriberId = userId };
         await artistSubscriberService.AddAsync(record);
     }
 
-    public async Task UnsubscribeFromArtist(long id, long userId) => 
+    public async Task UnsubscribeFromArtistAsync(long id, long userId) => 
         await artistSubscriberService.DeleteAsync(x => x.ArtistId == id && x.SubscriberId == userId);
 
     private static void MapProperties(Artist artist, ArtistRequestDto artistRequestDto, string? coverPath)

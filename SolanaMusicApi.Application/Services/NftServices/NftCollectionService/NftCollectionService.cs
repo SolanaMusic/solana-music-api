@@ -29,27 +29,32 @@ public class NftCollectionService(IBaseRepository<NftCollection> baseRepository,
     public async Task<List<NftCollection>> GetArtistNftCollectionsAsync(long artistId, string? type, string? name)
     {
         var collections = GetNftCollections(type);
-        
+
         if (!string.IsNullOrEmpty(name))
-        {
-            collections = collections
-                .Where(x => EF.Functions.Like(x.Name, $"%{name}%"));
-        }
+            collections = collections.Where(x => EF.Functions.Like(x.Name, $"%{name}%"));
         
         if (string.IsNullOrEmpty(type))
-            return await collections.ToListAsync();
+        {
+            var filtered = await collections.ToListAsync();
+
+            return filtered.Where(x =>
+                (x.Artist != null && x.Artist.Id == artistId)
+                || (x.Album != null && x.Album.ArtistAlbums.Any(aa => aa.ArtistId == artistId))
+                || (x.Track != null && x.Track.ArtistTracks.Any(at => at.ArtistId == artistId))
+            ).ToList();
+        }
 
         var associationType = GetAssociationType(type);
-        var filtered = await collections.ToListAsync();
-        
+        var filteredByType = await collections.ToListAsync();
+
         return associationType switch
         {
-            AssociationType.Artist => filtered.Where(x => x.Artist != null && x.Artist.Id == artistId).ToList(),
+            AssociationType.Artist => filteredByType.Where(x => x.Artist != null && x.Artist.Id == artistId).ToList(),
 
-            AssociationType.Album => filtered.Where(x => x.Album != null && x.Album.ArtistAlbums
+            AssociationType.Album => filteredByType.Where(x => x.Album != null && x.Album.ArtistAlbums
                 .Any(aa => aa.ArtistId == artistId)).ToList(),
 
-            AssociationType.Track => filtered.Where(x => x.Track != null && x.Track.ArtistTracks
+            AssociationType.Track => filteredByType.Where(x => x.Track != null && x.Track.ArtistTracks
                 .Any(at => at.ArtistId == artistId)).ToList(),
 
             _ => throw new ArgumentOutOfRangeException(nameof(associationType), associationType, "Invalid association type")

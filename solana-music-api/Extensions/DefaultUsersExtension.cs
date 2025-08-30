@@ -9,27 +9,28 @@ public static class DefaultUsersExtension
 {
     public static async Task CreateDefaultUsersAsync(this WebApplication app)
     {
-        using var scope = app.Services.CreateAsyncScope();
+        await using var scope = app.Services.CreateAsyncScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
         var users = new[]
         {
             new { Email = DefaultUsers.UserEmail, UserName = DefaultUsers.UserName, Password = DefaultUsers.UserPassword, Role = UserRoles.User },
             new { Email = DefaultUsers.ArtistEmail, UserName = DefaultUsers.ArtistName, Password = DefaultUsers.ArtistPassword, Role = UserRoles.Artist },
+            new { Email = DefaultUsers.ArtistEmail2, UserName = DefaultUsers.ArtistName2, Password = DefaultUsers.ArtistPassword2, Role = UserRoles.Artist },
             new { Email = DefaultUsers.ModerEmail, UserName = DefaultUsers.ModerName, Password = DefaultUsers.ModerPassword, Role = UserRoles.Moderator },
             new { Email = DefaultUsers.AdminEmail, UserName = DefaultUsers.AdminName, Password = DefaultUsers.AdminPassword, Role = UserRoles.Admin }
         };
 
         foreach (var userData in users)
         {
-            if (await userManager.FindByEmailAsync(userData.Email) == null)
-            {
-                var user = new ApplicationUser { Email = userData.Email, UserName = userData.UserName };
-                var result = await userManager.CreateAsync(user, userData.Password);
+            if (await userManager.FindByEmailAsync(userData.Email) != null) 
+                continue;
+            
+            var user = new ApplicationUser { Email = userData.Email, UserName = userData.UserName };
+            var result = await userManager.CreateAsync(user, userData.Password);
 
-                if (result.Succeeded)
-                    await userManager.AddToRoleAsync(user, userData.Role.ToString());
-            }
+            if (result.Succeeded)
+                await userManager.AddToRoleAsync(user, userData.Role.ToString());
         }
     }
 }

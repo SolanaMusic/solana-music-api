@@ -8,6 +8,6 @@ public class SubscribeToArtistRequestHandler(IArtistService artistService) : IRe
 {
     public async Task Handle(SubscribeToArtistRequest request, CancellationToken cancellationToken)
     {
-        await artistService.SubscribeToArtist(request.SubscribeToArtistDto.Id, request.SubscribeToArtistDto.UserId);
+        await artistService.SubscribeToArtistAsync(request.SubscribeToArtistDto.Id, request.SubscribeToArtistDto.UserId);
     }
 }

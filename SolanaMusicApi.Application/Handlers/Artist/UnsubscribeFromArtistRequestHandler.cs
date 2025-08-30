@@ -8,6 +8,6 @@ public class UnsubscribeFromArtistRequestHandler(IArtistService artistService) :
 {
     public async Task Handle(UnsubscribeFromArtistRequest request, CancellationToken cancellationToken)
     {
-        await artistService.UnsubscribeFromArtist(request.Id, request.UserId);
+        await artistService.UnsubscribeFromArtistAsync(request.Id, request.UserId);
     }
 }

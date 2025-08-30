@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Nft.Nft;
@@ -26,8 +25,8 @@ public class NftController(IMediator mediator)
         return Ok(response);
     }
     
-    [HttpGet("artist-collections")]
-    public async Task<IActionResult> GetArtistNftCollections([Required] long artistId, string? type, string? name)
+    [HttpGet("artist-collections/{artistId}")]
+    public async Task<IActionResult> GetArtistNftCollections(long artistId, string? type, string? name)
     {
         var response = await mediator.Send(new GetArtistNftCollectionsRequest(artistId, type, name));
         return Ok(response);

@@ -13,6 +13,6 @@ public interface IArtistService : IBaseService<Artist>
     Task<Artist> CreateArtistAsync(Artist artist, IFormFile? file);
     Task<Artist> UpdateArtistAsync(long id, ArtistRequestDto artistRequestDto);
     Task<Artist> DeleteArtistAsync(long id);
-    Task SubscribeToArtist(long id, long userId);
-    Task UnsubscribeFromArtist(long id, long userId);
+    Task SubscribeToArtistAsync(long id, long userId);
+    Task UnsubscribeFromArtistAsync(long id, long userId);
 }

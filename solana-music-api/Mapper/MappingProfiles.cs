@@ -58,7 +58,8 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.TrackGenres.Select(tg => tg.Genre)))
             .ForMember(dest => dest.Artists, opt => opt.MapFrom(src => src.ArtistTracks.Select(at => at.Artist)));
         CreateMap<Track, GetArtistTrackResponseDto>()
-            .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.TrackGenres.Select(tg => tg.Genre)));
+            .ForMember(dest => dest.ImageUrl,
+                opt => opt.MapFrom(src => src.Album != null ? src.Album.ImageUrl : src.ImageUrl));
 
         CreateMap<RecentlyPlayed, RecentlyPlayedResponseDto>();
         CreateMap<RecentlyPlayedRequestDto, RecentlyPlayed>();
@@ -105,7 +106,7 @@ public class MappingProfiles : Profile
         CreateMap<Artist, ArtistTrackResponseDto>();
         CreateMap<Artist, GetAlbumArtistResponseDto>();
         CreateMap<Artist, ArtistResponseDto>()
-            .ForMember(dest => dest.SubscribersCount, opt => opt.MapFrom(src => src.ArtistSubscribers.Count()))
+            .ForMember(dest => dest.SubscribersCount, opt => opt.MapFrom(src => src.ArtistSubscribers.Count))
             .ForMember(dest => dest.Albums, opt => opt.MapFrom(src => src.ArtistAlbums.Select(x => x.Album)))
             .ForMember(dest => dest.Tracks, opt => opt.MapFrom(src => src.ArtistTracks.Select(x => x.Track)));
 
@@ -139,7 +140,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Minted, opt => opt.MapFrom(src => src.Nfts.Count(x => x.Owner != Constants.SystemAddress)))
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Nfts.Any() ? src.Nfts.Min(n => n.Price) : 0))
             .ForMember(dest => dest.Currency, opt => opt.MapFrom(src => src.Nfts.Any() ? src.Nfts.First().Currency : null))
-            .ForMember(dest => dest.Creators, opt => opt.MapFrom(src => GetCreators(src)));;
+            .ForMember(dest => dest.Creators, opt => opt.MapFrom(src => GetCreators(src)));
     }
     
     private static List<ArtistResponseDto> GetCreators(NftCollection src)
