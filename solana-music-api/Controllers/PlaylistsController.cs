@@ -10,7 +10,7 @@ namespace solana_music_api.Controllers;
 [ApiController]
 public class PlaylistsController(IMediator mediator) : ControllerBase
 {
-    [HttpGet("get-user-playlists{userId}")]
+    [HttpGet("get-user-playlists/{userId}")]
     public async Task<IActionResult> GetAll(long userId)
     {
         var response = await mediator.Send(new GetUserPlaylistsRequest(userId));

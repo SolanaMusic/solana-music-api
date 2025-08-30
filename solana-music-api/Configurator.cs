@@ -185,4 +185,14 @@ public static class Configurator
             });
         });
     }
+
+    public static void ConfigureCors(this WebApplication app)
+    {
+        app.UseCors("AllowAll");
+
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            OnPrepareResponse = ctx => ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "*")
+        });
+    }
 }

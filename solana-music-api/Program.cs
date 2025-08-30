@@ -31,7 +31,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowAll");
+app.ConfigureCors();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 await app.CreateDefaultRolesAsync();
