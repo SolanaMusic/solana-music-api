@@ -52,6 +52,7 @@ public class AuthController(IMediator mediator, IConfiguration configuration) : 
         query["username"] = response.User.UserName;
         query["role"] = response.Role;
         query["avatar"] = response.User.Profile.AvatarUrl;
+        query["tokensAmount"] = response.User.Profile.TokensAmount.ToString();
 
         var redirectUri = $"{baseUri}?{query}";
         return Redirect(redirectUri);
