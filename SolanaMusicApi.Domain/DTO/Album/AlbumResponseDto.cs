@@ -1,5 +1,6 @@
 ﻿using SolanaMusicApi.Domain.DTO.Artist;
 using SolanaMusicApi.Domain.DTO.Genre;
+using SolanaMusicApi.Domain.DTO.Nft.NftCollection;
 using SolanaMusicApi.Domain.DTO.Track;
 
 namespace SolanaMusicApi.Domain.DTO.Album;
@@ -15,4 +16,5 @@ public class AlbumResponseDto : BaseResponseDto
     public ICollection<GetAlbumArtistResponseDto> Artists { get; set; } = null!;
     public ICollection<GetAlbumTrackResponseDto> Tracks { get; set; } = [];
     public ICollection<GenreResponseDto> Genres { get; set; } = null!;
+    public NftCollectionResponseDto? NftCollection { get; set; }
 }

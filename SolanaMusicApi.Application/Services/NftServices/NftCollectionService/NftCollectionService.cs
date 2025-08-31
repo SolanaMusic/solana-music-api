@@ -37,11 +37,12 @@ public class NftCollectionService(IBaseRepository<NftCollection> baseRepository,
         {
             var filtered = await collections.ToListAsync();
 
-            return filtered.Where(x =>
-                (x.Artist != null && x.Artist.Id == artistId)
-                || (x.Album != null && x.Album.ArtistAlbums.Any(aa => aa.ArtistId == artistId))
-                || (x.Track != null && x.Track.ArtistTracks.Any(at => at.ArtistId == artistId))
-            ).ToList();
+            return filtered
+                .Where(x => 
+                    (x.Artist != null && x.Artist.Id == artistId)
+                    || (x.Album != null && x.Album.ArtistAlbums.Any(aa => aa.ArtistId == artistId))
+                    || (x.Track != null && x.Track.ArtistTracks.Any(at => at.ArtistId == artistId)))
+                .ToList();
         }
 
         var associationType = GetAssociationType(type);
@@ -56,6 +57,25 @@ public class NftCollectionService(IBaseRepository<NftCollection> baseRepository,
 
             AssociationType.Track => filteredByType.Where(x => x.Track != null && x.Track.ArtistTracks
                 .Any(at => at.ArtistId == artistId)).ToList(),
+
+            _ => throw new ArgumentOutOfRangeException(nameof(associationType), associationType, "Invalid association type")
+        };
+    }
+    
+    public async Task<NftCollection?> GetNftCollectionAsync(long associationId, string type)
+    {
+        var collections = await GetNftCollections(type).ToListAsync();
+        var associationType = GetAssociationType(type);
+
+        return associationType switch
+        {
+            AssociationType.Artist => collections.FirstOrDefault(x => x.Artist != null && x.AssociationId == associationId),
+
+            AssociationType.Album => collections
+                .FirstOrDefault(x => x.Album != null && x.Album.ArtistAlbums.Any(aa => aa.AlbumId == associationId)),
+
+            AssociationType.Track => collections
+                .FirstOrDefault(x => x.Track != null && x.Track.ArtistTracks.Any(aa => aa.TrackId == associationId)),
 
             _ => throw new ArgumentOutOfRangeException(nameof(associationType), associationType, "Invalid association type")
         };
