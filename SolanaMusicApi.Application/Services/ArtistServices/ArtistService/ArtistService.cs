@@ -16,23 +16,25 @@ public class ArtistService(IBaseRepository<Artist> baseRepository, IFileService 
     public IQueryable<Artist> GetArtists()
     {
         return GetAll()
+            .AsTracking()
             .AsSplitQuery()
             .Include(x => x.User)
                 .ThenInclude(x => x != null ? x.Profile : null)
                     .ThenInclude(x => x.Country)
-
             .Include(x => x.ArtistSubscribers)
                 .ThenInclude(x => x.Subscriber)
-
             .Include(x => x.ArtistAlbums)
                 .ThenInclude(x => x.Album)
                     .ThenInclude(x => x.Tracks)
                         .ThenInclude(x => x.TrackGenres)
                             .ThenInclude(x => x.Genre)
-
             .Include(x => x.ArtistTracks)
                 .ThenInclude(x => x.Track)
-                    .ThenInclude(x => x.Album);
+                    .ThenInclude(x => x.Album)
+            .Include(x => x.ArtistTracks)
+                .ThenInclude(x => x.Track)
+                    .ThenInclude(t => t.ArtistTracks)
+                        .ThenInclude(ta => ta.Artist);
     }
 
     public async Task<Artist> GetArtistAsync(long id)

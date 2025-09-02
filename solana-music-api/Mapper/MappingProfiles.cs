@@ -59,7 +59,8 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Artists, opt => opt.MapFrom(src => src.ArtistTracks.Select(at => at.Artist)));
         CreateMap<Track, GetArtistTrackResponseDto>()
             .ForMember(dest => dest.ImageUrl,
-                opt => opt.MapFrom(src => src.Album != null ? src.Album.ImageUrl : src.ImageUrl));
+                opt => opt.MapFrom(src => src.Album != null ? src.Album.ImageUrl : src.ImageUrl))
+            .ForMember(dest => dest.Artists, opt => opt.MapFrom(src => src.ArtistTracks.Select(at => at.Artist)));
 
         CreateMap<RecentlyPlayed, RecentlyPlayedResponseDto>();
         CreateMap<RecentlyPlayedRequestDto, RecentlyPlayed>();
@@ -105,6 +106,7 @@ public class MappingProfiles : Profile
         CreateMap<ArtistRequestDto, Artist>();
         CreateMap<Artist, ArtistTrackResponseDto>();
         CreateMap<Artist, GetAlbumArtistResponseDto>();
+        CreateMap<Artist, ArtistSlimResponseDto>();
         CreateMap<Artist, ArtistResponseDto>()
             .ForMember(dest => dest.SubscribersCount, opt => opt.MapFrom(src => src.ArtistSubscribers.Count))
             .ForMember(dest => dest.Albums, opt => opt.MapFrom(src => src.ArtistAlbums.Select(x => x.Album)))
