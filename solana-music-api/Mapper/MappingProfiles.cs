@@ -44,7 +44,8 @@ public class MappingProfiles : Profile
 
         CreateMap<UserProfile, UserProfileResponseDto>();
         CreateMap<WhitelistRequestDto, Whitelist>();
-        CreateMap<ApplicationUser, UserResponseDto>();
+        CreateMap<ApplicationUser, UserResponseDto>()
+            .ForMember(dest => dest.Following, opt => opt.MapFrom(src => src.ArtistSubscribes.Count));
         CreateMap<LoginResponseDto, AuthResponseDto>();
 
         CreateMap<GenreRequestDto, Genre>();
@@ -102,6 +103,16 @@ public class MappingProfiles : Profile
                         .Select(pt => pt.Track.ImageUrl)
                         .FirstOrDefault()
             ));
+        CreateMap<Playlist, GetUserPlaylistResponseDto>()
+            .ForMember(dest => dest.TracksCount, opt => opt.MapFrom(src => src.PlaylistTracks.Count))
+            .ForMember(dest => dest.CoverUrl, opt => opt.MapFrom(src =>
+                !string.IsNullOrEmpty(src.CoverUrl)
+                    ? src.CoverUrl
+                    : src.PlaylistTracks
+                        .OrderBy(pt => pt.TrackId)
+                        .Select(pt => pt.Track.ImageUrl)
+                        .FirstOrDefault()
+            ));
 
         CreateMap<ArtistRequestDto, Artist>();
         CreateMap<Artist, ArtistTrackResponseDto>();
@@ -129,6 +140,7 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.IsActive, opt => opt.Ignore());
 
         CreateMap<Transaction, TransactionResponseDto>();
+        CreateMap<Transaction, GetUserTransactionResponseDto>();
 
         CreateMap<NftRequestDto, Nft>();
         CreateMap<NftCollectionRequestDto, NftCollection>();

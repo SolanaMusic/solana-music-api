@@ -12,7 +12,16 @@ public class UserService(UserManager<ApplicationUser> userManager) : IUserServic
     {
         return userManager.Users
             .Include(u => u.Profile)
-            .ThenInclude(x => x.Country);
+                .ThenInclude(x => x.Country)
+            .Include(x => x.UserSubscriptions)
+                .ThenInclude(x => x.Subscription)
+            .Include(x => x.Nfts)
+            .Include(x => x.Playlists)
+                .ThenInclude(x => x.PlaylistTracks)
+                    .ThenInclude(x => x.Track)
+            .Include(x => x.ArtistSubscribes)
+            .Include(x => x.Transactions)
+                .ThenInclude(x => x.Currency);
     }
 
     public async Task<ApplicationUser?> GetUserAsync(Expression<Func<ApplicationUser, bool>> expression) => 

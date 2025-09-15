@@ -20,5 +20,10 @@ public class NftConfiguration : IEntityTypeConfiguration<Domain.Entities.Nft.Nft
             .WithMany(c => c.Nfts)
             .HasForeignKey(n => n.CollectionId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasOne(n => n.User)
+            .WithMany(c => c.Nfts)
+            .HasForeignKey(n => n.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

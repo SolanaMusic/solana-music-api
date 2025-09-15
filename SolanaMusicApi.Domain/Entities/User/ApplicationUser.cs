@@ -15,5 +15,6 @@ public class ApplicationUser : IdentityUser<long>
     public ICollection<UserSubscription> UserSubscriptions { get; set; } = [];
     public ICollection<ArtistSubscriber> ArtistSubscribes { get; set; } = [];
     public ICollection<PlaylistEntity> Playlists { get; set; } = [];
-    public ICollection<TransactionEntity>? Transactions { get; set; }
+    public ICollection<TransactionEntity> Transactions { get; set; } = [];
+    public ICollection<Nft.Nft> Nfts { get; set; } = [];
 }

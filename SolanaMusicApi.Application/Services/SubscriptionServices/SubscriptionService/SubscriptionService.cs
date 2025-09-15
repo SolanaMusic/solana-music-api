@@ -115,12 +115,12 @@ public class SubscriptionService(IBaseRepository<Subscription> baseRepository, I
         return GetAll()
             .Include(x => x.Owner)
                 .ThenInclude(x => x.Profile)
-
             .Include(x => x.UserSubscriptions)
                 .ThenInclude(x => x.User)
                     .ThenInclude(x => x.Profile)
-
-            .Include(x => x.SubscriptionPlan);
+            .Include(x => x.SubscriptionPlan)
+                .ThenInclude(x => x.SubscriptionPlanCurrencies)
+                    .ThenInclude(x => x.Currency);
     }
 
     private async Task DeactivateUserSubscriptionsAsync(long userId)

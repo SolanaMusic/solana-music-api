@@ -13,6 +13,7 @@ public class NftResponseDto : BaseResponseDto
     public Rarity Rarity { get; set; }
     public bool Available { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
+    public DateTime UpdatedDate  { get; set; }
 
     public CurrencyResponseDto Currency { get; set; } = null!;
 }
