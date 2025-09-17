@@ -14,7 +14,10 @@ public class PlaylistConfiguration : IEntityTypeConfiguration<PlaylistEntity>
             .IsRequired()
             .HasMaxLength(150);
 
-        builder.Property(a => a.CoverUrl)
+        builder.Property(p => p.IsPublic)
+            .HasDefaultValue(true);
+
+        builder.Property(p => p.CoverUrl)
             .HasMaxLength(500);
 
         builder.HasOne(p => p.Owner)

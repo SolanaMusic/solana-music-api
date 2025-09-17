@@ -9,5 +9,7 @@ public class CreatePlaylistRequestDto
     public string Name { get; set; } = string.Empty;
     [Required]
     public long OwnerId { get; set; }
+
+    public bool IsPublic { get; set; } = true;
     public IFormFile? CoverFile { get; set; }
 }

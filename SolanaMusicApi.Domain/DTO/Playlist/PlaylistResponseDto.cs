@@ -6,7 +6,9 @@ namespace SolanaMusicApi.Domain.DTO.Playlist;
 public class PlaylistResponseDto : BaseResponseDto
 {
     public string Name { get; set; } = string.Empty;
+    public bool IsPublic { get; set; }
     public string? CoverUrl { get; set; }
+    public DateTime UpdatedDate { get; set; }
 
     public UserResponseDto Owner { get; set; } = null!;
     public ICollection<GetAlbumTrackResponseDto>? Tracks { get; set; }

@@ -58,28 +58,42 @@ public class PlaylistService : BaseService<Playlist>, IPlaylistService
     public async Task<Playlist> UpdatePlaylistAsync(long id, UpdatePlaylistRequestDto playlistRequestDto)
     {
         await BeginTransactionAsync();
-        var coverPath = playlistRequestDto.CoverFile != null
-            ? await _fileService.SaveFileAsync(playlistRequestDto.CoverFile, FileTypes.PlaylistCover)
-            : null;
+
+        var newCoverPath = string.Empty;
 
         try
         {
             var playlist = await GetByIdAsync(id);
             var coverSnapshot = playlist.CoverUrl;
-            playlist.CoverUrl = coverPath;
+            
+            if (playlistRequestDto.RemoveCover)
+            {
+                playlist.CoverUrl = null;
+
+                if (!string.IsNullOrEmpty(coverSnapshot))
+                    await ProcessRollBackActions(GetRollBackActions(coverSnapshot));
+            }
+            else if (playlistRequestDto.CoverFile != null)
+            {
+                newCoverPath = await _fileService.SaveFileAsync(playlistRequestDto.CoverFile, FileTypes.PlaylistCover);
+
+                playlist.CoverUrl = newCoverPath;
+
+                if (!string.IsNullOrEmpty(coverSnapshot))
+                    await ProcessRollBackActions(GetRollBackActions(coverSnapshot));
+            }
+
             playlist.Name = playlistRequestDto.Name;
+            playlist.IsPublic = playlistRequestDto.IsPublic;
 
             var response = await UpdateAsync(playlist);
-            await CommitTransactionAsync(GetRollBackActions(coverPath));
-            
-            if (!string.IsNullOrEmpty(coverSnapshot))
-                await ProcessRollBackActions(GetRollBackActions(coverSnapshot));
+            await CommitTransactionAsync(GetRollBackActions(newCoverPath));
 
             return await GetPlaylistAsync(response.Id);
         }
         catch (Exception ex)
         {
-            await RollbackTransactionAsync(ex, GetRollBackActions(coverPath));
+            await RollbackTransactionAsync(ex, GetRollBackActions(newCoverPath));
             throw;
         }
     }
@@ -98,6 +112,7 @@ public class PlaylistService : BaseService<Playlist>, IPlaylistService
     {
         var record = new PlaylistTrack { PlaylistId = addToPlaylistDto.PlaylistId, TrackId = addToPlaylistDto.TrackId };
         await _playlistTrackService.AddAsync(record);
+        await UpdatePlaylistDate(addToPlaylistDto.PlaylistId);
     }
 
     public async Task RemoveFromPlaylistAsync(AddToPlaylistDto addToPlaylistDto)
@@ -106,6 +121,7 @@ public class PlaylistService : BaseService<Playlist>, IPlaylistService
             && x.TrackId == addToPlaylistDto.TrackId;
 
         await _playlistTrackService.DeleteAsync(expression);
+        await UpdatePlaylistDate(addToPlaylistDto.PlaylistId);
     }
 
     private IQueryable<Playlist> GetPlaylistsQuery()
@@ -115,6 +131,10 @@ public class PlaylistService : BaseService<Playlist>, IPlaylistService
                 .ThenInclude(x => x.Track)
                     .ThenInclude(x => x.ArtistTracks)
                         .ThenInclude(x => x.Artist)
+            
+            .Include(x => x.PlaylistTracks)
+                .ThenInclude(x => x.Track)
+                    .ThenInclude(x => x.Album)
 
             .Include(x => x.Owner)
                 .ThenInclude(x => x.Profile);
@@ -126,5 +146,12 @@ public class PlaylistService : BaseService<Playlist>, IPlaylistService
             return [() => Task.Run(() => _fileService.DeleteFile(coverPath))];
 
         return [];
+    }
+
+    private async Task UpdatePlaylistDate(long playlistId)
+    {
+        await GetAll()
+            .Where(p => p.Id == playlistId)
+            .ExecuteUpdateAsync(p => p.SetProperty(x => x.UpdatedDate, DateTime.UtcNow));
     }
 }
