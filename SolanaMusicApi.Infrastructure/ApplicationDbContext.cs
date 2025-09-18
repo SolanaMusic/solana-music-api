@@ -49,6 +49,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     
     public DbSet<NftCollection> NftCollections { get; set; }
     public DbSet<Nft> Nfts { get; set; }
+    public DbSet<LikedNft> LikedNfts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

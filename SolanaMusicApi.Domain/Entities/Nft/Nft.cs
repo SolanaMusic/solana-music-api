@@ -1,4 +1,5 @@
-﻿using SolanaMusicApi.Domain.Entities.Transaction;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using SolanaMusicApi.Domain.Entities.Transaction;
 using SolanaMusicApi.Domain.Entities.User;
 using SolanaMusicApi.Domain.Enums.Nft;
 
@@ -15,8 +16,12 @@ public class Nft : BaseEntity
     public long CurrencyId { get; set; }
     public Rarity Rarity { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
+    
+    [NotMapped]
+    public bool IsLiked { get; set; }
 
     public Currency Currency { get; set; } = null!;
     public NftCollection Collection { get; set; } = null!;
     public ApplicationUser? User { get; set; }
+    public ICollection<LikedNft> LikedNfts { get; set; } = [];
 }

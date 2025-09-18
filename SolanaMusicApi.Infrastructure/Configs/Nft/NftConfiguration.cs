@@ -9,7 +9,7 @@ public class NftConfiguration : IEntityTypeConfiguration<Domain.Entities.Nft.Nft
     {
         builder.HasKey(x => x.Id);
 
-        builder.Property(c => c.Name)
+        builder.Property(b => b.Name)
             .IsRequired()
             .HasMaxLength(100);
         

@@ -11,7 +11,7 @@ public class GetNftCollectionRequestHandler(INftCollectionService nftCollectionS
 {
     public async Task<NftCollectionResponseDto> Handle(GetNftCollectionRequest request, CancellationToken cancellationToken)
     {
-        var response = await nftCollectionService.GetNftCollectionAsync(request.Id);
+        var response = await nftCollectionService.GetNftCollectionAsync(request.Id, request.UserId);
         return mapper.Map<NftCollectionResponseDto>(response);
     }
 }

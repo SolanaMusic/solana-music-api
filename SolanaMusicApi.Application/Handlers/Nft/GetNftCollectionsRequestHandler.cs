@@ -13,7 +13,7 @@ public class GetNftCollectionsRequestHandler(INftCollectionService nftCollection
     public async Task<List<NftCollectionResponseDto>> Handle(GetNftCollectionsRequest request, CancellationToken cancellationToken)
     {
         var response = await nftCollectionService
-            .GetNftCollections(request.Type)
+            .GetNftCollections(request.Type, request.UserId)
             .ToListAsync(cancellationToken);
         
         return mapper.Map<List<NftCollectionResponseDto>>(response);

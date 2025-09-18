@@ -37,9 +37,9 @@ public class DashboardController(IMediator mediator) : ControllerBase
     }
     
     [HttpGet("nfts")]
-    public async Task<IActionResult> GetNfts(string? type)
+    public async Task<IActionResult> GetNfts(string? type, long? userId = null)
     {
-        var response = await mediator.Send(new GetNftCollectionsRequest(type));
+        var response = await mediator.Send(new GetNftCollectionsRequest(type, userId));
         return Ok(response);
     }
 }

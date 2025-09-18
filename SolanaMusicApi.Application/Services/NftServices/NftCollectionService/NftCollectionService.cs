@@ -13,9 +13,9 @@ namespace SolanaMusicApi.Application.Services.NftServices.NftCollectionService;
 public class NftCollectionService(IBaseRepository<NftCollection> baseRepository, IAlbumService albumService,
     ITracksService tracksService, IArtistService artistService) : BaseService<NftCollection>(baseRepository), INftCollectionService
 {
-    public IQueryable<NftCollection> GetNftCollections(string? type)
+    public IQueryable<NftCollection> GetNftCollections(string? type, long? userId = null)
     {
-        var query = GetNftCollectionsQuery();
+        var query = GetNftCollectionsQuery(userId);
 
         if (string.IsNullOrEmpty(type)) 
             return query;
@@ -26,9 +26,9 @@ public class NftCollectionService(IBaseRepository<NftCollection> baseRepository,
         return query;
     }
     
-    public async Task<List<NftCollection>> GetArtistNftCollectionsAsync(long artistId, string? type, string? name)
+    public async Task<List<NftCollection>> GetArtistNftCollectionsAsync(long artistId, string? type, string? name, long? userId = null)
     {
-        var collections = GetNftCollections(type);
+        var collections = GetNftCollections(type, userId);
 
         if (!string.IsNullOrEmpty(name))
             collections = collections.Where(x => EF.Functions.Like(x.Name, $"%{name}%"));
@@ -81,9 +81,9 @@ public class NftCollectionService(IBaseRepository<NftCollection> baseRepository,
         };
     }
 
-    public async Task<NftCollection> GetNftCollectionAsync(long id)
+    public async Task<NftCollection> GetNftCollectionAsync(long id, long? userId = null)
     {
-        return await GetNftCollectionsQuery().FirstOrDefaultAsync(x => x.Id == id)
+        return await GetNftCollectionsQuery(userId).FirstOrDefaultAsync(x => x.Id == id)
                ?? throw new Exception("Nft collection not found");
     }
     
@@ -130,7 +130,7 @@ public class NftCollectionService(IBaseRepository<NftCollection> baseRepository,
             .ToList();
     }
 
-    private IQueryable<NftCollection> GetNftCollectionsQuery()
+    private IQueryable<NftCollection> GetNftCollectionsQuery(long? userId = null)
     {
         var albums = albumService.GetAll()
             .Include(x => x.ArtistAlbums)
@@ -143,8 +143,11 @@ public class NftCollectionService(IBaseRepository<NftCollection> baseRepository,
         var artists = artistService.GetAll();
 
         return from c in GetAll()
+                .Include(x => x.LikedNfts)
                 .Include(x => x.Nfts)
-                .ThenInclude(n => n.Currency)
+                    .ThenInclude(n => n.Currency)
+                .Include(x => x.Nfts)
+                    .ThenInclude(n => n.LikedNfts)
                 .AsSplitQuery()
             join a in albums on c.AssociationId equals a.Id into albumJoin
             from album in albumJoin.DefaultIfEmpty()
@@ -162,7 +165,25 @@ public class NftCollectionService(IBaseRepository<NftCollection> baseRepository,
                 AssociationId = c.AssociationId,
                 AssociationType = c.AssociationType,
                 ImageUrl = c.ImageUrl,
-                Nfts = c.Nfts,
+                Nfts = c.Nfts.Select(n => new Nft
+                {
+                    Id = n.Id,
+                    Name = n.Name,
+                    CollectionId = n.CollectionId,
+                    Address = n.Address,
+                    Owner = n.Owner,
+                    UserId = n.UserId,
+                    Price = n.Price,
+                    CurrencyId = n.CurrencyId,
+                    Rarity = n.Rarity,
+                    ImageUrl = n.ImageUrl,
+                    IsLiked = userId.HasValue && n.LikedNfts.Any(l => l.UserId == userId.Value),
+                    Currency = n.Currency,
+                    Collection = null!,
+                    User = n.User
+                }).ToList(),
+                
+                IsLiked = userId.HasValue && c.LikedNfts.Any(l => l.UserId == userId.Value),
                 Album = c.AssociationType == AssociationType.Album ? album : null,
                 Track = c.AssociationType == AssociationType.Track ? track : null,
                 Artist = c.AssociationType == AssociationType.Artist ? artist : null,

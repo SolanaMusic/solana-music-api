@@ -15,6 +15,7 @@ using SolanaMusicApi.Application.Services.DashboardService;
 using SolanaMusicApi.Application.Services.FileService;
 using SolanaMusicApi.Application.Services.GenreService;
 using SolanaMusicApi.Application.Services.LocationService;
+using SolanaMusicApi.Application.Services.NftServices.LikedNftService;
 using SolanaMusicApi.Application.Services.NftServices.NftCollectionService;
 using SolanaMusicApi.Application.Services.NftServices.NftService;
 using SolanaMusicApi.Application.Services.PaymentServices.PaymentService;
@@ -43,6 +44,7 @@ using SolanaMusicApi.Infrastructure.Repositories.BaseRepository;
 using SolanaMusicApi.Infrastructure.Repositories.CountryRepository;
 using SolanaMusicApi.Infrastructure.Repositories.CurrencyRepository;
 using SolanaMusicApi.Infrastructure.Repositories.GenreRepository;
+using SolanaMusicApi.Infrastructure.Repositories.NftRepositories.LikedNftRepository;
 using SolanaMusicApi.Infrastructure.Repositories.NftRepositories.NftCollectionRepository;
 using SolanaMusicApi.Infrastructure.Repositories.NftRepositories.NftRepository;
 using SolanaMusicApi.Infrastructure.Repositories.PlaylistRepositories.PlaylistRepository;
@@ -90,6 +92,7 @@ public static class Configurator
 
         services.AddScoped<INftCollectionRepository, NftCollectionRepository>();
         services.AddScoped<INftRepository, NftRepository>();
+        services.AddScoped<ILikedNftRepository, LikedNftRepository>();
     }
 
     public static void ConfigureServices(this IServiceCollection services)
@@ -130,6 +133,7 @@ public static class Configurator
 
         services.AddScoped<INftCollectionService, NftCollectionService>();
         services.AddScoped<INftService, NftService>();
+        services.AddScoped<ILikedNftService, LikedNftService>();
     }
 
     public static void ConfigureGeneral(this WebApplicationBuilder builder)

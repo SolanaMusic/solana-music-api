@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SolanaMusicApi.Domain.Entities.General;
+using SolanaMusicApi.Domain.Entities.Nft;
 using SolanaMusicApi.Domain.Entities.Performer;
 using SolanaMusicApi.Domain.Entities.Subscription;
 using PlaylistEntity = SolanaMusicApi.Domain.Entities.Playlist.Playlist;
@@ -17,4 +18,5 @@ public class ApplicationUser : IdentityUser<long>
     public ICollection<PlaylistEntity> Playlists { get; set; } = [];
     public ICollection<TransactionEntity> Transactions { get; set; } = [];
     public ICollection<Nft.Nft> Nfts { get; set; } = [];
+    public ICollection<LikedNft> LikedNfts { get; set; } = [];
 }

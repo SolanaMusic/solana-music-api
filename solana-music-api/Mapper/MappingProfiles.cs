@@ -9,6 +9,7 @@ using SolanaMusicApi.Domain.DTO.Auth.Default;
 using SolanaMusicApi.Domain.DTO.Country;
 using SolanaMusicApi.Domain.DTO.Currency;
 using SolanaMusicApi.Domain.DTO.Genre;
+using SolanaMusicApi.Domain.DTO.Nft.LikedNft;
 using SolanaMusicApi.Domain.DTO.Nft.Nft;
 using SolanaMusicApi.Domain.DTO.Nft.NftCollection;
 using SolanaMusicApi.Domain.DTO.Playlist;
@@ -155,6 +156,9 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Nfts.Any() ? src.Nfts.Min(n => n.Price) : 0))
             .ForMember(dest => dest.Currency, opt => opt.MapFrom(src => src.Nfts.Any() ? src.Nfts.First().Currency : null))
             .ForMember(dest => dest.Creators, opt => opt.MapFrom(src => GetCreators(src)));
+        
+        CreateMap<LikedNftRequestDto, LikedNft>();
+        CreateMap<LikedNft, LikedNftResponseDto>();
     }
     
     private static List<ArtistResponseDto> GetCreators(NftCollection src)

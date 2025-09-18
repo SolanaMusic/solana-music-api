@@ -5,5 +5,5 @@ namespace SolanaMusicApi.Application.Services.NftServices.NftService;
 
 public interface INftService : IBaseService<Nft>
 {
-    Task<Nft> GetNftAsyncById(long id);
+    Task<Nft> GetNftAsyncById(long id, long? userId = null);
 }

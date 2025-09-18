@@ -10,7 +10,7 @@ public class GetNftRequestHandler(INftService nftService, IMapper mapper) : IReq
 {
     public async Task<GetNftResponseDto> Handle(GetNftRequest request, CancellationToken cancellationToken)
     {
-        var response = await nftService.GetNftAsyncById(request.Id);
+        var response = await nftService.GetNftAsyncById(request.Id, request.UserId);
         return mapper.Map<GetNftResponseDto>(response);
     }
 }

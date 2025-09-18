@@ -12,6 +12,7 @@ public class NftResponseDto : BaseResponseDto
     public decimal Price { get; set; }
     public Rarity Rarity { get; set; }
     public bool Available { get; set; }
+    public bool IsLiked { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
     public DateTime UpdatedDate  { get; set; }
 

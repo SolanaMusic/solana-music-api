@@ -16,6 +16,7 @@ public class NftCollectionResponseDto : BaseResponseDto
     public CurrencyResponseDto Currency { get; set; } = null!;
     public string Address { get; set; } = string.Empty;
     public AssociationType AssociationType { get; set; }
+    public bool IsLiked { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
 
     public List<ArtistResponseDto> Creators { get; set; } = [];
