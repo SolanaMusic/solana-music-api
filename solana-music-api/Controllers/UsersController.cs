@@ -17,7 +17,7 @@ public class UsersController(IMediator mediator) : ControllerBase
     }
     
     [HttpPatch("{id}")]
-    public async Task<IActionResult> UpdateUsers(long id, UpdateUserDto updateUserDto)
+    public async Task<IActionResult> UpdateUsers(long id, UpdateUserDto updateUserDto, string? role = null)
     {
         var response = await mediator.Send(new UpdateUserRequest(id, updateUserDto));
         return Ok(response);

@@ -191,15 +191,9 @@ public partial class AuthService(IUserProfileService userProfileService, ICountr
         return new LoginResponseDto
         {
             Jwt = await GenerateTokenAsync(user),
-            Role = await GetUserRoleAsync(user),
+            Role = await userService.GetUserRoleAsync(user),
             User = user,
         };
-    }
-    
-    private async Task<string> GetUserRoleAsync(ApplicationUser user)
-    {
-        var roles = await userManager.GetRolesAsync(user);
-        return roles.First();
     }
     
     private static string GetAvatarUrl(ExternalLoginInfo info)

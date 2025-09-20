@@ -10,7 +10,7 @@ public class UpdateUserRequestHandler(IUserService userService, IMapper mapper) 
 {
     public async Task<UserResponseDto> Handle(UpdateUserRequest request, CancellationToken cancellationToken)
     {
-        var response = await userService.UpdateUserAsync(request.Id, request.UpdateUserDto);
+        var response = await userService.UpdateUserAsync(request.Id, request.UpdateUserDto, request.Role);
         return mapper.Map<UserResponseDto>(response);
     }
 }

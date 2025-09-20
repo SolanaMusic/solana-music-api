@@ -10,7 +10,12 @@ public class GetUserRequestHandler(IUserService userService, IMapper mapper) : I
 {
     public async Task<UserResponseDto> Handle(GetUserRequest request, CancellationToken cancellationToken)
     {
-        var response = await userService.GetUserAsync(x => x.Id == request.Id);
-        return mapper.Map<UserResponseDto>(response);
+        var user = await userService.GetUserAsync(x => x.Id == request.Id) 
+                   ?? throw new Exception("User not found");
+        
+        var response = mapper.Map<UserResponseDto>(user);
+        response.Role = await userService.GetUserRoleAsync(user);
+        
+        return response;
     }
 }

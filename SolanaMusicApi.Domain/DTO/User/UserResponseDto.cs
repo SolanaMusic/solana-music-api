@@ -9,6 +9,7 @@ namespace SolanaMusicApi.Domain.DTO.User;
 public class UserResponseDto : IdentityUser<long>
 {
     public int Following  { get; set; }
+    public string Role { get; set; } = string.Empty;
     
     public UserProfileResponseDto Profile { get; set; } = null!;
     public List<NftResponseDto> Nfts { get; set; } = [];

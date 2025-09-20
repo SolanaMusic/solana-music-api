@@ -46,7 +46,13 @@ public class MappingProfiles : Profile
         CreateMap<UserProfile, UserProfileResponseDto>();
         CreateMap<WhitelistRequestDto, Whitelist>();
         CreateMap<ApplicationUser, UserResponseDto>()
-            .ForMember(dest => dest.Following, opt => opt.MapFrom(src => src.ArtistSubscribes.Count));
+            .ForMember(dest => dest.Following, opt => opt.MapFrom(src => src.ArtistSubscribes.Count))
+            .ForPath(dest => dest.Profile.AvatarUrl, opt => opt.MapFrom(src =>
+                src.Artist != null && !string.IsNullOrEmpty(src.Artist.ImageUrl)
+                    ? src.Artist.ImageUrl
+                    : src.Profile.AvatarUrl
+            ));
+
         CreateMap<LoginResponseDto, AuthResponseDto>();
 
         CreateMap<GenreRequestDto, Genre>();

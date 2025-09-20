@@ -16,6 +16,7 @@ public class UserService(UserManager<ApplicationUser> userManager, IFileService 
         return userManager.Users
             .Include(u => u.Profile)
                 .ThenInclude(x => x.Country)
+            .Include(x => x.Artist)
             .Include(x => x.UserSubscriptions)
                 .ThenInclude(x => x.Subscription)
             .Include(x => x.Nfts)
@@ -29,6 +30,12 @@ public class UserService(UserManager<ApplicationUser> userManager, IFileService 
 
     public async Task<ApplicationUser?> GetUserAsync(Expression<Func<ApplicationUser, bool>> expression) => 
         await GetUsers().FirstOrDefaultAsync(expression);
+    
+    public async Task<string> GetUserRoleAsync(ApplicationUser user)
+    {
+        var roles = await userManager.GetRolesAsync(user);
+        return roles.First();
+    }
 
     public async Task CreateUserAsync(ApplicationUser user, string? password = null)
     {
@@ -42,7 +49,7 @@ public class UserService(UserManager<ApplicationUser> userManager, IFileService 
         await UpdateUserRoleAsync(user, UserRoles.User);
     }
 
-    public async Task<ApplicationUser> UpdateUserAsync(long id, UpdateUserDto updateUserDto)
+    public async Task<ApplicationUser> UpdateUserAsync(long id, UpdateUserDto updateUserDto, string? role = null)
     {
         string? avatarUrl = null;
         string? avatarSnapshot = null;
@@ -60,8 +67,18 @@ public class UserService(UserManager<ApplicationUser> userManager, IFileService 
             if (updateUserDto.Avatar != null)
             {
                 avatarUrl = await fileService.SaveFileAsync(updateUserDto.Avatar, FileTypes.UserImage);
-                avatarSnapshot = user.Profile.AvatarUrl;
-                user.Profile.AvatarUrl = avatarUrl;
+
+                if (role != nameof(UserRoles.Artist))
+                {
+                    avatarSnapshot = user.Profile.AvatarUrl;
+                    user.Profile.AvatarUrl = avatarUrl;
+                }
+
+                if (user.Artist != null)
+                {
+                    avatarSnapshot = user.Artist.ImageUrl;
+                    user.Artist.ImageUrl = avatarUrl;
+                }
             }
             
             await userManager.UpdateAsync(user);
@@ -104,6 +121,7 @@ public class UserService(UserManager<ApplicationUser> userManager, IFileService 
     {
         return await userManager.Users
                    .Include(u => u.Profile)
+                   .Include(x => x.Artist)
                    .FirstOrDefaultAsync(x => x.Id == id) 
                ?? throw new Exception("User not found");
     }
