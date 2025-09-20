@@ -14,13 +14,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using SolanaMusicApi.Application.Extensions;
 using SolanaMusicApi.Domain.DTO.Auth.Default;
-using SolanaMusicApi.Domain.DTO.User.Profile;
 
 namespace SolanaMusicApi.Application.Services.AuthService;
 
-public class AuthService(IUserProfileService userProfileService, ICountryService countryService, UserManager<ApplicationUser> userManager, 
+public partial class AuthService(IUserProfileService userProfileService, ICountryService countryService, UserManager<ApplicationUser> userManager, 
     ILocationService locationService, IUserService userService, SignInManager<ApplicationUser> signInManager, IMapper mapper, 
      IOptions<JwtTokenSettings> tokenSettings, IOptions<AuthSettings> authSettings) : IAuthService
 {
@@ -41,19 +41,25 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
 
     public async Task<LoginResponseDto> RegisterAsync(RegisterDto registerDto)
     {
-        var appUser = await userManager.FindByEmailAsync(registerDto.LoginDto.Email);
+        registerDto.Validate();
+        var appUser = await userManager.FindByEmailAsync(registerDto.Email);
 
         if (appUser != null)
             throw new InvalidOperationException("User is already exists");
 
-        var newUser = mapper.Map<ApplicationUser>(registerDto.LoginDto);
-        newUser.UserName = await GenerateUserNameAsync(registerDto.LoginDto.Email);
-        await userService.CreateUserAsync(newUser, registerDto.LoginDto.Password);
+        var loginDto = mapper.Map<LoginDto>(registerDto);
+        var newUser = mapper.Map<ApplicationUser>(loginDto);
+        
+        newUser.UserName = string.IsNullOrEmpty(registerDto.UserName) 
+            ? GenerateUserName(registerDto.Email) 
+            : registerDto.UserName;
+        
+        await userService.CreateUserAsync(newUser, registerDto.Password);
 
         var country = await GetUserCountry();
-        await userProfileService.CreateUserProfileAsync(newUser.Id, country, registerDto.UserProfileRequestDto);
+        await userProfileService.CreateUserProfileAsync(newUser.Id, country);
 
-        return await LoginAsync(registerDto.LoginDto);
+        return await LoginAsync(loginDto);
     }
 
     public async Task<LoginResponseDto> LoginWithExternalAsync()
@@ -77,7 +83,7 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
             throw new AuthenticationException(userService.AggregateErrors(addLoginResult.Errors));
 
         var country = await GetUserCountry();
-        await userProfileService.CreateUserProfileAsync(user.Id, country, info);
+        await userProfileService.CreateUserProfileAsync(user.Id, country, GetAvatarUrl(info));
         await signInManager.SignInAsync(user, false);
 
         return await GetLoginResponseAsync(user);
@@ -102,7 +108,7 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
             throw new AuthenticationException(userService.AggregateErrors(loginResult.Errors));
         
         var country = await GetUserCountry();
-        await userProfileService.CreateUserProfileAsync(user.Id, country, new UserProfileRequestDto());
+        await userProfileService.CreateUserProfileAsync(user.Id, country);
         
         return await GetLoginResponseAsync(user);
     }
@@ -117,7 +123,6 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
 
         return matchedProvider;
     }
-
     private async Task<string> GenerateTokenAsync(ApplicationUser user)
     {
         var roles = await userManager.GetRolesAsync(user);
@@ -153,7 +158,7 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
 
         user = new ApplicationUser
         {
-            UserName = await GenerateUserNameAsync(email),
+            UserName = GenerateUserName(email),
             Email = email
         };
 
@@ -163,20 +168,7 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
         return user!;
     }
 
-    private async Task<string> GenerateUserNameAsync(string email)
-    {
-        var baseUserName = email.Split('@')[0];
-        var userName = baseUserName;
-        var suffix = 1;
-
-        while (await userManager.FindByNameAsync(userName) != null)
-        {
-            userName = $"{baseUserName}{suffix}";
-            suffix++;
-        }
-
-        return userName;
-    }
+    private string GenerateUserName(string email) => email.Split('@')[0];
 
     private async Task<ApplicationUser?> GetExistingUserAsync(ExternalLoginInfo info)
     {
@@ -209,4 +201,13 @@ public class AuthService(IUserProfileService userProfileService, ICountryService
         var roles = await userManager.GetRolesAsync(user);
         return roles.First();
     }
+    
+    private static string GetAvatarUrl(ExternalLoginInfo info)
+    {
+        var avatar = info.Principal.Claims.FirstOrDefault(c => c.Type == "urn:google:picture")?.Value ?? string.Empty;
+        return Regex().Replace(avatar, "=s300");
+    }
+
+    [GeneratedRegex(@"=s\d+")]
+    private static partial Regex Regex();
 }

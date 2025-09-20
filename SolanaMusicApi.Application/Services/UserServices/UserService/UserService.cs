@@ -3,10 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using SolanaMusicApi.Domain.Entities.User;
 using SolanaMusicApi.Domain.Enums;
 using System.Linq.Expressions;
+using SolanaMusicApi.Application.Services.FileService;
+using SolanaMusicApi.Domain.DTO.User;
+using SolanaMusicApi.Domain.Enums.File;
 
 namespace SolanaMusicApi.Application.Services.UserServices.UserService;
 
-public class UserService(UserManager<ApplicationUser> userManager) : IUserService
+public class UserService(UserManager<ApplicationUser> userManager, IFileService fileService) : IUserService
 {
     public IQueryable<ApplicationUser> GetUsers()
     {
@@ -39,8 +42,71 @@ public class UserService(UserManager<ApplicationUser> userManager) : IUserServic
         await UpdateUserRoleAsync(user, UserRoles.User);
     }
 
+    public async Task<ApplicationUser> UpdateUserAsync(long id, UpdateUserDto updateUserDto)
+    {
+        string? avatarUrl = null;
+        string? avatarSnapshot = null;
+
+        try
+        {
+            var user = await GetUserByIdAsync(id);
+
+            if (!string.IsNullOrEmpty(updateUserDto.UserName))
+                user.UserName = updateUserDto.UserName;
+
+            if (updateUserDto.TokensAmount.HasValue)
+                user.Profile.TokensAmount = updateUserDto.TokensAmount.Value;
+
+            if (updateUserDto.Avatar != null)
+            {
+                avatarUrl = await fileService.SaveFileAsync(updateUserDto.Avatar, FileTypes.UserImage);
+                avatarSnapshot = user.Profile.AvatarUrl;
+                user.Profile.AvatarUrl = avatarUrl;
+            }
+            
+            await userManager.UpdateAsync(user);
+
+            if (!string.IsNullOrEmpty(avatarSnapshot) && !string.IsNullOrEmpty(avatarUrl)) 
+                fileService.DeleteFile(avatarSnapshot);
+            
+            var response = await GetUserAsync(x => x.Id == user.Id);
+            
+            if (response == null)
+                throw new Exception("User not found");
+            
+            return response;
+        }
+        catch
+        {
+            if (!string.IsNullOrEmpty(avatarUrl)) 
+                fileService.DeleteFile(avatarUrl);
+            
+            throw;
+        }
+    }
+    
+    public async Task DeleteUserAsync(long id)
+    {
+        var user = await GetUserByIdAsync(id);
+        var result = await userManager.DeleteAsync(user);
+        
+        if (!result.Succeeded)
+            AggregateErrors(result.Errors);
+        
+        if (!string.IsNullOrEmpty(user.Profile.AvatarUrl))
+            fileService.DeleteFile(user.Profile.AvatarUrl);
+    }
+
     public string AggregateErrors(IEnumerable<IdentityError> errors) =>
         string.Join(" ", errors.Select(e => e.Description));
+
+    private async Task<ApplicationUser> GetUserByIdAsync(long id)
+    {
+        return await userManager.Users
+                   .Include(u => u.Profile)
+                   .FirstOrDefaultAsync(x => x.Id == id) 
+               ?? throw new Exception("User not found");
+    }
     
     private async Task UpdateUserRoleAsync(ApplicationUser user, UserRoles newRole)
     {

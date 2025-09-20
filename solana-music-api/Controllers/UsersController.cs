@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests;
+using SolanaMusicApi.Domain.DTO.User;
 
 namespace solana_music_api.Controllers;
 
@@ -13,5 +14,19 @@ public class UsersController(IMediator mediator) : ControllerBase
     {
         var response = await mediator.Send(new GetUserRequest(id));
         return Ok(response);
+    }
+    
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> UpdateUsers(long id, UpdateUserDto updateUserDto)
+    {
+        var response = await mediator.Send(new UpdateUserRequest(id, updateUserDto));
+        return Ok(response);
+    }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(long id)
+    {
+        await mediator.Send(new DeleteUserRequest(id));
+        return NoContent();
     }
 }
