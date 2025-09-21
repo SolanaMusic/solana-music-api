@@ -25,7 +25,9 @@ public class UserService(UserManager<ApplicationUser> userManager, IFileService 
                     .ThenInclude(x => x.Track)
             .Include(x => x.ArtistSubscribes)
             .Include(x => x.Transactions)
-                .ThenInclude(x => x.Currency);
+                .ThenInclude(x => x.Currency)
+            .Include(x => x.ArtistApplication)
+                .ThenInclude(x => x.Reviewer);
     }
 
     public async Task<ApplicationUser?> GetUserAsync(Expression<Func<ApplicationUser, bool>> expression) => 
@@ -33,6 +35,15 @@ public class UserService(UserManager<ApplicationUser> userManager, IFileService 
     
     public async Task<string> GetUserRoleAsync(ApplicationUser user)
     {
+        var roles = await userManager.GetRolesAsync(user);
+        return roles.First();
+    }
+    
+    public async Task<string> GetUserRoleAsync(long id)
+    {
+        var user = await userManager.FindByIdAsync(id.ToString()) 
+                   ?? throw new Exception("User not found");
+        
         var roles = await userManager.GetRolesAsync(user);
         return roles.First();
     }
@@ -100,6 +111,14 @@ public class UserService(UserManager<ApplicationUser> userManager, IFileService 
             
             throw;
         }
+    }
+    
+    public async Task UpdateUserRoleAsync(long id, UserRoles newRole)
+    {
+        var user = await userManager.FindByIdAsync(id.ToString()) 
+                   ?? throw new Exception("User not found");
+        
+        await UpdateUserRoleAsync(user, newRole);
     }
     
     public async Task DeleteUserAsync(long id)

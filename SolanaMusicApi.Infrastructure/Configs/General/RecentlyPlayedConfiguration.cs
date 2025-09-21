@@ -4,7 +4,7 @@ using SolanaMusicApi.Domain.Entities.General;
 
 namespace SolanaMusicApi.Infrastructure.Configs.General;
 
-public class RecentlyPlayedConfig : IEntityTypeConfiguration<RecentlyPlayed>
+public class RecentlyPlayedConfiguration : IEntityTypeConfiguration<RecentlyPlayed>
 {
     public void Configure(EntityTypeBuilder<RecentlyPlayed> builder)
     {

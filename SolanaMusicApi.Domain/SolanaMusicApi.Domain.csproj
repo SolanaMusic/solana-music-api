@@ -20,10 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTO\Dashboard\Artists\" />
-    <Folder Include="DTO\Dashboard\Nfts\" />
-    <Folder Include="DTO\Dashboard\Songs\" />
-    <Folder Include="DTO\Dashboard\Users\" />
+    <Reference Include="Microsoft.AspNetCore.Mvc.Core">
+      <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.20\Microsoft.AspNetCore.Mvc.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

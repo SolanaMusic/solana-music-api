@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using SolanaMusicApi.Domain.DTO.Artist;
+using SolanaMusicApi.Domain.DTO.Artist.ArtistApplication;
+using SolanaMusicApi.Domain.Entities.Performer;
 
 namespace SolanaMusicApi.Application.Requests;
 
@@ -11,3 +13,9 @@ public record SubscribeToArtistRequest(SubscribeToArtistDto SubscribeToArtistDto
 public record UnsubscribeFromArtistRequest(long Id, long UserId) : IRequest;
 public record UpdateArtistRequest(long Id, ArtistRequestDto ArtistRequestDto) : IRequest<ArtistResponseDto>;
 public record DeleteArtistRequest(long Id) : IRequest<ArtistResponseDto>;
+
+public record CreateArtistApplicationRequest(ArtistApplicationRequestDto ApplicationRequestDto) 
+    : IRequest<ArtistApplication>;
+public record UpdateArtistApplicationRequest(long Id, UpdateArtistApplicationDto UpdateArtistApplicationDto) 
+    : IRequest<ArtistApplicationResponseDto>;
+public record DeleteArtistApplicationRequest(long Id) : IRequest;

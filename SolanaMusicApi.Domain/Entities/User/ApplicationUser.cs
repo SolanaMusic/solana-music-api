@@ -19,4 +19,6 @@ public class ApplicationUser : IdentityUser<long>
     public ICollection<TransactionEntity> Transactions { get; set; } = [];
     public ICollection<Nft.Nft> Nfts { get; set; } = [];
     public ICollection<LikedNft> LikedNfts { get; set; } = [];
+    public ArtistApplication? ArtistApplication { get; set; }
+    public ICollection<ArtistApplication> ReviewedApplications { get; set; } = [];
 }

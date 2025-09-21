@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.DTO.Artist;
+using SolanaMusicApi.Domain.DTO.Artist.ArtistApplication;
 
 namespace solana_music_api.Controllers;
 
@@ -63,6 +64,27 @@ public class ArtistsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> UnsubscribeToArtist([Required]long id, [Required]long userId)
     {
         await mediator.Send(new UnsubscribeFromArtistRequest(id, userId));
+        return NoContent();
+    }
+
+    [HttpPost("applications")]
+    public async Task<IActionResult> CreateApplication(ArtistApplicationRequestDto artistApplicationRequestDto)
+    {
+        var response = await mediator.Send(new CreateArtistApplicationRequest(artistApplicationRequestDto));
+        return Ok(response);
+    }
+    
+    [HttpPatch("applications/{id}")]
+    public async Task<IActionResult> UpdateApplication(long id, UpdateArtistApplicationDto artistApplicationRequestDto)
+    {
+        var response = await mediator.Send(new UpdateArtistApplicationRequest(id, artistApplicationRequestDto));
+        return Ok(response);
+    }
+
+    [HttpDelete("applications/{id}")]
+    public async Task<IActionResult> DeleteApplication(long id)
+    {
+        await mediator.Send(new DeleteArtistApplicationRequest(id));
         return NoContent();
     }
 }

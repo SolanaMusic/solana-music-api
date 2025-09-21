@@ -49,7 +49,7 @@ public class AuthController(IMediator mediator, IConfiguration configuration) : 
         var query = HttpUtility.ParseQueryString(string.Empty);
         query["token"] = response.Jwt;
         query["id"] = response.User.Id.ToString();
-        query["username"] = response.User.UserName;
+        query["username"] = response.User.ArtistName ?? response.User.UserName;
         query["role"] = response.Role;
         query["avatar"] = response.User.Profile.AvatarUrl;
         query["tokensAmount"] = response.User.Profile.TokensAmount.ToString();

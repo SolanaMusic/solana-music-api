@@ -8,6 +8,7 @@ public class UserProfileResponseDto : BaseResponseDto
     public long CountryId { get; set; }
     public string? AvatarUrl { get; set; }
     public long TokensAmount { get; set; }
+    public DateTime CreatedDate { get; set; }
 
     public CountryResponseDto Country { get; set; } = null!;
 }

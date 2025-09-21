@@ -1,6 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SolanaMusicApi.Application.Requests;
+using SolanaMusicApi.Domain.DTO.Dashboard;
+using SolanaMusicApi.Domain.DTO.Sorting;
+using SolanaMusicApi.Domain.Enums;
 
 namespace solana_music_api.Controllers;
 
@@ -40,6 +43,23 @@ public class DashboardController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> GetNfts(string? type, long? userId = null)
     {
         var response = await mediator.Send(new GetNftCollectionsRequest(type, userId));
+        return Ok(response);
+    }
+    
+    [HttpGet("applications")]
+    public async Task<IActionResult> GetArtistApplications(
+        [FromQuery] DashboardFilter filter,
+        [FromQuery] RequestSortingDto sorting,
+        ArtistApplicationStatus? status)
+    {
+        var response = await mediator.Send(new GetArtistApplicationsRequest(filter, sorting, status));
+        return Ok(response);
+    }
+    
+    [HttpGet("active-applications")]
+    public async Task<IActionResult> GetPendingArtistApplications()
+    {
+        var response = await mediator.Send(new GetPendingApplications());
         return Ok(response);
     }
 }

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Domain.Constants;
 using SolanaMusicApi.Domain.DTO.Album;
 using SolanaMusicApi.Domain.DTO.Artist;
+using SolanaMusicApi.Domain.DTO.Artist.ArtistApplication;
 using SolanaMusicApi.Domain.DTO.ArtistTrack;
 using SolanaMusicApi.Domain.DTO.Auth;
 using SolanaMusicApi.Domain.DTO.Auth.Default;
@@ -12,6 +14,7 @@ using SolanaMusicApi.Domain.DTO.Genre;
 using SolanaMusicApi.Domain.DTO.Nft.LikedNft;
 using SolanaMusicApi.Domain.DTO.Nft.Nft;
 using SolanaMusicApi.Domain.DTO.Nft.NftCollection;
+using SolanaMusicApi.Domain.DTO.Pagination;
 using SolanaMusicApi.Domain.DTO.Playlist;
 using SolanaMusicApi.Domain.DTO.Subscription;
 using SolanaMusicApi.Domain.DTO.SubscriptionPlan;
@@ -45,13 +48,14 @@ public class MappingProfiles : Profile
 
         CreateMap<UserProfile, UserProfileResponseDto>();
         CreateMap<WhitelistRequestDto, Whitelist>();
+        CreateMap<ApplicationUser, IdentityUser<long>>();
         CreateMap<ApplicationUser, UserResponseDto>()
             .ForMember(dest => dest.Following, opt => opt.MapFrom(src => src.ArtistSubscribes.Count))
-            .ForPath(dest => dest.Profile.AvatarUrl, opt => opt.MapFrom(src =>
-                src.Artist != null && !string.IsNullOrEmpty(src.Artist.ImageUrl)
-                    ? src.Artist.ImageUrl
-                    : src.Profile.AvatarUrl
-            ));
+            .ForMember(dest => dest.ArtistName, opt => opt.MapFrom(src => src.Artist.Name))
+            .AfterMap((src, dest) => {
+                if (src.Artist != null && !string.IsNullOrEmpty(src.Artist.ImageUrl))
+                    dest.Profile.AvatarUrl = src.Artist.ImageUrl;
+            });
 
         CreateMap<LoginResponseDto, AuthResponseDto>();
 
@@ -130,6 +134,11 @@ public class MappingProfiles : Profile
             .ForMember(dest => dest.Albums, opt => opt.MapFrom(src => src.ArtistAlbums.Select(x => x.Album)))
             .ForMember(dest => dest.Tracks, opt => opt.MapFrom(src => src.ArtistTracks.Select(x => x.Track)));
 
+        CreateMap<ArtistApplicationRequestDto, ArtistApplication>();
+        CreateMap<UpdateArtistApplicationDto, ArtistApplication>();
+        CreateMap<ArtistApplication, ArtistApplicationResponseDto>();
+        CreateMap<ArtistApplication, UserArtistApplicationDto>();
+
         CreateMap<CurrencyRequestDto, Currency>();
         CreateMap<Currency, CurrencyResponseDto>();
 
@@ -165,6 +174,8 @@ public class MappingProfiles : Profile
         
         CreateMap<LikedNftRequestDto, LikedNft>();
         CreateMap<LikedNft, LikedNftResponseDto>();
+
+        CreateMap(typeof(ResponsePaginationDto<>), typeof(PaginationResponseDto<>));
     }
     
     private static List<ArtistResponseDto> GetCreators(NftCollection src)

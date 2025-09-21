@@ -43,12 +43,17 @@ public class ArtistService(IBaseRepository<Artist> baseRepository, IFileService 
             .FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("Artist not found");
     }
 
-    public async Task<Artist> CreateArtistAsync(Artist artist, IFormFile? file)
+    public async Task<Artist> CreateArtistAsync(Artist artist, IFormFile? file = null)
     {
+        if (file == null)
+        {
+            artist.Country = null!;
+            var response = await AddAsync(artist);
+            return await GetArtistAsync(response.Id);
+        }
+        
         await BeginTransactionAsync();
-        var coverPath = file != null
-            ? await fileService.SaveFileAsync(file, FileTypes.ArtistImage)
-            : null;
+        var coverPath = await fileService.SaveFileAsync(file, FileTypes.ArtistImage);
 
         try
         {

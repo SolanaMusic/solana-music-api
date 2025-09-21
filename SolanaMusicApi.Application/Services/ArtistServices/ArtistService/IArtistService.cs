@@ -10,7 +10,7 @@ public interface IArtistService : IBaseService<Artist>
     IQueryable<Artist> GetArtists();
     Task<Artist> GetArtistAsync(long id);
     bool CheckArtistSubscription(Artist artist, long userId);
-    Task<Artist> CreateArtistAsync(Artist artist, IFormFile? file);
+    Task<Artist> CreateArtistAsync(Artist artist, IFormFile? file = null);
     Task<Artist> UpdateArtistAsync(long id, ArtistRequestDto artistRequestDto);
     Task<Artist> DeleteArtistAsync(long id);
     Task SubscribeToArtistAsync(long id, long userId);

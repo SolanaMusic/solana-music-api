@@ -4,6 +4,7 @@ using SolanaMusicApi.Application.Factories.FilePathFactory;
 using SolanaMusicApi.Application.Factories.RedirectUrlFactory;
 using SolanaMusicApi.Application.Services.AlbumService;
 using SolanaMusicApi.Application.Services.ArtistServices.ArtistAlbumService;
+using SolanaMusicApi.Application.Services.ArtistServices.ArtistApplicationService;
 using SolanaMusicApi.Application.Services.ArtistServices.ArtistService;
 using SolanaMusicApi.Application.Services.ArtistServices.ArtistSubscriberService;
 using SolanaMusicApi.Application.Services.ArtistServices.ArtistTrackService;
@@ -37,6 +38,7 @@ using SolanaMusicApi.Domain.Entities.User;
 using SolanaMusicApi.Infrastructure;
 using SolanaMusicApi.Infrastructure.Repositories.AlbumRepository;
 using SolanaMusicApi.Infrastructure.Repositories.ArtistRepositories.ArtistAlbumRepository;
+using SolanaMusicApi.Infrastructure.Repositories.ArtistRepositories.ArtistApplicationRepository;
 using SolanaMusicApi.Infrastructure.Repositories.ArtistRepositories.ArtistRepository;
 using SolanaMusicApi.Infrastructure.Repositories.ArtistRepositories.ArtistSubscriberRepository;
 using SolanaMusicApi.Infrastructure.Repositories.ArtistRepositories.ArtistTrackRepository;
@@ -79,6 +81,8 @@ public static class Configurator
         services.AddScoped<IArtistTrackRepository, ArtistTrackRepository>();
         services.AddScoped<IArtistAlbumRepository, ArtistAlbumRepository>();
         services.AddScoped<IArtistSubscriberRepository, ArtistSubscriberRepository>();
+        services.AddScoped<IArtistApplicationRepository, ArtistApplicationRepository>();
+        
         services.AddScoped<IPlaylistRepository, PlaylistRepository>();
         services.AddScoped<IPlaylistTrackRepository, PlaylistTrackRepository>();
         services.AddScoped<IRecentlyPlayedRepository, RecentlyPlayedRepository>();
@@ -118,6 +122,8 @@ public static class Configurator
         services.AddScoped<IArtistTrackService, ArtistTrackService>();
         services.AddScoped<IArtistAlbumService, ArtistAlbumService>();
         services.AddScoped<IArtistSubscriberService, ArtistSubscriberService>();
+        services.AddScoped<IArtistApplicationService, ArtistApplicationService>();
+        
         services.AddScoped<IPlaylistService, PlaylistService>();
         services.AddScoped<IPlaylistTrackService, PlaylistTrackService>();
         services.AddScoped<IRecentlyPlayedService, RecentlyPlayedService>();

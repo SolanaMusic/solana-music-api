@@ -38,6 +38,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ArtistTrack> ArtistTracks { get; set; }
     public DbSet<ArtistAlbum> ArtistAlbums { get; set; }
     public DbSet<ArtistSubscriber> ArtistSubscribers { get; set; }
+    public DbSet<ArtistApplication> ArtistApplications { get; set; }
+    
     public DbSet<Album> Albums { get; set; }
     public DbSet<Track> Tracks { get; set; }
     public DbSet<TrackGenre> TrackGenres { get; set; }
@@ -69,6 +71,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         modelBuilder.ApplyConfiguration(new ArtistTrackConfiguration());
         modelBuilder.ApplyConfiguration(new ArtistAlbumConfiguration());
         modelBuilder.ApplyConfiguration(new ArtistSubscriberConfiguration());
+        modelBuilder.ApplyConfiguration(new ArtistApplicationConfiguration());
+        
         modelBuilder.ApplyConfiguration(new AlbumConfiguration());
         modelBuilder.ApplyConfiguration(new TrackConfiguration());
         modelBuilder.ApplyConfiguration(new TrackGenreConfiguration());

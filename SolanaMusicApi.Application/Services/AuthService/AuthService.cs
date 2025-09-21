@@ -168,7 +168,7 @@ public partial class AuthService(IUserProfileService userProfileService, ICountr
         return user!;
     }
 
-    private string GenerateUserName(string email) => email.Split('@')[0];
+    private static string GenerateUserName(string email) => email.Split('@')[0];
 
     private async Task<ApplicationUser?> GetExistingUserAsync(ExternalLoginInfo info)
     {
@@ -192,6 +192,7 @@ public partial class AuthService(IUserProfileService userProfileService, ICountr
         {
             Jwt = await GenerateTokenAsync(user),
             Role = await userService.GetUserRoleAsync(user),
+            ArtistName = user.Artist?.Name,
             User = user,
         };
     }
