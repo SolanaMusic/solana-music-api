@@ -10,7 +10,7 @@ using SolanaMusicApi.Domain.Enums;
 namespace SolanaMusicApi.Application.Requests;
 
 public record GetDashboardOverviewRequest : IRequest<DashboardOverviewResponseDto>;
-public record GetUsersRequest : IRequest<List<UserResponseDto>>;
+public record GetUsersRequest(DashboardFilter Filter, RequestSortingDto Sorting) : IRequest<PaginationResponseDto<UserResponseDto>>;
 
 public record GetPendingApplications : IRequest<int>;
 public record GetArtistApplicationsRequest(DashboardFilter Filter, RequestSortingDto Sorting, ArtistApplicationStatus? Status) 

@@ -1,8 +1,6 @@
-﻿using SolanaMusicApi.Domain.Entities;
+﻿namespace SolanaMusicApi.Domain.DTO.Pagination;
 
-namespace SolanaMusicApi.Domain.DTO.Pagination;
-
-public class ResponsePaginationDto<T> where T : BaseEntity
+public class ResponsePaginationDto<T>
 {
     public ResponsePaginationDto(RequestPaginationDto request, IQueryable<T> data)
     {
