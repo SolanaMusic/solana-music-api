@@ -11,7 +11,7 @@ public class GetArtistsRequestHandler(IArtistService artistService, IMapper mapp
 {
     public async Task<List<ArtistResponseDto>> Handle(GetArtistsRequest request, CancellationToken cancellationToken)
     {
-        var artists = await artistService.GetArtists().ToListAsync();
+        var artists = await artistService.GetArtists().ToListAsync(cancellationToken);
         var response = mapper.Map<List<ArtistResponseDto>>(artists);
 
         foreach (var artistDto in response)

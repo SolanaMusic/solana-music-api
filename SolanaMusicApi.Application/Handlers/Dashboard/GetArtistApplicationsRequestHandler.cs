@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using SolanaMusicApi.Application.Requests;
 using SolanaMusicApi.Application.Services.ArtistServices.ArtistApplicationService;
 using SolanaMusicApi.Domain.DTO.Artist.ArtistApplication;
@@ -24,8 +25,11 @@ public class GetArtistApplicationsRequestHandler(IArtistApplicationService artis
 
         if (!string.IsNullOrEmpty(request.Filter.Query))
         {
-            applications = applications.Where(x => x.User.Email != null && x.User.UserName 
-                != null && (x.User.Email.Contains(request.Filter.Query) || x.User.UserName.Contains(request.Filter.Query)));
+            applications = applications.Where(x =>
+                x.User.Email != null && x.User.UserName != null &&
+                (EF.Functions.Like(x.User.Email, $"%{request.Filter.Query}%") ||
+                 EF.Functions.Like(x.User.UserName, $"%{request.Filter.Query}%"))
+            );
         }
         
         var paginated = new DashboardResponsePaginationDto<ArtistApplication>(request.Filter, applications, x => x.CreatedDate);

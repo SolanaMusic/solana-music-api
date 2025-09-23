@@ -17,7 +17,6 @@ public class ArtistService(IBaseRepository<Artist> baseRepository, IFileService 
     {
         return GetAll()
             .AsTracking()
-            .AsSplitQuery()
             .Include(x => x.User)
                 .ThenInclude(x => x != null ? x.Profile : null)
                     .ThenInclude(x => x.Country)

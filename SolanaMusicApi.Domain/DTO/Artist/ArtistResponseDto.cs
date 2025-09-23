@@ -12,6 +12,7 @@ public class ArtistResponseDto : BaseResponseDto
     public string? ImageUrl { get; set; }
     public long SubscribersCount { get; set; }
     public bool IsUserSubscribed { get; set; }
+    public DateTime CreatedDate { get; set; }
 
     public UserResponseDto? User { get; set; }
     public CountryResponseDto Country { get; set; } = null!;

@@ -28,9 +28,11 @@ public class DashboardController(IMediator mediator) : ControllerBase
     }
     
     [HttpGet("artists")]
-    public async Task<IActionResult> GetArtists()
+    public async Task<IActionResult> GetArtists(
+        [FromQuery] DashboardFilter filter,
+        [FromQuery] RequestSortingDto sorting)
     {
-        var response = await mediator.Send(new GetArtistsRequest(0));
+        var response = await mediator.Send(new GetArtistsDashboardRequest(filter, sorting));
         return Ok(response);
     }
     
