@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using SolanaMusicApi.Application.Services.PaymentServices.TransactionService;
 using SolanaMusicApi.Application.Services.SubscriptionServices.SubscriptionService;
-using SolanaMusicApi.Application.Services.TrackServices.TracksService;
 using SolanaMusicApi.Application.Services.UserServices.UserProfileService;
 using SolanaMusicApi.Domain.DTO.Currency;
 using SolanaMusicApi.Domain.DTO.Dashboard.Overview;
@@ -14,40 +13,49 @@ using SolanaMusicApi.Domain.Enums.Transaction;
 
 namespace SolanaMusicApi.Application.Services.DashboardService;
 
-public class DashboardService(ITracksService tracksService, ISubscriptionService subscriptionService, 
-    ITransactionService transactionService, IUserProfileService userProfileService, IConfiguration configuration) 
+public class DashboardService(ISubscriptionService subscriptionService, ITransactionService transactionService, 
+    IUserProfileService userProfileService, IConfiguration configuration) 
     : IDashboardService
 {
     public async Task<DashboardOverviewResponseDto> GetOverviewAsync()
     {
-        var completedTransactions = transactionService
+        var solPrice = await GetSolPriceAsync();
+        
+        var transactions = transactionService
             .GetAll()
             .Where(x => x.Status == TransactionStatus.Completed && x.CreatedDate.Year == DateTime.UtcNow.Year);
 
-        var revenue = await GetRevenueAsync(completedTransactions
-            .Where(x => x.TransactionType == TransactionType.NftMint || x.TransactionType == TransactionType.SubscriptionPurchase));
+        var revenue = await GetRevenueAsync(
+            transactions,
+            solPrice, 
+            TransactionType.NftMint,
+            TransactionType.SubscriptionPurchase
+            );
 
+        var nftSales = await GetNftSalesAsync(
+            transactions, 
+            solPrice, 
+            TransactionType.NftMint
+            );
+        
         return new DashboardOverviewResponseDto
         {
             Revenue = revenue,
-            TotalSongs = await GetChangeStatsAsync(tracksService.GetAll()),
             SubscriptionStats = await GetSubscriptionStatsResponseAsync(),
             ActiveUsers = await GetStatsAsync(userProfileService.GetAll()),
-            NftSales = await GetMonthlyStatsAsync(completedTransactions.Where(x => x.TransactionType == TransactionType.NftMint))
+            NftSales = nftSales
         };
     }
 
     private async Task<SubscriptionStatsResponseDto> GetSubscriptionStatsResponseAsync()
     {
-        var subscriptions = subscriptionService.GetAll();
-        
         var stats = new SubscriptionStatsResponseDto
         {
-            StatsChange = await GetChangeStatsAsync(subscriptions),
-            SubscriptionStats = await GetSubscriptionStatsAsync()
+            Change = await GetChangeStatsAsync(subscriptionService.GetAll()),
+            Stats = await GetSubscriptionStatsAsync()
         };
 
-        stats.StatsChange.Count = stats.SubscriptionStats.Sum(x => x.Count);
+        stats.Change.TotalValue = stats.Stats.Sum(x => x.Count);
         return stats;
     }
 
@@ -86,24 +94,46 @@ public class DashboardService(ITracksService tracksService, ISubscriptionService
         return grouped;
     }
     
-    private async Task<StatsResponseDto> GetRevenueAsync(IQueryable<Transaction> transactions)
+    private static async Task<List<MonthlyStatsResponseDto>> GetTransactionMonthlyAsync(
+        IQueryable<Transaction> query, 
+        decimal solPrice, 
+        params TransactionType[] types
+        )
     {
-        var solPrice = await GetSolPriceAsync();
+        if (types.Length > 0)
+            query = query.Where(t => types.Contains(t.TransactionType));
 
-        var monthly = await transactions
+        return await query
             .GroupBy(t => new { t.CreatedDate.Year, t.CreatedDate.Month })
             .OrderBy(g => g.Key.Month)
             .Select(g => new MonthlyStatsResponseDto
             {
                 Date = new DateOnly(g.Key.Year, g.Key.Month, 1),
-                Items = g.Sum(t => t.CurrencyId == 2 ? solPrice * t.Amount : t.Amount)
+                Value = g.Sum(t => t.CurrencyId == 2 ? solPrice * t.Amount : t.Amount)
             })
             .ToListAsync();
+    }
 
+    private static async Task<StatsResponseDto> GetRevenueAsync(IQueryable<Transaction> query, decimal solPrice, params TransactionType[] types)
+    {
+        var monthly = await GetTransactionMonthlyAsync(query, solPrice, types);
+        
         return new StatsResponseDto
         {
             Monthly = monthly,
             Change = CalculateChange(monthly)
+        };
+    }
+    
+    private static async Task<StatsResponseDto> GetNftSalesAsync(IQueryable<Transaction> query, decimal solPrice, params TransactionType[] types)
+    {
+        var monthly = await GetTransactionMonthlyAsync(query, solPrice, types);
+        var stats = await GetStatsAsync(query.Where(x => types.Contains(x.TransactionType)));
+        
+        return new StatsResponseDto
+        {
+            Monthly = monthly,
+            Change = stats.Change
         };
     }
 
@@ -150,7 +180,7 @@ public class DashboardService(ITracksService tracksService, ISubscriptionService
             .Select(g => new MonthlyStatsResponseDto
             {
                 Date = new DateOnly(g.Year, g.Month, 1),
-                Items = g.Count
+                Value = g.Count
             })
             .ToList();
     }
@@ -174,8 +204,9 @@ public class DashboardService(ITracksService tracksService, ISubscriptionService
 
         return new StatsChangeResponseDto
         {
-            Count = count,
-            Change = currentMonthCount - previousMonthCount,
+            TotalValue = count,
+            CurrentValue = currentMonthCount,
+            PreviousValue = previousMonthCount,
             PercentageChange = Math.Round(percentageChange, 2)
         };
     }
@@ -189,8 +220,9 @@ public class DashboardService(ITracksService tracksService, ISubscriptionService
             case 1:
                 return new StatsChangeResponseDto
                 {
-                    Count = monthly[0].Items,
-                    Change = 0,
+                    TotalValue = monthly[0].Value,
+                    CurrentValue = 0,
+                    PreviousValue = 0,
                     PercentageChange = 0
                 };
         }
@@ -201,18 +233,20 @@ public class DashboardService(ITracksService tracksService, ISubscriptionService
         if (prev.Date != last.Date.AddMonths(-1))
             return new StatsChangeResponseDto
             {
-                Count = monthly.Sum(x => x.Items),
-                Change = 0,
+                TotalValue = monthly.Sum(x => x.Value),
+                CurrentValue = 0,
+                PreviousValue = 0,
                 PercentageChange = 0
             };
 
-        var change = last.Items - prev.Items;
-        var percentageChange = prev.Items != 0 ? change / prev.Items * 100 : last.Items != 0 ? 100 : 0;
+        var change = last.Value - prev.Value;
+        var percentageChange = prev.Value != 0 ? change / prev.Value * 100 : last.Value != 0 ? 100 : 0;
 
         return new StatsChangeResponseDto
         {
-            Count = monthly.Sum(x => x.Items),
-            Change = change,
+            TotalValue = monthly.Sum(x => x.Value),
+            CurrentValue = last.Value,
+            PreviousValue = prev.Value,
             PercentageChange = Math.Round(percentageChange, 2)
         };
     }

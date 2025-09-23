@@ -2,6 +2,6 @@
 
 public class SubscriptionStatsResponseDto
 {
-    public List<SubscriptionStats> SubscriptionStats { get; set; } = [];
-    public StatsChangeResponseDto StatsChange { get; set; } = new();
+    public List<SubscriptionStats> Stats { get; set; } = [];
+    public StatsChangeResponseDto Change { get; set; } = new();
 }

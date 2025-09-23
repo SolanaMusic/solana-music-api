@@ -2,7 +2,8 @@
 
 public class StatsChangeResponseDto
 {
-    public decimal Count { get; set; }
-    public decimal Change { get; set; }
+    public decimal TotalValue { get; set; }
+    public decimal CurrentValue { get; set; }
+    public decimal PreviousValue { get; set; }
     public decimal PercentageChange { get; set; }
 }
