@@ -37,9 +37,11 @@ public class DashboardController(IMediator mediator) : ControllerBase
     }
     
     [HttpGet("tracks")]
-    public async Task<IActionResult> GetTracks()
+    public async Task<IActionResult> GetTracks(
+        [FromQuery] DashboardFilter filter,
+        [FromQuery] RequestSortingDto sorting)
     {
-        var response = await mediator.Send(new GetTracksRequest());
+        var response = await mediator.Send(new GetDashboardTracksRequest(filter, sorting));
         return Ok(response);
     }
     
