@@ -181,27 +181,39 @@ public class MappingProfiles : Profile
     private static List<ArtistResponseDto> GetCreators(NftCollection src)
     {
         List<ArtistResponseDto> artists = [];
-        
+
         if (src.Album != null)
         {
-            artists.AddRange(src.Album.ArtistAlbums.Select(x => x.Artist)
-                .Select(artist => new ArtistResponseDto { Id = artist.Id, Name = artist.Name }));
-
+            artists.AddRange(src.Album.ArtistAlbums
+                .Select(x => MapArtist(x.Artist)));
             return artists;
         }
-       
+
         if (src.Track != null)
         {
-            artists.AddRange(src.Track.ArtistTracks.Select(x => x.Artist)
-                .Select(artist => new ArtistResponseDto { Id = artist.Id, Name = artist.Name }));
-
+            artists.AddRange(src.Track.ArtistTracks
+                .Select(x => MapArtist(x.Artist)));
             return artists;
         }
 
-        if (src.Artist == null) 
-            return artists;
-        
-        artists.Add(new ArtistResponseDto { Id = src.Artist.Id, Name = src.Artist.Name });
+        if (src.Artist != null)
+        {
+            artists.Add(MapArtist(src.Artist));
+        }
+
         return artists;
     }
+    
+    private static ArtistResponseDto MapArtist(Artist artist) =>
+        new()
+        {
+            Id = artist.Id,
+            Name = artist.Name,
+            Country = new CountryResponseDto
+            {
+                Id = artist.Country.Id,
+                Name = artist.Country.Name,
+                CountryCode = artist.Country.CountryCode
+            }
+        };
 }

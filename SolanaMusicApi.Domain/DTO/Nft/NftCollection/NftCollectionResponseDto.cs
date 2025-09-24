@@ -18,6 +18,7 @@ public class NftCollectionResponseDto : BaseResponseDto
     public AssociationType AssociationType { get; set; }
     public bool IsLiked { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
+    public DateTime CreatedDate { get; set; }
 
     public List<ArtistResponseDto> Creators { get; set; } = [];
     public List<NftResponseDto> Nfts { get; set; } = [];

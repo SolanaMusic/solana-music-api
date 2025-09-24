@@ -134,13 +134,16 @@ public class NftCollectionService(IBaseRepository<NftCollection> baseRepository,
     {
         var albums = albumService.GetAll()
             .Include(x => x.ArtistAlbums)
-            .ThenInclude(x => x.Artist);
+            .ThenInclude(x => x.Artist)
+            .ThenInclude(x => x.Country);
 
         var tracks = tracksService.GetAll()
             .Include(x => x.ArtistTracks)
-            .ThenInclude(x => x.Artist);
+            .ThenInclude(x => x.Artist)
+            .ThenInclude(x => x.Country);
 
-        var artists = artistService.GetAll();
+        var artists = artistService.GetAll()
+            .Include(x => x.Country);
 
         return from c in GetAll()
                 .Include(x => x.LikedNfts)
