@@ -13,7 +13,7 @@ public class GetAlbumsByArtistRequestHandler(IAlbumService albumService, IMapper
     public async Task<List<AlbumResponseDto>> Handle(GetAlbumsByArtistRequest request, CancellationToken cancellationToken)
     {
         var query = albumService.GetAlbums()
-            .Where(x => x.ArtistAlbums.Any(aa => aa.ArtistId == request.ArtistId));
+            .Where(x => x.ArtistAlbums.Any(aa => request.ArtistIds.Contains(aa.ArtistId)));
 
         if (!string.IsNullOrWhiteSpace(request.Title))
             query = query.Where(x => EF.Functions.Like(x.Title, $"%{request.Title}%"));

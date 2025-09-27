@@ -5,7 +5,7 @@ using SolanaMusicApi.Domain.DTO.Track.RecentlyPlayed;
 namespace SolanaMusicApi.Application.Requests;
 
 public record GetTracksRequest : IRequest<List<TrackResponseDto>>;
-public record GetTracksByArtistRequest(long ArtistId, string? Name) : IRequest<List<TrackResponseDto>>;
+public record GetTracksByArtistRequest(List<long> ArtistIds, string? Name) : IRequest<List<TrackResponseDto>>;
 public record GetTrackRequest(long Id) : IRequest<TrackResponseDto>;
 public record GetRecentlyPlayedRequest(long UserId) : IRequest<List<TrackResponseDto>>;
 public record AddOrUpdateRecentlyPlayedRequest(long UserId, long TrackId) : IRequest<RecentlyPlayedResponseDto>;

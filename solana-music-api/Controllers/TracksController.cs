@@ -18,10 +18,10 @@ public class TracksController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
     
-    [HttpGet("by-artist/{artistId}")]
-    public async Task<IActionResult> GetByArtist([Required]long artistId, string? name)
+    [HttpGet("by-artists")]
+    public async Task<IActionResult> GetByArtist([Required][FromQuery] List<long> artistIds, string? name)
     {
-        var response = await mediator.Send(new GetTracksByArtistRequest(artistId, name));
+        var response = await mediator.Send(new GetTracksByArtistRequest(artistIds, name));
         return Ok(response);
     }
 

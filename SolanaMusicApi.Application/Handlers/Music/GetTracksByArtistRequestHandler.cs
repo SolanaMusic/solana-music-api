@@ -7,12 +7,13 @@ using SolanaMusicApi.Domain.DTO.Track;
 
 namespace SolanaMusicApi.Application.Handlers.Music;
 
-public class GetTracksByArtistRequestHandler(ITracksService tracksService, IMapper mapper) : IRequestHandler<GetTracksByArtistRequest, List<TrackResponseDto>>
+public class GetTracksByArtistRequestHandler(ITracksService tracksService, IMapper mapper) 
+    : IRequestHandler<GetTracksByArtistRequest, List<TrackResponseDto>>
 {
     public async Task<List<TrackResponseDto>> Handle(GetTracksByArtistRequest request, CancellationToken cancellationToken)
     {
         var query = await tracksService.GetTracksQueryAsync();
-        query = query.Where(x => x.ArtistTracks.Any(at => at.ArtistId == request.ArtistId));
+        query = query.Where(x => x.ArtistTracks.Any(at => request.ArtistIds.Contains(at.ArtistId)));
         
         if (!string.IsNullOrEmpty(request.Name))
             query = query.Where(track => EF.Functions.Like(track.Title, $"%{request.Name}%"));

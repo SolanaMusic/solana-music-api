@@ -197,9 +197,7 @@ public class MappingProfiles : Profile
         }
 
         if (src.Artist != null)
-        {
             artists.Add(MapArtist(src.Artist));
-        }
 
         return artists;
     }
